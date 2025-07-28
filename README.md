@@ -30,8 +30,7 @@ Fayda will be used to:
 - Prevent fraud and duplication.
 
 ## Tech Stack
-- Frontend: **Next.js** — Web framework for dashboards and UI
-- Backend: Go (Gin framework) or Node.js (Express) — final decision pending
+- Frontend: **Next.js** — Web framework
 - Authentication: VeriFayda OIDC integration
 - Database: MongoDB
 - Deployment: Railway or Vercel (TBD)
