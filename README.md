@@ -1,37 +1,38 @@
-# Startup Ethiopa — Verified Startup Registration & Benefits Platform
+# Project Title: Ethiopia Startup — Verified Startup Ecosystem Platform
 
 ## Contributors
-- Alemayehu Dabi
-- Bement Mussa
+- Alemayehu Dabi *(Registered participant)*
+- Bemnet Mussa *(Registered participant)*
 
 ## Project Synopsis
 
-### Problem Statement (What problem are we solving?)
-Ethiopian startup founders often face challenges in getting officially recognized and accessing government benefits like tax breaks, grants, and legal support. The current processes are manual, prone to fraud, and lack a centralized digital system. Additionally, investors have limited access to verified startup data, increasing risk.
+### Problem Statement
+Ethiopian startups lack visibility, official recognition, and access to government support provided under the new Startup Law. There’s no centralized digital system for identifying real startups or connecting them with government programs or diaspora support. As a result, trust is low and growth is slow.
 
-### Planned Solution (How do we plan to solve it?)
-FaydaStartup is a secure web platform that leverages the **Fayda digital ID** to verify all users — startup founders, investors, and government reviewers — and streamline the startup registration process. Founders can register their startups digitally, and government agencies can review and approve them via an admin panel. Once approved, startups gain access to official benefits, and investors can explore a directory of verified startups.
+### Planned Solution
+We will build a web platform where:
+- Startups register and verify team identity using Fayda Digital ID.
+- Verified startups submit applications to be officially recognized under the startup law.
+- Approved startups get listed publicly as “Verified Ethiopian Startups.”
+- Diaspora, investors, and organizations can browse startups, offer investment, mentorship, or collaboration.
 
-### Expected Outcome (What do we hope to achieve?)
-- Digitally verified and registered startups linked to real founder identities.
-- Verified government and investor users interacting securely.
-- Simplified and transparent application and approval workflows.
-- Increased government efficiency and reduced fraud.
-- Improved investor trust and reduced risk in startup funding.
-- A centralized ecosystem for startups, government, and investors to interact securely.
+### Expected Outcome
+- Trusted, visible ecosystem of verified Ethiopian startups.
+- A centralized, government-aligned database.
+- Simplified access to legal and financial benefits for startups.
+- Improved investment confindece and mentorship from diaspora and local partners.
+- Reduced fraud and duplication via digital ID-based validation.
 
-### Fayda's Role (How does Fayda fit into our project?)
-Fayda plays a **central role in identity verification** across the platform:
-- **Verifying all users** — startup founders, investors, and government officials — through secure digital ID login.
-- Enabling **trust and transparency** in the ecosystem by tying all actions to **real, verified identities**.
-- Supporting Ethiopia’s **startup law** by ensuring that all beneficiaries are authenticated.
-- Reducing fraud, fake applications, and untrustworthy investment activity.
+### Fayda's Role
+Fayda will be used to:
+- Verify startup founders' identities during registration.
+- Build trust in the authenticity of submitted startups.
+- Prevent fraud and duplication.
 
-## Tech Stack we plan to use
-
-### Front to Back
-- **Next.js** – framework for building the interactive dashboards and backend logic
-
-### Authentication & Integration
-- **Fayda Digital ID** – Identity verification for all users
-- **OAuth2 / National ID API Integration** – For Fayda login
+## Tech Stack
+- Frontend: **Next.js** — Web framework for dashboards and UI
+- Backend: Go (Gin framework) or Node.js (Express) — final decision pending
+- Authentication: VeriFayda OIDC integration
+- Database: MongoDB
+- Deployment: Railway or Vercel (TBD)
+- Version Control: GitHub
