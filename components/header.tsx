@@ -31,7 +31,7 @@ export function Header({ currentPage }: HeaderProps) {
               Directory
             </Link>
             <Link
-              href="/submit"
+              href="/submit/verify"
               className={`${
                 currentPage === 'submit'
                   ? 'font-medium text-emerald-600'

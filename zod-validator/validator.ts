@@ -25,13 +25,21 @@ export const SignUpSchema = z
 //   message: 'Invalid ObjectId format',
 // });
 
+export const faydaSchema = z.object({
+  faydaId: z.literal(true), // must be checked
+});
+
 export const StartupZodSchema = z.object({
-  name: z.string().min(3),
-  description: z.string().min(10),
-  region: z.string().min(2),
-  documents: z.array(z.url()).min(1),
-  founders: z.array(z.string()).min(1), // array of User IDs (Fayda users)
-  status: z.enum(['pending', 'approved', 'rejected']).optional(),
+  startupName: z.string().min(1, 'Startup name is required'),
+  sector: z.string().min(1, 'Sector is required'),
+  location: z.string().min(1, 'Location is required'),
+  description: z.string().min(1, 'Description is required'),
+  founderName: z.string().min(1, 'Founder name is required'),
+  founderRole: z.string().min(1, 'Founder role is required'),
+  pitch: z.string().min(1, 'Pitch is required'),
+  startupLaw: z.literal(true, { message: 'You must agree to startup law.' }),
+  faydaId: z.literal(true, { message: 'Fayda ID must be verified.' }),
+  terms: z.literal(true, { message: 'You must accept the terms.' }),
 });
 
 export type LoginInput = z.infer<typeof LoginSchema>;
