@@ -1,9 +1,24 @@
-import Image from 'next/image';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+import { HeroSection } from '@/components/hero-section';
+import { StatsSection } from '@/components/stats-section';
+import { FeaturedStartups } from '@/components/featured-startups';
+import { TrustSection } from '@/components/trust-section';
+import { mockStartups } from '@/lib/data'; // adjust path if needed
 
-export default function Home() {
+export default function HomePage() {
+  const featuredStartups = mockStartups;
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      ethiopia-start-up
+    <div className="min-h-screen bg-white">
+      <Header />
+      <main>
+        <HeroSection />
+        <StatsSection />
+        <FeaturedStartups startups={featuredStartups} />
+        <TrustSection />
+      </main>
+      <Footer />
     </div>
   );
 }
