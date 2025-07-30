@@ -1,28 +1,35 @@
-'use client';
+"use client"
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
-import { useEffect, useState } from 'react';
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { authClient, type Session } from "@/lib/auth-client"
+import { useEffect, useState } from "react"
+import { UserProfileDropdown } from "./user-profile-dropdown" // Import the new component
 
 interface HeaderProps {
-  currentPage?: string;
+  currentPage?: string
 }
 
 export function Header({ currentPage }: HeaderProps) {
+<<<<<<< HEAD
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [session, setSession] = useState<any>(null);
+=======
+  const [session, setSession] = useState<Session | null | undefined>(undefined) // undefined for initial loading state
+>>>>>>> bbf5d25f2b17a85344da35d60882a33f993f167e
 
   useEffect(() => {
     const getSession = async () => {
-      const { data: sessionData, error } = await authClient.getSession();
+      const { data: sessionData, error } = await authClient.getSession()
       if (!error) {
-        setSession(sessionData);
+        setSession(sessionData)
+      } else {
+        setSession(null) // Set to null if no session or error
       }
-    };
+    }
+    getSession()
+  }, [])
 
-    getSession();
-  }, []);
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -31,41 +38,46 @@ export function Header({ currentPage }: HeaderProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
               <span className="text-sm font-bold text-white">ES</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900">
-              Ethiopia Startup
-            </span>
+            <span className="text-xl font-semibold text-gray-900">Ethiopia Startup</span>
           </Link>
-
           <nav className="hidden items-center space-x-8 md:flex">
             <Link
               href="/startups"
               className={`${
-                currentPage === 'startups'
-                  ? 'font-medium text-emerald-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                currentPage === "startups" ? "font-medium text-emerald-600" : "text-gray-800 hover:text-gray-900"
               }`}
             >
               Directory
             </Link>
             <Link
-              href={session ? '/submit/verify' : '/login'}
+              href={session ? "/submit/verify" : "/login"}
               className={`${
-                currentPage === 'submit'
-                  ? 'font-medium text-emerald-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                currentPage === "submit" ? "font-medium text-emerald-600" : "text-gray-800 hover:text-gray-900"
               }`}
             >
               Submit Startup
             </Link>
-            <Link href="/login" className="text-gray-600 hover:text-gray-900">
-              Login
-            </Link>
-            <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
-              <Link href="/register">Get Started</Link>
-            </Button>
+
+            {session === undefined ? (
+              // Optional: Show a loading skeleton or nothing while session is being fetched
+              <div className="h-8 w-24 animate-pulse rounded-md bg-gray-200" />
+            ) : session ? (
+              // If session exists, show user profile dropdown
+              <UserProfileDropdown session={session} />
+            ) : (
+              // If no session, show Login and Get Started buttons
+              <>
+                <Link href="/login" className="text-gray-800 hover:text-gray-900">
+                  Login
+                </Link>
+                <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
+                  <Link href="/register">Get Started</Link>
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </div>
     </header>
-  );
+  )
 }

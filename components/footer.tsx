@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link"
 
 export function Footer() {
   return (
@@ -12,15 +12,11 @@ export function Footer() {
               </div>
               <span className="text-xl font-semibold">Ethiopia Startup</span>
             </div>
-            <p className="text-gray-400">
-              Connecting Ethiopian entrepreneurs with investors, mentors, and
-              supporters.
-            </p>
+            <p className="text-gray-300">Connecting Ethiopian entrepreneurs with investors, mentors, and supporters.</p>
           </div>
-
           <div>
             <h4 className="mb-4 font-semibold">Platform</h4>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-300">
               <li>
                 <Link href="/startups" className="hover:text-white">
                   Browse Startups
@@ -38,10 +34,9 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
           <div>
             <h4 className="mb-4 font-semibold">Support</h4>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-300">
               <li>
                 <Link href="#" className="hover:text-white">
                   Help Center
@@ -59,10 +54,9 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
           <div>
             <h4 className="mb-4 font-semibold">Legal</h4>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-300">
               <li>
                 <Link href="#" className="hover:text-white">
                   Privacy Policy
@@ -81,11 +75,10 @@ export function Footer() {
             </ul>
           </div>
         </div>
-
-        <div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-400">
+        <div className="mt-8 border-t border-gray-700 pt-8 text-center text-gray-400">
           <p>&copy; 2024 Ethiopia Startup. All rights reserved.</p>
         </div>
       </div>
     </footer>
-  );
+  )
 }

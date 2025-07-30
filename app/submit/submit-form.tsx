@@ -112,7 +112,7 @@ export default function SubmitStartupForm() {
           <h1 className="mb-4 text-3xl font-bold text-gray-900">
             Submit Your Startup
           </h1>
-          <p className="mx-auto max-w-2xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-gray-800">
             Join Ethiopia&apos;s verified startup ecosystem. All submissions
             require Fayda ID verification and approval under the national
             Startup Law.
@@ -185,7 +185,7 @@ export default function SubmitStartupForm() {
                         <h4 className="font-medium text-gray-900">
                           {item.title}
                         </h4>
-                        <p className="text-sm text-gray-600">{item.desc}</p>
+                        <p className="text-sm text-gray-800">{item.desc}</p>
                       </div>
                     </Link>
                   );

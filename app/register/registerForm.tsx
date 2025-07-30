@@ -150,7 +150,7 @@ export default function RegisterForm() {
 
               <div className="flex items-center space-x-2">
                 <Checkbox id="terms" />
-                <Label htmlFor="terms" className="text-sm text-gray-600">
+                <Label htmlFor="terms" className="text-sm text-gray-800">
                   I agree to the{' '}
                   <Link
                     href="#"
@@ -177,7 +177,7 @@ export default function RegisterForm() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-800">
                 Already have an account?{' '}
                 <Link
                   href="/login"
