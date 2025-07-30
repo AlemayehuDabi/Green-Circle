@@ -35,3 +35,98 @@ Fayda will be used to:
 - Database: MongoDB
 - Deployment: Railway or Vercel (TBD)
 - Version Control: GitHub
+
+
+
+## Installation and Deployment
+
+Follow these instructions to set up and run the project locally or deploy it using Docker.
+
+### Prerequisites
+
+*   Node.js (v20 or later recommended)
+*   npm or Yarn
+*   Docker (for Docker deployment)
+
+### 1. Clone the Repository
+
+\`\`\`bash
+git clone [\[YOUR_REPOSITORY_URL\]](https://github.com/BemnetMussa/Startup-Ethiopia.git)
+cd ethiopia-startup-platform # Replace with your actual repo name
+\`\`\`
+
+### 2. Install Dependencies
+
+Using npm:
+\`\`\`bash
+npm install
+\`\`\`
+Or using Yarn:
+\`\`\`bash
+yarn install
+\`\`\`
+
+### 3. Environment Variables
+
+Create a `.env.local` file in the root of your project and add necessary environment variables.
+If you are using Better Auth, you will likely need:
+
+\`\`\`
+# Example .env.local
+AUTH_SECRET=your_super_secret_key_here # Generate a strong, random string
+AUTH_URL=http://localhost:3000/api/auth # Or your deployed URL
+# Add any other API keys or secrets your application uses
+\`\`\`
+**Note:** For Docker deployment, these variables will be passed via `docker-compose.yml` or your deployment platform.
+
+### 4. Running the App Locally
+
+To run the development server:
+
+\`\`\`bash
+npm run dev
+# or
+yarn dev
+\`\`\`
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+### 5. Deploying the App using Docker
+
+Ensure Docker is installed and running on your system.
+
+#### Build and Run with Docker Compose
+
+This is the recommended method for easy setup and deployment.
+
+\`\`\`bash
+docker-compose up --build -d
+\`\`\`
+
+*   `--build`: Builds the Docker image from the `Dockerfile`.
+*   `-d`: Runs the containers in detached mode (in the background).
+
+The application will be accessible at [http://localhost:3000](http://localhost:3000).
+
+#### Stop Docker Containers
+
+To stop the running containers:
+
+\`\`\`bash
+docker-compose down
+\`\`\`
+
+#### Manual Docker Build and Run (Alternative)
+
+You can also build and run the Docker image manually:
+
+1.  **Build the Docker image:**
+    \`\`\`bash
+    docker build -t ethiopia-startup-app .
+    \`\`\`
+2.  **Run the Docker container:**
+    \`\`\`bash
+    docker run -p 3000:3000 ethiopia-startup-app
+    \`\`\`
+
+

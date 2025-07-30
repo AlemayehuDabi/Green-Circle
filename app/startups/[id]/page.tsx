@@ -11,12 +11,10 @@ import { Separator } from "@/components/ui/separator"
 import { MapPin, Users, Calendar, Globe, Mail, Phone, ArrowLeft, Heart, DollarSign, UserPlus } from "lucide-react"
 import { ImageWithFallback } from "@/components/image-withfallback" // This is a Client Component
 
-interface PageProps {
-  params: { id: string }
-}
 
-export default async function StartupDetailPage({ params }: PageProps) {
-  const { id } = params
+export default async function StartupDetailPage({ params }: any) {
+  // We then cast 'params' back to its expected type for safe usage within the component
+  const { id } = params as { id: string }
   const startup = mockStartups.find((s) => s.id === Number.parseInt(id))
 
   if (!startup) notFound()
