@@ -1,40 +1,31 @@
-import { notFound } from 'next/navigation';
-import { mockStartups } from '@/lib/data';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Header } from '@/components/header';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import {
-  MapPin,
-  Users,
-  Calendar,
-  Globe,
-  Mail,
-  Phone,
-  ArrowLeft,
-  Heart,
-  DollarSign,
-  UserPlus,
-} from 'lucide-react';
+// REMOVE THIS LINE: "use client"
+
+import { notFound } from "next/navigation"
+import { mockStartups } from "@/lib/data"
+import Link from "next/link"
+import { Header } from "@/components/header"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { MapPin, Users, Calendar, Globe, Mail, Phone, ArrowLeft, Heart, DollarSign, UserPlus } from "lucide-react"
+import { ImageWithFallback } from "@/components/image-withfallback" // This is a Client Component
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string }
 }
 
 export default async function StartupDetailPage({ params }: PageProps) {
-  const { id } = await params;
-  const startup = mockStartups.find((s) => s.id === Number.parseInt(id));
+  const { id } = params
+  const startup = mockStartups.find((s) => s.id === Number.parseInt(id))
 
-  if (!startup) notFound();
+  if (!startup) notFound()
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <Button asChild variant="ghost" className="mb-6">
+        <Button asChild variant="ghost" className="mb-6 text-gray-700 hover:text-gray-900">
           <Link href="/startups">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Directory
@@ -45,8 +36,8 @@ export default async function StartupDetailPage({ params }: PageProps) {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-start space-x-6">
-                  <Image
-                    src={startup.logo || '/placeholder.svg'}
+                  <ImageWithFallback
+                    src={startup.logo || "/placeholder.svg"}
                     alt={startup.name}
                     width={80}
                     height={80}
@@ -54,16 +45,10 @@ export default async function StartupDetailPage({ params }: PageProps) {
                   />
                   <div className="flex-1">
                     <div className="mb-2 flex items-center space-x-3">
-                      <h1 className="text-3xl font-bold text-gray-900">
-                        {startup.name}
-                      </h1>
-                      {startup.verified && (
-                        <Badge className="bg-emerald-100 text-emerald-700">
-                          Verified
-                        </Badge>
-                      )}
+                      <h1 className="text-3xl font-bold text-gray-900">{startup.name}</h1>
+                      {startup.verified && <Badge className="bg-emerald-100 text-emerald-700">Verified</Badge>}
                     </div>
-                    <div className="mb-4 flex items-center space-x-4 text-gray-600">
+                    <div className="mb-4 flex items-center space-x-4 text-gray-700 text-sm">
                       <div className="flex items-center space-x-1">
                         <MapPin className="h-4 w-4" />
                         <span>{startup.location}</span>
@@ -77,32 +62,32 @@ export default async function StartupDetailPage({ params }: PageProps) {
                         <span>Founded {startup.foundedYear}</span>
                       </div>
                     </div>
-                    <Badge variant="outline" className="mb-4">
+                    <Badge variant="outline" className="mb-4 text-gray-700">
                       {startup.sector}
                     </Badge>
-                    <p className="text-gray-700">{startup.description}</p>
+                    <p className="text-gray-800 text-base leading-relaxed">{startup.description}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Company Overview</CardTitle>
+                <CardTitle className="text-gray-900">Company Overview</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="leading-relaxed text-gray-700">{startup.pitch}</p>
+                <p className="leading-relaxed text-gray-800 text-base">{startup.pitch}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Key Achievements</CardTitle>
+                <CardTitle className="text-gray-900">Key Achievements</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
                   {startup.achievements.map((achievement, i) => (
                     <li key={i} className="flex items-center space-x-2">
                       <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-                      <span className="text-gray-700">{achievement}</span>
+                      <span className="text-gray-800 text-base">{achievement}</span>
                     </li>
                   ))}
                 </ul>
@@ -110,27 +95,23 @@ export default async function StartupDetailPage({ params }: PageProps) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Meet the Founders</CardTitle>
+                <CardTitle className="text-gray-900">Meet the Founders</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {startup.founders.map((founder, i) => (
                     <div key={i} className="flex items-start space-x-4">
-                      <Image
-                        src={founder.image || '/placeholder.svg'}
+                      <ImageWithFallback
+                        src={founder.image || "/placeholder.svg"}
                         alt={founder.name}
                         width={64}
                         height={64}
                         className="h-16 w-16 rounded-full"
                       />
                       <div>
-                        <h4 className="font-semibold text-gray-900">
-                          {founder.name}
-                        </h4>
-                        <p className="mb-2 text-sm text-emerald-600">
-                          {founder.role}
-                        </p>
-                        <p className="text-sm text-gray-600">{founder.bio}</p>
+                        <h4 className="font-semibold text-gray-900">{founder.name}</h4>
+                        <p className="mb-2 text-sm text-emerald-700">{founder.role}</p>
+                        <p className="text-sm text-gray-800">{founder.bio}</p>
                       </div>
                     </div>
                   ))}
@@ -141,18 +122,18 @@ export default async function StartupDetailPage({ params }: PageProps) {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Support This Startup</CardTitle>
+                <CardTitle className="text-gray-900">Support This Startup</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full bg-emerald-500 hover:bg-emerald-600">
                   <DollarSign className="mr-2 h-4 w-4" />
                   Invest
                 </Button>
-                <Button variant="outline" className="w-full bg-transparent">
+                <Button variant="outline" className="w-full bg-transparent text-gray-800 hover:bg-gray-100">
                   <UserPlus className="mr-2 h-4 w-4" />
                   Become a Mentor
                 </Button>
-                <Button variant="outline" className="w-full bg-transparent">
+                <Button variant="outline" className="w-full bg-transparent text-gray-800 hover:bg-gray-100">
                   <Heart className="mr-2 h-4 w-4" />
                   Donate
                 </Button>
@@ -160,34 +141,31 @@ export default async function StartupDetailPage({ params }: PageProps) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
+                <CardTitle className="text-gray-900">Contact Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {startup.website && (
                   <div className="flex items-center space-x-3">
-                    <Globe className="h-4 w-4 text-gray-400" />
-                    <Link
-                      href={startup.website}
-                      className="text-emerald-600 hover:text-emerald-700"
-                    >
+                    <Globe className="h-4 w-4 text-gray-700" />
+                    <Link href={startup.website} className="text-emerald-600 hover:text-emerald-700 text-base">
                       {startup.website}
                     </Link>
                   </div>
                 )}
                 <div className="flex items-center space-x-3">
-                  <Mail className="h-4 w-4 text-gray-400" />
+                  <Mail className="h-4 w-4 text-gray-700" />
                   <Link
                     href={`mailto:${startup.contact.email}`}
-                    className="text-emerald-600 hover:text-emerald-700"
+                    className="text-emerald-600 hover:text-emerald-700 text-base"
                   >
                     {startup.contact.email}
                   </Link>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className="h-4 w-4 text-gray-400" />
+                  <Phone className="h-4 w-4 text-gray-700" />
                   <Link
                     href={`tel:${startup.contact.phone}`}
-                    className="text-emerald-600 hover:text-emerald-700"
+                    className="text-emerald-600 hover:text-emerald-700 text-base"
                   >
                     {startup.contact.phone}
                   </Link>
@@ -196,27 +174,27 @@ export default async function StartupDetailPage({ params }: PageProps) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Quick Stats</CardTitle>
+                <CardTitle className="text-gray-900">Quick Stats</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Sector</span>
-                  <span className="font-medium">{startup.sector}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-800">Sector</span>
+                  <span className="font-medium text-gray-900">{startup.sector}</span>
                 </div>
                 <Separator />
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Founded</span>
-                  <span className="font-medium">{startup.foundedYear}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-800">Founded</span>
+                  <span className="font-medium text-gray-900">{startup.foundedYear}</span>
                 </div>
                 <Separator />
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Team Size</span>
-                  <span className="font-medium">{startup.employees}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-800">Team Size</span>
+                  <span className="font-medium text-gray-900">{startup.employees}</span>
                 </div>
                 <Separator />
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Location</span>
-                  <span className="font-medium">{startup.location}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-800">Location</span>
+                  <span className="font-medium text-gray-900">{startup.location}</span>
                 </div>
               </CardContent>
             </Card>
@@ -224,5 +202,5 @@ export default async function StartupDetailPage({ params }: PageProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

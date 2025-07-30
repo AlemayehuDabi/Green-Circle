@@ -46,7 +46,7 @@ export default function StartupsForm() {
           <h1 className="mb-2 text-3xl font-bold text-gray-900">
             Startup Directory
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-800">
             Discover {mockStartups.length} verified startups approved under
             Ethiopia&apos;s national Startup Law
           </p>
@@ -55,7 +55,7 @@ export default function StartupsForm() {
         {/* Filters */}
         <div className="mb-8 flex flex-col gap-4 md:flex-row">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-800" />
             <Input
               placeholder="Search startups..."
               className="pl-10"

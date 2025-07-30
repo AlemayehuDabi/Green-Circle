@@ -1,11 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function VerifyPage() {
+interface User {
+  name: string;
+  email: string;
+  role: 'startup' | 'user';
+  isValidate: boolean;
+  faydaId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function VerifyPageContent() {
   const params = useSearchParams();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -35,4 +45,13 @@ export default function VerifyPage() {
 
   if (error) return <p>Error: {error}</p>;
   if (!user) return <p>Verifying...</p>;
+  return <p>User verified successfully!</p>;
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <VerifyPageContent />
+    </Suspense>
+  );
 }

@@ -29,9 +29,9 @@ export async function GET(req: NextRequest) {
       throw new Error('User not found in DB');
     }
 
-    return { success: true, message: 'succesfully validate user' };
+    return NextResponse.json({ success: true, message: 'Successfully validated user' });
   } catch (err) {
     console.error('Fayda auth error:', err);
-    return NextResponse.redirect(new URL('/login?error=auth_failed', req.url));
+ return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
   }
 }
