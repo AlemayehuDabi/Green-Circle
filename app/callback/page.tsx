@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function VerifyPage() {
   const params = useSearchParams();
-  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -14,6 +14,7 @@ export default function VerifyPage() {
     if (!code) return setError('No code provided');
 
     const getUser = async () => {
+      setIsLoading(true);
       try {
         const res = await fetch(`/api/callback?code=${code}`);
         const data = await res.json();
@@ -27,6 +28,8 @@ export default function VerifyPage() {
       } catch (e) {
         console.error(e);
         setError('Server error');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -34,5 +37,5 @@ export default function VerifyPage() {
   }, [params]);
 
   if (error) return <p>Error: {error}</p>;
-  if (!user) return <p>Verifying...</p>;
+  if (!isLoading) return <p>Verifying...</p>;
 }

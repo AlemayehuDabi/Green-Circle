@@ -1,27 +1,31 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import SubmitStartupForm from '../submit-form';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 
-export default function page() {
+export default function Page() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const getSession = async () => {
       const { data: sessionData, error } = await authClient.getSession();
-      if (!error) {
+      if (!error && sessionData) {
         setSession(sessionData);
+      } else {
+        router.replace('/login');
       }
+      setLoading(false);
     };
 
     getSession();
-  }, []);
-  const router = useRouter();
+  }, [router]);
 
-  if (!session) {
-    return router.replace('/login');
-  }
+  if (loading) return <p>Loading...</p>;
 
   return <SubmitStartupForm />;
 }
