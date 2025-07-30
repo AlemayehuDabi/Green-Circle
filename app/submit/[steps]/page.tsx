@@ -26,4 +26,5 @@ export default function Page() {
   }, [router]);
 
   if (loading) return <p>Loading...</p>;
+  if (session) return <SubmitStartupForm />;
 }
