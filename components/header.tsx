@@ -1,11 +1,27 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
+import { useEffect, useState } from 'react';
 
 interface HeaderProps {
   currentPage?: string;
 }
 
 export function Header({ currentPage }: HeaderProps) {
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: sessionData, error } = await authClient.getSession();
+      if (!error) {
+        setSession(sessionData);
+      }
+    };
+
+    getSession();
+  }, []);
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -31,7 +47,7 @@ export function Header({ currentPage }: HeaderProps) {
               Directory
             </Link>
             <Link
-              href="/submit/verify"
+              href={session ? '/submit/verify' : '/login'}
               className={`${
                 currentPage === 'submit'
                   ? 'font-medium text-emerald-600'

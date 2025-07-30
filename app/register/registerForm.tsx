@@ -17,9 +17,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SignUpInput, SignUpSchema } from '@/zod-validator/validator';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -46,6 +48,8 @@ export default function RegisterForm() {
           onSuccess: (ctx) => {
             //redirect to the dashboard or sign in page
             console.log(ctx.data);
+
+            router.push('/');
           },
           onError: (ctx) => {
             // display the error message

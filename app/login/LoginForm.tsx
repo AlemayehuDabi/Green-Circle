@@ -46,9 +46,9 @@ export default function LoginForm() {
             setIsLoading(true);
           },
           onSuccess: (ctx) => {
-            //redirect to the dashboard or sign in page
-            router.push('/');
             console.log(ctx.data);
+
+            router.push('/');
           },
           onError: (ctx) => {
             // display the error message
