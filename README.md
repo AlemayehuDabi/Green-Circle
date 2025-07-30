@@ -40,6 +40,9 @@ Fayda will be used to:
 
 ## Installation and Deployment
 
+## use this link
+   https://startup-ethiopia-kohl.vercel.app/
+
 Follow these instructions to set up and run the project locally or deploy it using Docker.
 
 ### Prerequisites
