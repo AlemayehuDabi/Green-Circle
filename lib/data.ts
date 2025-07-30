@@ -102,6 +102,113 @@ export const mockStartups: Startup[] = [
       phone: '+251-911-345678',
     },
   },
+ {
+    id: 4,
+    name: 'HealthBridge',
+    logo: '/placeholder.svg?height=60&width=60&text=HB',
+    sector: 'HealthTech',
+    location: 'Addis Ababa',
+    description:
+      'Telemedicine platform connecting rural patients with doctors',
+    foundedYear: 2020,
+    employees: '51-100',
+    website: 'https://healthbridge.et',
+    verified: true,
+    founders: [
+      {
+        name: 'Lily Desta',
+        role: 'CEO & Founder',
+        bio: 'Public health expert with 12 years in digital health initiatives.',
+        image: '/placeholder.svg?height=60&width=60&text=LD',
+      },
+    ],
+    pitch:
+      'Bridging the healthcare gap in Ethiopia by providing affordable remote consultations and diagnostics.',
+    achievements: [
+      '20,000+ consultations conducted',
+      'Partnership with 5 regional hospitals',
+      'Recipient of African Health Innovation Grant 2023',
+    ],
+    contact: {
+      email: 'contact@healthbridge.et',
+      phone: '+251-911-456789',
+    },
+  },
+  {
+    id: 5,
+    name: 'EcoPack Ethiopia',
+    logo: '/placeholder.svg?height=60&width=60&text=EP',
+    sector: 'Sustainability',
+    location: 'Addis Ababa',
+    description:
+      'Eco-friendly packaging solutions to reduce plastic waste in Ethiopia',
+    foundedYear: 2023,
+    employees: '1-10',
+    website: 'https://ecopack.et',
+    verified: false,
+    founders: [
+      {
+        name: 'Mekdes Abebe',
+        role: 'Founder & CEO',
+        bio: 'Environmental scientist focused on sustainable materials.',
+        image: '/placeholder.svg?height=60&width=60&text=MA',
+      },
+      {
+        name: 'Samuel Tesfaye',
+        role: 'COO',
+        bio: 'Operations specialist with experience in manufacturing.',
+        image: '/placeholder.svg?height=60&width=60&text=ST',
+      },
+    ],
+    pitch:
+      'Reducing Ethiopia’s plastic footprint with biodegradable and reusable packaging alternatives.',
+    achievements: [
+      'Developed 3 patented biodegradable materials',
+      'Supplied packaging to 50+ local businesses',
+    ],
+    contact: {
+      email: 'hello@ecopack.et',
+      phone: '+251-911-567890',
+    },
+  },
+  {
+    id: 6,
+    name: 'RideSafe',
+    logo: '/placeholder.svg?height=60&width=60&text=RS',
+    sector: 'Transportation',
+    location: 'Dire Dawa',
+    description:
+      'Ride-sharing platform focused on safety and affordability in Ethiopian cities',
+    foundedYear: 2022,
+    employees: '11-50',
+    website: 'https://ridesafe.et',
+    verified: true,
+    founders: [
+      {
+        name: 'Tesfaye Mekonnen',
+        role: 'Founder & CEO',
+        bio: 'Entrepreneur passionate about urban mobility solutions.',
+        image: '/placeholder.svg?height=60&width=60&text=TM',
+      },
+      {
+        name: 'Betelhem Kassaye',
+        role: 'CTO',
+        bio: 'Software engineer with expertise in mobile apps and data security.',
+        image: '/placeholder.svg?height=60&width=60&text=BK',
+      },
+    ],
+    pitch:
+      'Providing a safe, reliable, and affordable ride-sharing service tailored for Ethiopian urban commuters.',
+    achievements: [
+      '50,000+ rides completed',
+      'Integrated mobile payment solutions',
+      'Featured in Ethiopian Startup Expo 2024',
+    ],
+    contact: {
+      email: 'support@ridesafe.et',
+      phone: '+251-911-678901',
+    },
+  },
 ];
 
 export const mockSubmissions: SubmissionStatus[] = [
@@ -133,6 +240,36 @@ export const mockSubmissions: SubmissionStatus[] = [
     location: 'Mekelle',
     submittedDate: '2024-01-13',
     status: 'pending',
+    fayda_verified: false,
+  },
+    {
+    id: 4,
+    name: 'Green Energy Solutions',
+    founder: 'Fikadu Alemu',
+    sector: 'Renewable Energy',
+    location: 'Addis Ababa',
+    submittedDate: '2024-01-16',
+    status: 'pending',
+    fayda_verified: false,
+  },
+  {
+    id: 5,
+    name: 'SmartHome Ethiopia',
+    founder: 'Sara Tesfaye',
+    sector: 'IoT',
+    location: 'Mekelle',
+    submittedDate: '2024-01-14',
+    status: 'under_review',
+    fayda_verified: true,
+  },
+  {
+    id: 6,
+    name: 'FoodConnect',
+    founder: 'Mulugeta Bekele',
+    sector: 'FoodTech',
+    location: 'Bahir Dar',
+    submittedDate: '2024-01-12',
+    status: 'rejected',
     fayda_verified: false,
   },
 ];

@@ -118,7 +118,7 @@ export default function LoginForm() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="remember" />
-                  <Label htmlFor="remember" className="text-sm text-gray-600">
+                  <Label htmlFor="remember" className="text-sm text-gray-800">
                     Remember me
                   </Label>
                 </div>
@@ -137,7 +137,7 @@ export default function LoginForm() {
               </Button>
             </form>
 
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-800">
               Don&apos;t have an account?{' '}
               <Link
                 href="/register"

@@ -36,7 +36,7 @@ export function TrustSection() {
               <h3 className="mb-2 text-xl font-semibold text-gray-900">
                 {feature.title}
               </h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <p className="text-gray-800">{feature.description}</p>
             </div>
           ))}
         </div>

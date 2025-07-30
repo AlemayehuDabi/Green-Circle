@@ -15,7 +15,7 @@ export function FeaturedStartups({ startups }: FeaturedStartupsProps) {
           <h2 className="mb-4 text-3xl font-bold text-gray-900">
             Featured Startups
           </h2>
-          <p className="mx-auto max-w-2xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-gray-800">
             Discover some of the most promising verified startups in
             Ethiopia&apos;s ecosystem
           </p>

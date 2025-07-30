@@ -1,27 +1,27 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import SubmitStartupForm from '../submit-form';
 import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth-client';
+import { authClient, type Session } from '@/lib/auth-client';
 
-export default function page() {
-  const [session, setSession] = useState<any>(null);
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data: sessionData, error } = await authClient.getSession();
-      if (!error) {
-        setSession(sessionData);
-      }
-    };
-
-    getSession();
-  }, []);
+export default function Page() {
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
   const router = useRouter();
 
-  if (!session) {
-    return router.replace('/login');
-  }
+  useEffect(() => {
+    authClient.getSession().then(({ data, error }) => {
+      if (!error) setSession(data);
+      else setSession(null);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (session === undefined) return;
+    if (!session) router.replace('/login');
+  }, [session, router]);
+
+  if (session === undefined) return null;
 
   return <SubmitStartupForm />;
 }
