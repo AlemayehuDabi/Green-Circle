@@ -15,20 +15,19 @@ interface User {
 
 function VerifyPageContent() {
   const params = useSearchParams();
-<<<<<<< HEAD
-  const [isLoading, setIsLoading] = useState(false);
-=======
-  const [user, setUser] = useState<User | null>(null);
->>>>>>> bbf5d25f2b17a85344da35d60882a33f993f167e
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     const code = params.get('code');
-    if (!code) return setError('No code provided');
+    if (!code) {
+      setError('No code provided');
+      setIsLoading(false);
+      return;
+    }
 
     const getUser = async () => {
-      setIsLoading(true);
       try {
         const res = await fetch(`/api/callback?code=${code}`);
         const data = await res.json();
@@ -48,14 +47,11 @@ function VerifyPageContent() {
     };
 
     getUser();
-  }, [params]);
+  }, [params, router]);
 
   if (error) return <p>Error: {error}</p>;
-<<<<<<< HEAD
-  if (!isLoading) return <p>Verifying...</p>;
-=======
-  if (!user) return <p>Verifying...</p>;
-  return <p>User verified successfully!</p>;
+
+  return <p>Verifying...</p>;
 }
 
 export default function VerifyPage() {
@@ -64,5 +60,4 @@ export default function VerifyPage() {
       <VerifyPageContent />
     </Suspense>
   );
->>>>>>> bbf5d25f2b17a85344da35d60882a33f993f167e
 }
