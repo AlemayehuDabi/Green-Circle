@@ -17,12 +17,14 @@ function VerifyPageContent() {
   const params = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const code = params.get('code');
     if (!code) {
       setError('No code provided');
+      setIsLoading(false);
       return;
     }
 
@@ -32,7 +34,7 @@ function VerifyPageContent() {
         const data = await res.json();
 
         if (data.success && data.user) {
-          setUser(data.user); 
+          setUser(data.user);
           router.push('/submit/startup-info');
         } else {
           setError(data.message || 'Failed to verify');
@@ -48,11 +50,11 @@ function VerifyPageContent() {
 
     getUser();
   }, [params, router]);
-  }, [params, router]);
 
-  if (error) return <p>Error: {error}</p>;
+  if (isLoading) return <p>Verifying...</p>;
+  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
-  return <p>Verifying...</p>;
+  return null;
 }
 
 export default function VerifyPage() {
