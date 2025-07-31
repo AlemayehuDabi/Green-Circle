@@ -52,6 +52,7 @@ export default function RegisterForm() {
             router.push('/');
           },
           onError: (ctx) => {
+      
             // display the error message
             alert(ctx.error.message);
           },

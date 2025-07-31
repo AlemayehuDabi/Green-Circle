@@ -2,7 +2,9 @@ import type { Metadata } from "next"
 import type React from "react"
 import { Geist, Geist_Mono } from "next/font/google" // Keep Geist fonts
 import "./globals.css"
+import { UserSchema } from "@/models/user";
 
+console.log("FaydaUser Schema Loaded:", Object.keys(UserSchema.paths));
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
