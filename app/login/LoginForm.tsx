@@ -41,7 +41,7 @@ export default function LoginForm() {
           password: Logindata.password,
         },
         {
-          onRequest: (ctx) => {
+          onRequest: () => {
             //show loading
             setIsLoading(true);
           },
@@ -58,6 +58,8 @@ export default function LoginForm() {
       );
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

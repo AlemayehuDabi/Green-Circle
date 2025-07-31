@@ -6,22 +6,25 @@ import { useRouter } from 'next/navigation';
 import { authClient, type Session } from '@/lib/auth-client';
 
 export default function Page() {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    authClient.getSession().then(({ data, error }) => {
-      if (!error) setSession(data);
-      else setSession(null);
-    });
-  }, []);
+    const getSession = async () => {
+      const { data: sessionData, error } = await authClient.getSession();
+      if (!error && sessionData) {
+        setSession(sessionData);
+      } else {
+        router.replace('/login');
+      }
+      setLoading(false);
+    };
 
-  useEffect(() => {
-    if (session === undefined) return;
-    if (!session) router.replace('/login');
-  }, [session, router]);
+    getSession();
+  }, [router]);
 
-  if (session === undefined) return null;
-
-  return <SubmitStartupForm />;
+  if (loading) return <p>Loading...</p>;
+  if (session) return <SubmitStartupForm />;
 }

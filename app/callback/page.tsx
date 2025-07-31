@@ -15,7 +15,7 @@ interface User {
 
 function VerifyPageContent() {
   const params = useSearchParams();
-  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -41,15 +41,18 @@ function VerifyPageContent() {
       } catch (e) {
         console.error(e);
         setError('Server error');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     getUser();
   }, [params, router]);
+  }, [params, router]);
 
   if (error) return <p>Error: {error}</p>;
-  if (!user) return <p>Verifying...</p>;
-  return <p>User verified successfully!</p>;
+
+  return <p>Verifying...</p>;
 }
 
 export default function VerifyPage() {

@@ -41,7 +41,7 @@ export default function RegisterForm() {
           callbackURL: '/dashboard', // A URL to redirect to after the user verifies their email (optional)
         },
         {
-          onRequest: (ctx) => {
+          onRequest: () => {
             //show loading
             setIsLoading(true);
           },
@@ -60,6 +60,8 @@ export default function RegisterForm() {
       );
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
