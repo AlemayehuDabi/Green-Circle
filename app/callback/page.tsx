@@ -21,18 +21,22 @@ function VerifyPageContent() {
 
   useEffect(() => {
     const code = params.get('code');
-    if (!code) return setError('No code provided');
+    if (!code) {
+      setError('No code provided');
+      return;
+    }
 
     const getUser = async () => {
       try {
         const res = await fetch(`/api/callback?code=${code}`);
         const data = await res.json();
 
-        if (data.success) {
+        if (data.success && data.user) {
+          setUser(data.user); 
           router.push('/submit/startup-info');
         } else {
-          router.replace('/submit/verify');
           setError(data.message || 'Failed to verify');
+          router.replace('/submit/verify');
         }
       } catch (e) {
         console.error(e);
@@ -41,7 +45,7 @@ function VerifyPageContent() {
     };
 
     getUser();
-  }, [params]);
+  }, [params, router]);
 
   if (error) return <p>Error: {error}</p>;
   if (!user) return <p>Verifying...</p>;

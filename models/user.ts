@@ -1,38 +1,34 @@
-import { Schema, model, models, Document } from 'mongoose';
+import { Schema, model, models, type Document } from "mongoose";
 
 export interface IUser extends Document {
   name: string;
   email: string;
-  role: 'startup' | 'user';
+  role: "startup" | "user";
   isValidate: boolean;
   faydaId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const UserSchema = new Schema<IUser>(
+export const UserSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    isValidate: {
-      type: Boolean,
-      default: false,
-    },
+    isValidate: { type: Boolean, default: false },
     role: {
       type: String,
-      enum: ['startup', 'user'],
+      enum: ["startup", "user"],
       required: true,
+      default: "user",
     },
-    faydaId: {
-      type: String,
-      minlength: 16,
-      maxlength: 16,
-      required: function (this: IUser) {
-        return this.role === 'startup';
-      },
-    },
+    faydaId: { type: String, required: true, unique: true },
   },
   { timestamps: true }
 );
 
-export const User = models.User || model<IUser>('User', UserSchema);
+
+if (models.User) {
+  delete models.User;
+}
+
+export const User = model<IUser>("User", UserSchema);
