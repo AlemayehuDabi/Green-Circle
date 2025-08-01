@@ -17,21 +17,33 @@ export async function exchangeFaydaCodeForToken(code: string) {
 
     const clientAssertionType = process.env.CLIENT_ASSERTION_TYPE!;
 
+    const getVerifier = () => {
+      return sessionStorage.getItem('code_verifier');
+    };
+
+    const codeVerifier = getVerifier();
+
+    if (!codeVerifier) {
+      throw new Error('Missing code_verifier in sessionStorage');
+    }
+
+    const sentData = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      client_id: process.env.NEXT_PUBLIC_CLIENT_ID!,
+      redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
+      client_assertion_type: clientAssertionType, // Use the explicitly defined type
+      client_assertion: signedJwt,
+      code_verifier: codeVerifier, // Ensure this matches what was sent in auth request
+    });
+
     // fetch token
     const res = await fetch(`${process.env.TOKEN_ENDPOINT}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        client_id: process.env.NEXT_PUBLIC_CLIENT_ID!,
-        redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
-        client_assertion_type: clientAssertionType, // Use the explicitly defined type
-        client_assertion: signedJwt,
-        code_verifier: 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk', // Ensure this matches what was sent in auth request
-      }),
+      body: sentData,
     });
 
     if (!res.ok) {
@@ -47,6 +59,7 @@ export async function exchangeFaydaCodeForToken(code: string) {
     }
 
     const data = await res.json();
+    sessionStorage.removeItem('code_verifier');
     console.log('Access token:', data.access_token);
     return data;
   } catch (error) {

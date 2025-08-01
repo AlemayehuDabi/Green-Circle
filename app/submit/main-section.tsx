@@ -23,6 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';
 import { FormData } from './submit-form';
+import { generatePKCEPair } from '@/utils/faydaUtils';
 
 export const MainSection: React.FC<{
   step: number;
@@ -44,14 +45,16 @@ export const MainSection: React.FC<{
   console.log('sadsadas', process.env.NEXT_PUBLIC_AUTHORIZATION_ENDPOINT!);
 
   // url
-  const generateSignInUrl = () => {
+  const generateSignInUrl = async () => {
+    const { codeChallenge } = await generatePKCEPair();
+
     const params = new URLSearchParams({
       client_id: process.env.NEXT_PUBLIC_CLIENT_ID!,
       redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
       response_type: 'code',
       scope: 'openid profile email',
       acr_values: 'mosip:idp:acr:generated-code',
-      code_challenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+      code_challenge: codeChallenge,
       code_challenge_method: 'S256',
       display: 'page',
       nonce: 'g4DEuje5Fx57Vb64dO4oqLHXGT8L8G7g',
