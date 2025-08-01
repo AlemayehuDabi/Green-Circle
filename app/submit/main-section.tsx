@@ -85,8 +85,8 @@ export const MainSection: React.FC<{
               </AlertDescription>
             </Alert>
             <Button
-              onClick={() => {
-                const url = generateSignInUrl();
+              onClick={async () => {
+                const url = await generateSignInUrl();
                 console.log('url', url);
                 window.location.href = `${url}`;
               }}
