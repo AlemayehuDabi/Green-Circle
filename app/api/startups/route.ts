@@ -166,3 +166,47 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const { startupId } = await request.json();
+
+    if (!startupId) {
+      return NextResponse.json(
+        { error: '`startupId` is required' },
+        { status: 400 }
+      );
+    }
+
+    await connectToDB();
+
+    const approved = await Startup.findByIdAndUpdate(
+      startupId,
+      { status: 'approved' },
+      { new: true }
+    );
+
+    if (!approved) {
+      return NextResponse.json(
+        { error: 'Start-up not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        message: 'Start-up approved successfully',
+        approved,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        error: 'Failed to approve start-up',
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}

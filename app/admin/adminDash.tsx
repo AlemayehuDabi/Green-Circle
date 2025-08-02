@@ -54,6 +54,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 
 // Types
 interface Startup {
@@ -192,6 +193,35 @@ const handleRejection = async (startupId: string) => {
     console.log('Startup rejected successfully:', data);
   } catch (error) {
     console.error('Error rejecting startup:', error);
+  }
+};
+
+const handleApprove = async ({
+  startupId,
+  fetchData,
+}: {
+  startupId: string;
+  fetchData: () => void;
+}) => {
+  try {
+    const res = await fetch('/api/startups', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ startupId }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to approve startup');
+    }
+
+    fetchData();
+    console.log('Approved:', data);
+  } catch (error) {
+    console.error('Approval error:', error);
   }
 };
 
@@ -380,10 +410,12 @@ const OverviewContent: React.FC<OverviewContentProps> = ({
 // Verification Component
 interface VerificationContentProps {
   startups: Startup[] | null;
+  fetchData: () => void;
 }
 
 const VerificationContent: React.FC<VerificationContentProps> = ({
   startups,
+  fetchData,
 }) => {
   const [selectedSector, setSelectedSector] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -558,18 +590,29 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
                         <Eye className="w-4 h-4 mr-1" />
                         Review
                       </Button>
-                      <Button size="sm" variant="default">
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleRejection(startup._id)}
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Reject
-                      </Button>
+                      {startup.status === 'pending' && (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => {
+                              const startupId = startup._id;
+                              handleApprove({ startupId, fetchData });
+                            }}
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRejection(startup._id)}
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Reject
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -593,37 +636,38 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [data, setData] = useState<Startup[] | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('/api/startups');
+  async function fetchData() {
+    try {
+      const response = await fetch('/api/startups');
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (result.success) {
-          console.log('admin fetch', result);
-          setData(
-            result.startups.map((item: any) => ({
-              _id: item._id,
-              name: item.startupName,
-              founders: item.founderName,
-              sector: item.sector,
-              createdAt: item.createdAt,
-              employees: item.employees,
-              revenue: item.revenue,
-              location: item.location,
-              status: item.status,
-              fayda_verified: item.fayda_verified,
-            }))
-          );
-        } else {
-          setData(null);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      if (result.success) {
+        console.log('admin fetch', result);
+        setData(
+          result.startups.map((item: any) => ({
+            _id: item._id,
+            name: item.startupName,
+            founders: item.founderName,
+            sector: item.sector,
+            createdAt: item.createdAt,
+            employees: item.employees,
+            revenue: item.revenue,
+            location: item.location,
+            status: item.status,
+            fayda_verified: item.fayda_verified,
+          }))
+        );
+      } else {
         setData(null);
       }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setData(null);
     }
+  }
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -682,7 +726,7 @@ export default function AdminDashboard() {
             />
           )}
           {activeTab === 'verification' && (
-            <VerificationContent startups={data} />
+            <VerificationContent startups={data} fetchData={fetchData} />
           )}
           {activeTab === 'analytics' && (
             <div className="space-y-6">
