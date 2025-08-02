@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   BarChart3,
   Building2,
@@ -57,16 +57,16 @@ import { Input } from '@/components/ui/input';
 
 // Types
 interface Startup {
-  id: number;
+  _id: string;
   name: string;
-  founder: string;
+  founders: string[];
   sector: string;
-  stage: string;
-  submittedDate: string;
-  employees: number;
+  createdAt: string;
+  employees: string;
   revenue: string;
   location: string;
-  status: string;
+  status: 'pending' | 'approved' | 'rejected' | 'under_review';
+  fayda_verified: boolean;
 }
 
 interface Activity {
@@ -113,55 +113,22 @@ const dashboardStats: DashboardStats = {
   regionsActive: 11,
 };
 
-const pendingVerifications: Startup[] = [
-  {
-    id: 1,
-    name: 'TechFlow Solutions',
-    founder: 'Abebe Kebede',
-    sector: 'FinTech',
-    stage: 'Seed',
-    submittedDate: '2024-01-15',
-    employees: 12,
-    revenue: '$50K',
-    location: 'Addis Ababa',
-    status: 'pending',
-  },
-  {
-    id: 2,
-    name: 'AgriConnect',
-    founder: 'Meron Tadesse',
-    sector: 'AgTech',
-    stage: 'Pre-Seed',
-    submittedDate: '2024-01-14',
-    employees: 8,
-    revenue: '$25K',
-    location: 'Bahir Dar',
-    status: 'under_review',
-  },
-  {
-    id: 3,
-    name: 'EduBridge',
-    founder: 'Daniel Haile',
-    sector: 'EdTech',
-    stage: 'Series A',
-    submittedDate: '2024-01-13',
-    employees: 25,
-    revenue: '$200K',
-    location: 'Mekelle',
-    status: 'pending',
-  },
-  {
-    id: 4,
-    name: 'HealthTech Pro',
-    founder: 'Sara Alemayehu',
-    sector: 'HealthTech',
-    stage: 'Seed',
-    submittedDate: '2024-01-12',
-    employees: 15,
-    revenue: '$75K',
-    location: 'Hawassa',
-    status: 'pending',
-  },
+const sectorData: Sector[] = [
+  { name: 'FinTech', percentage: 28, count: 349 },
+  { name: 'AgTech', percentage: 22, count: 274 },
+  { name: 'EdTech', percentage: 18, count: 224 },
+  { name: 'HealthTech', percentage: 15, count: 187 },
+  { name: 'E-commerce', percentage: 10, count: 125 },
+  { name: 'Other', percentage: 7, count: 88 },
+];
+
+const regionalData: Region[] = [
+  { region: 'Addis Ababa', count: 561, percentage: 45 },
+  { region: 'Oromia', count: 224, percentage: 18 },
+  { region: 'Amhara', count: 150, percentage: 12 },
+  { region: 'Tigray', count: 100, percentage: 8 },
+  { region: 'SNNP', count: 125, percentage: 10 },
+  { region: 'Other Regions', count: 87, percentage: 7 },
 ];
 
 const recentActivity: Activity[] = [
@@ -197,34 +164,14 @@ const recentActivity: Activity[] = [
   },
 ];
 
-const sectorData: Sector[] = [
-  { name: 'FinTech', percentage: 28, count: 349 },
-  { name: 'AgTech', percentage: 22, count: 274 },
-  { name: 'EdTech', percentage: 18, count: 224 },
-  { name: 'HealthTech', percentage: 15, count: 187 },
-  { name: 'E-commerce', percentage: 10, count: 125 },
-  { name: 'Other', percentage: 7, count: 88 },
-];
-
-const regionalData: Region[] = [
-  { region: 'Addis Ababa', count: 561, percentage: 45 },
-  { region: 'Oromia', count: 224, percentage: 18 },
-  { region: 'Amhara', count: 150, percentage: 12 },
-  { region: 'Tigray', count: 100, percentage: 8 },
-  { region: 'SNNP', count: 125, percentage: 10 },
-  { region: 'Other Regions', count: 87, percentage: 7 },
-];
-
-// actions
-const updatedState = () => {};
-
 // Sidebar Component
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  data: Startup[] | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, data }) => {
   return (
     <div className="w-64 bg-white shadow-lg border-r">
       <div className="p-6 border-b">
@@ -248,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
               tab: 'verification',
               icon: CheckCircle,
               label: 'Verification Queue',
-              badge: pendingVerifications.length,
+              badge: data?.length || 0,
             },
             { tab: 'startups', icon: Building2, label: 'Startups' },
             { tab: 'analytics', icon: BarChart3, label: 'Analytics' },
@@ -263,11 +210,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
             >
               <Icon className="w-4 h-4 mr-2" />
               {label}
-              {badge && (
+              {badge ? (
                 <Badge variant="secondary" className="ml-auto">
                   {badge}
                 </Badge>
-              )}
+              ) : null}
             </Button>
           ))}
         </div>
@@ -281,6 +228,7 @@ interface OverviewContentProps {
   stats: DashboardStats;
   sectors: Sector[];
   activities: Activity[];
+  data: Startup[] | null;
 }
 
 const OverviewContent: React.FC<OverviewContentProps> = ({
@@ -407,7 +355,7 @@ const OverviewContent: React.FC<OverviewContentProps> = ({
 
 // Verification Component
 interface VerificationContentProps {
-  startups: Startup[];
+  startups: Startup[] | null;
 }
 
 const VerificationContent: React.FC<VerificationContentProps> = ({
@@ -419,7 +367,10 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const filteredStartups = useMemo(() => {
-    let result = [...startups];
+    if (!startups) return [];
+
+    let result = startups;
+
     if (selectedSector !== 'all') {
       result = result.filter(
         (startup) => startup.sector.toLowerCase() === selectedSector
@@ -429,7 +380,9 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
       result = result.filter(
         (startup) =>
           startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          startup.founder.toLowerCase().includes(searchTerm.toLowerCase())
+          startup.founders.some((founder) =>
+            founder.toLowerCase().includes(searchTerm.toLowerCase())
+          )
       );
     }
     return result.sort((a, b) => {
@@ -526,14 +479,14 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
             <TableRow>
               {[
                 { label: 'Startup Name', field: 'name' },
-                { label: 'Founder', field: 'founder' },
+                { label: 'Founders', field: 'founders' },
                 { label: 'Sector', field: 'sector' },
-                { label: 'Stage', field: 'stage' },
+                { label: 'Status', field: 'status' },
                 { label: 'Location', field: 'location' },
                 { label: 'Employees', field: 'employees' },
                 { label: 'Revenue', field: 'revenue' },
                 { label: 'Status', field: 'status' },
-                { label: 'Submitted', field: 'submittedDate' },
+                { label: 'Submitted', field: 'createdAt' },
                 { label: 'Actions' },
               ].map((header, index) => (
                 <TableHead
@@ -556,37 +509,50 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredStartups.map((startup) => (
-              <TableRow key={startup.id}>
-                <TableCell className="font-medium">{startup.name}</TableCell>
-                <TableCell>{startup.founder}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{startup.sector}</Badge>
-                </TableCell>
-                <TableCell>{startup.stage}</TableCell>
-                <TableCell>{startup.location}</TableCell>
-                <TableCell>{startup.employees}</TableCell>
-                <TableCell>{startup.revenue}</TableCell>
-                <TableCell>{getStatusBadge(startup.status)}</TableCell>
-                <TableCell>{startup.submittedDate}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-4 h-4 mr-1" />
-                      Review
-                    </Button>
-                    <Button size="sm" variant="default">
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Approve
-                    </Button>
-                    <Button size="sm" variant="destructive">
-                      <X className="w-4 h-4 mr-1" />
-                      Reject
-                    </Button>
-                  </div>
+            {filteredStartups.length > 0 ? (
+              filteredStartups.map((startup) => (
+                <TableRow key={startup._id}>
+                  <TableCell className="font-medium">{startup.name}</TableCell>
+                  <TableCell>
+                    {Array.isArray(startup.founders) &&
+                    startup.founders.length > 0
+                      ? startup.founders.join(', ')
+                      : ''}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{startup.sector}</Badge>
+                  </TableCell>
+                  <TableCell>{getStatusBadge(startup.status)}</TableCell>
+                  <TableCell>{startup.location}</TableCell>
+                  <TableCell>{startup.employees}</TableCell>
+                  <TableCell>{startup.revenue}</TableCell>
+                  <TableCell>{getStatusBadge(startup.status)}</TableCell>
+                  <TableCell>{startup.createdAt}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline">
+                        <Eye className="w-4 h-4 mr-1" />
+                        Review
+                      </Button>
+                      <Button size="sm" variant="default">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Approve
+                      </Button>
+                      <Button size="sm" variant="destructive">
+                        <X className="w-4 h-4 mr-1" />
+                        Reject
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={10} className="text-center">
+                  No startups available
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </Card>
@@ -597,10 +563,45 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
 // Main Dashboard Component
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<string>('overview');
+  const [data, setData] = useState<Startup[] | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/startups');
+
+        const result = await response.json();
+
+        if (result.success) {
+          console.log('admin fetch', result);
+          setData(
+            result.startupFortAdmin.map((item: any) => ({
+              _id: item._id,
+              name: item.startupName,
+              founders: item.founderName,
+              sector: item.sector,
+              createdAt: item.createdAt,
+              employees: item.employees,
+              revenue: item.revenue,
+              location: item.location,
+              status: item.status,
+              fayda_verified: item.fayda_verified,
+            }))
+          );
+        } else {
+          setData(null);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setData(null);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} data={data} />
       <div className="flex-1 overflow-auto">
         <header className="bg-white shadow-sm border-b p-4">
           <div className="flex items-center justify-between">
@@ -649,10 +650,11 @@ export default function AdminDashboard() {
               stats={dashboardStats}
               sectors={sectorData}
               activities={recentActivity}
+              data={data}
             />
           )}
           {activeTab === 'verification' && (
-            <VerificationContent startups={pendingVerifications} />
+            <VerificationContent startups={data} />
           )}
           {activeTab === 'analytics' && (
             <div className="space-y-6">

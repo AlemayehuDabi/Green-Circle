@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { connectToDB } from '@/lib/db';
 import { User } from '@/models/user';
 import { z } from 'zod';
@@ -80,6 +80,56 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: 'Submission failed', details: error.message },
       { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    await connectToDB();
+
+    // for the admin
+    const startupFortAdmin = await Startup.find(
+      {},
+      {
+        _id: 1,
+        name: 1,
+        founders: 1,
+        sector: 1,
+        createdAt: 1,
+        employees: 1,
+        revenue: 1,
+        location: 1,
+        status: 1,
+        fayda_verified: true,
+      }
+    )
+      .populate({
+        path: 'founders',
+        model: 'User',
+        select: 'name',
+      })
+      .lean();
+
+    console.log('start admin', startupFortAdmin);
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'data is fetched',
+        startupFortAdmin,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        error: 'fetching start-up failed',
+        details: error.message,
+      },
+      {
+        status: 500,
+      }
     );
   }
 }

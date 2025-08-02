@@ -15,6 +15,7 @@ export interface IStartup extends Document {
   founderEmail?: string;
   founderPhone?: string;
   founderBio?: string;
+  revenue?: string;
   founders: Types.ObjectId[]; // references to User model
   status: 'pending' | 'approved' | 'rejected';
   createdAt: Date;
