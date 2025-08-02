@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDB } from '@/lib/db';
-import { User } from '@/models/user';
+import { IUser, User } from '@/models/user';
 import { z } from 'zod';
 import { StartupZodSchema } from '@/zod-validator/validator';
 import { Startup } from '@/models/start-up';
@@ -18,9 +18,8 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await User.findOne({
-      email: "chere@id.et",
+      email: 'chere@id.et',
     });
-
 
     if (!user) {
       return NextResponse.json({ error: 'User not found.' }, { status: 404 });
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
       throw error;
     }
-    console.log("let seeee", formData.name)
+    console.log('let seeee', formData.name);
     // Create startup document
     const startup = new Startup({
       userId: user._id,
@@ -88,36 +87,36 @@ export async function GET() {
   try {
     await connectToDB();
 
+    const startupProjection = {
+      _id: 1,
+      name: 1,
+      founders: 1,
+      sector: 1,
+      createdAt: 1,
+      employees: 1,
+      revenue: 1,
+      location: 1,
+      status: 1,
+    };
+
     // for the admin
-    const startupFortAdmin = await Startup.find(
-      {},
-      {
-        _id: 1,
-        name: 1,
-        founders: 1,
-        sector: 1,
-        createdAt: 1,
-        employees: 1,
-        revenue: 1,
-        location: 1,
-        status: 1,
-        fayda_verified: true,
-      }
-    )
-      .populate({
+    const startups = await Startup.find({})
+      .select(startupProjection)
+      .populate<{ founders: IUser[] }>({
         path: 'founders',
         model: 'User',
         select: 'name',
       })
-      .lean();
+      .lean()
+      .exec(); // Explicitly call exec() for better type inference
 
-    console.log('start admin', startupFortAdmin);
+    console.log('start admin', startups);
 
     return NextResponse.json(
       {
         success: true,
         message: 'data is fetched',
-        startupFortAdmin,
+        startups,
       },
       { status: 200 }
     );

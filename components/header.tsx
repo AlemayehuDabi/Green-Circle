@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { authClient, type Session } from '@/lib/auth-client';
 import { useEffect, useState } from 'react';
-import { UserProfileDropdown } from './user-profile-dropdown'; // Import the new component
+import { UserProfileDropdown } from './user-profile-dropdown';
 
 interface HeaderProps {
   currentPage?: string;
