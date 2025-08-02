@@ -1,4 +1,5 @@
 import { Schema, models, type Document } from 'mongoose';
+import { model } from 'mongoose';
 
 export interface IUser extends Document {
   name: string;
@@ -26,5 +27,4 @@ export const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-// Prevent model redefi nition
-export const User = models.user;
+export const User = models.user || model<IUser>('user', UserSchema);
