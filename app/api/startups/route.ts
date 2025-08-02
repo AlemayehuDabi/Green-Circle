@@ -18,10 +18,9 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await User.findOne({
-      email: email,
+      email: "chere@id.et",
     });
 
-    console.log('user', user);
 
     if (!user) {
       return NextResponse.json({ error: 'User not found.' }, { status: 404 });
@@ -46,10 +45,11 @@ export async function POST(request: NextRequest) {
       }
       throw error;
     }
-
+    console.log("let seeee", formData.name)
     // Create startup document
     const startup = new Startup({
       userId: user._id,
+      name: formData.founderName,
       startupName: formData.startupName,
       website: formData.website,
       sector: formData.sector,
