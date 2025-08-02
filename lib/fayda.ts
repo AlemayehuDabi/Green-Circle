@@ -1,7 +1,10 @@
 import * as jose from 'jose';
 
 // exchange code for token
-export async function exchangeFaydaCodeForToken(code: string) {
+export async function exchangeFaydaCodeForToken(
+  code: string,
+  codeVerifier: string
+) {
   try {
     const signedJwt = await generateSignedJwt(
       process.env.NEXT_PUBLIC_CLIENT_ID!
@@ -16,12 +19,6 @@ export async function exchangeFaydaCodeForToken(code: string) {
     });
 
     const clientAssertionType = process.env.CLIENT_ASSERTION_TYPE!;
-
-    const getVerifier = () => {
-      return sessionStorage.getItem('code_verifier');
-    };
-
-    const codeVerifier = getVerifier();
 
     if (!codeVerifier) {
       throw new Error('Missing code_verifier in sessionStorage');
@@ -54,12 +51,11 @@ export async function exchangeFaydaCodeForToken(code: string) {
         'Error:',
         errorText
       );
-      console.log('Full response object:', res);
+      console.log('access token:', res);
       throw new Error(`Token exchange failed: ${errorText}`);
     }
 
     const data = await res.json();
-    sessionStorage.removeItem('code_verifier');
     console.log('Access token:', data.access_token);
     return data;
   } catch (error) {
@@ -83,10 +79,8 @@ export async function getUserInfo(accessToken: string) {
       throw new Error(`Failed to fetch user info: ${errorText}`);
     }
 
-    // *** FIX START ***
     // The user info endpoint returns a JWT string, not a JSON object.
     const userInfoJwtToken = await res.text();
-    // *** FIX END ***
 
     console.log('User info response (raw JWT):', userInfoJwtToken); // Log the raw JWT
     const decodedUserInfo = decodeUserInfoResponse(userInfoJwtToken);

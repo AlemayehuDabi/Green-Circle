@@ -64,8 +64,9 @@ export function Header({ currentPage }: HeaderProps) {
               // Optional: Show a loading skeleton or nothing while session is being fetched
               <div className="h-8 w-24 animate-pulse rounded-md bg-gray-200" />
             ) : session ? (
-              // If session exists, show user profile dropdown
-              <UserProfileDropdown session={session} />
+              <>
+                <UserProfileDropdown session={session} />
+              </>
             ) : (
               // If no session, show Login and Get Started buttons
               <>

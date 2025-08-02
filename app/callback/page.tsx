@@ -28,18 +28,31 @@ function VerifyPageContent() {
       return;
     }
 
-    const getUser = async () => {
-      try {
-        const res = await fetch(`/api/callback?code=${code}`);
-        const data = await res.json();
+    const getVerifier = () => {
+      return sessionStorage.getItem('code_verifier');
+    };
 
-        if (data.success && data.user) {
-          setUser(data.user);
-          router.push('/submit/startup-info');
-        } else {
-          setError(data.message || 'Failed to verify');
-          router.replace('/submit/verify');
-        }
+    const codeVerifier = getVerifier();
+
+    const getUser = () => {
+      try {
+        fetch('/api/callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, codeVerifier }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            sessionStorage.removeItem('code_verifier');
+            // handle success
+            console.log('User info:', data);
+            sessionStorage.setItem('step_valid', 'true');
+            localStorage.setItem('user', data.user);
+            router.push('/submit/startup-info');
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       } catch (e) {
         console.error(e);
         setError('Server error');

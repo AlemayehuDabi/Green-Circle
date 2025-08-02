@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '@/components/header';
@@ -46,7 +46,7 @@ const steps = [
   },
 ];
 
-export default function SubmitStartupForm() {
+export default function SubmitStartupForm({ verified }: { verified: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
 

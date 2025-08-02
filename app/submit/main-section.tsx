@@ -21,9 +21,14 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield } from 'lucide-react';
+import { AlertCircle, Shield } from 'lucide-react';
 import { FormData } from './submit-form';
 import { generatePKCEPair } from '@/utils/faydaUtils';
+import { useState } from 'react';
+import { StartupZodSchema } from '@/zod-validator/validator';
+import z from 'zod';
+import { cn } from '@/lib/utils';
+import { authClient } from '@/lib/auth-client';
 
 export const MainSection: React.FC<{
   step: number;
@@ -40,9 +45,12 @@ export const MainSection: React.FC<{
   isStepValid,
   setFormData,
 }) => {
-  console.log('client id', process.env.NEXT_PUBLIC_CLIENT_ID!);
-  console.log('redirect url', process.env.NEXT_PUBLIC_REDIRECT_URI!);
-  console.log('sadsadas', process.env.NEXT_PUBLIC_AUTHORIZATION_ENDPOINT!);
+  const [submissionStatus, setSubmissionStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   // url
   const generateSignInUrl = async () => {
@@ -66,6 +74,71 @@ export const MainSection: React.FC<{
 
     return `${process.env
       .NEXT_PUBLIC_AUTHORIZATION_ENDPOINT!}?${params.toString()}`;
+  };
+
+  // api
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmissionStatus({ type: null, message: '' });
+    setFieldErrors({});
+
+    const session = await authClient.getSession();
+    const email = session.data?.user.email;
+
+    console.log(email);
+
+    try {
+      // Validate formData
+      StartupZodSchema.parse(formData);
+
+      // Submit to API
+      const response = await fetch(`/api/submit-startup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formData, email }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit startup');
+      }
+
+      setSubmissionStatus({
+        type: 'success',
+        message: 'Startup submitted successfully! Awaiting review.',
+      });
+
+      // Reset form (except faydaId)
+      setFormData({
+        startupName: '',
+        website: '',
+        sector: '',
+        location: '',
+        description: '',
+        founderName: '',
+        founderRole: '',
+        pitch: '',
+        startupLaw: false,
+        faydaId: formData.faydaId,
+        terms: false,
+      });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        const errors = error.flatten().fieldErrors;
+        setFieldErrors(errors);
+        const errorMessages = Object.values(errors).flat().join(' ');
+        setSubmissionStatus({
+          type: 'error',
+          message: errorMessages || 'Please fix the errors in the form.',
+        });
+      } else {
+        setSubmissionStatus({
+          type: 'error',
+          message: error.message || 'An error occurred during submission.',
+        });
+      }
+    }
   };
 
   switch (step) {
@@ -115,13 +188,38 @@ export const MainSection: React.FC<{
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form className="space-y-6">
+              {submissionStatus.type && (
+                <Alert
+                  className={`mb-6 ${
+                    submissionStatus.type === 'success'
+                      ? 'border-green-200 bg-green-50'
+                      : 'border-red-200 bg-red-50'
+                  }`}
+                >
+                  <AlertCircle
+                    className={`h-4 w-4 ${
+                      submissionStatus.type === 'success'
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  />
+                  <AlertDescription
+                    className={
+                      submissionStatus.type === 'success'
+                        ? 'text-green-800'
+                        : 'text-red-800'
+                    }
+                  >
+                    {submissionStatus.message}
+                  </AlertDescription>
+                </Alert>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Basic Information
                   </h3>
-
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="startupName">Startup Name *</Label>
@@ -133,22 +231,35 @@ export const MainSection: React.FC<{
                           handleInputChange('startupName', e.target.value)
                         }
                         required
+                        className={
+                          fieldErrors.startupName ? 'border-red-500' : ''
+                        }
                       />
+                      {fieldErrors.startupName && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.startupName.join(', ')}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="website">Website</Label>
                       <Input
                         id="website"
                         type="url"
-                        placeholder="https://yourstartu.com"
+                        placeholder="https://yourstartup.com"
                         value={formData.website}
                         onChange={(e) =>
                           handleInputChange('website', e.target.value)
                         }
+                        className={fieldErrors.website ? 'border-red-500' : ''}
                       />
+                      {fieldErrors.website && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.website.join(', ')}
+                        </p>
+                      )}
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="sector">Sector *</Label>
@@ -158,7 +269,9 @@ export const MainSection: React.FC<{
                           handleInputChange('sector', value)
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={fieldErrors.sector ? 'border-red-500' : ''}
+                        >
                           <SelectValue placeholder="Select sector" />
                         </SelectTrigger>
                         <SelectContent>
@@ -174,6 +287,11 @@ export const MainSection: React.FC<{
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
+                      {fieldErrors.sector && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.sector.join(', ')}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="location">Location *</Label>
@@ -183,7 +301,11 @@ export const MainSection: React.FC<{
                           handleInputChange('location', value)
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={
+                            fieldErrors.location ? 'border-red-500' : ''
+                          }
+                        >
                           <SelectValue placeholder="Select location" />
                         </SelectTrigger>
                         <SelectContent>
@@ -198,9 +320,13 @@ export const MainSection: React.FC<{
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
+                      {fieldErrors.location && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.location.join(', ')}
+                        </p>
+                      )}
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="description">Short Description *</Label>
                     <Textarea
@@ -212,7 +338,15 @@ export const MainSection: React.FC<{
                         handleInputChange('description', e.target.value)
                       }
                       required
+                      className={
+                        fieldErrors.description ? 'border-red-500' : ''
+                      }
                     />
+                    {fieldErrors.description && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.description.join(', ')}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -221,7 +355,6 @@ export const MainSection: React.FC<{
                   <h3 className="text-lg font-semibold text-gray-900">
                     Founder Information
                   </h3>
-
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="founderName">Full Name *</Label>
@@ -233,7 +366,15 @@ export const MainSection: React.FC<{
                           handleInputChange('founderName', e.target.value)
                         }
                         required
+                        className={
+                          fieldErrors.founderName ? 'border-red-500' : ''
+                        }
                       />
+                      {fieldErrors.founderName && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.founderName.join(', ')}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="founderRole">Role *</Label>
@@ -245,10 +386,17 @@ export const MainSection: React.FC<{
                           handleInputChange('founderRole', e.target.value)
                         }
                         required
+                        className={
+                          fieldErrors.founderRole ? 'border-red-500' : ''
+                        }
                       />
+                      {fieldErrors.founderRole && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.founderRole.join(', ')}
+                        </p>
+                      )}
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="pitch">Detailed Pitch *</Label>
                     <Textarea
@@ -260,7 +408,13 @@ export const MainSection: React.FC<{
                         handleInputChange('pitch', e.target.value)
                       }
                       required
+                      className={fieldErrors.pitch ? 'border-red-500' : ''}
                     />
+                    {fieldErrors.pitch && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.pitch.join(', ')}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -269,48 +423,42 @@ export const MainSection: React.FC<{
                   <h3 className="text-lg font-semibold text-gray-900">
                     Legal Compliance
                   </h3>
-
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        id="startup-law"
+                        id="startupLaw"
                         checked={formData.startupLaw}
                         onCheckedChange={(val) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            startupLaw: val === true,
-                          }))
+                          handleInputChange('startupLaw', val === true)
                         }
                       />
-                      <Label htmlFor="startup-law" className="text-sm">
+                      <Label htmlFor="startupLaw" className="text-sm">
                         I confirm that my startup meets the requirements of
                         Ethiopia&apos;s national Startup Law *
                       </Label>
                     </div>
+                    {fieldErrors.startupLaw && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.startupLaw.join(', ')}
+                      </p>
+                    )}
                     <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="fayda-id"
-                        checked={formData.faydaId}
-                        onCheckedChange={(val) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            faydaId: val === true,
-                          }))
-                        }
-                      />
-                      <Label htmlFor="fayda-id" className="text-sm">
+                      <Checkbox id="faydaId" />
+                      <Label htmlFor="faydaId" className="text-sm">
                         I have completed Fayda ID verification *
                       </Label>
                     </div>
+                    {fieldErrors.faydaId && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.faydaId.join(', ')}
+                      </p>
+                    )}
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="terms"
                         checked={formData.terms}
                         onCheckedChange={(val) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            terms: val === true,
-                          }))
+                          handleInputChange('terms', val === true)
                         }
                       />
                       <Label htmlFor="terms" className="text-sm">
@@ -331,6 +479,11 @@ export const MainSection: React.FC<{
                         *
                       </Label>
                     </div>
+                    {fieldErrors.terms && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.terms.join(', ')}
+                      </p>
+                    )}
                   </div>
                 </div>
 

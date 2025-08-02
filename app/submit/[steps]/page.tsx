@@ -9,6 +9,7 @@ export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [verified, setVerified] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -25,6 +26,14 @@ export default function Page() {
     getSession();
   }, [router]);
 
+  useEffect(() => {
+    const isVerified = sessionStorage.getItem('fayda_verified') === 'true';
+    if (isVerified) {
+      setVerified(true);
+      sessionStorage.removeItem('fayda_verified');
+    }
+  }, []);
+
   if (loading) return <p>Loading...</p>;
-  if (session) return <SubmitStartupForm />;
+  if (session) return <SubmitStartupForm verified={verified} />;
 }

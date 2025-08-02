@@ -1,4 +1,4 @@
-import { Schema, models, type Document } from 'mongoose';
+import { Schema, model, models, type Document } from 'mongoose';
 
 export interface IUser extends Document {
   name: string;
@@ -10,13 +10,13 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-export const UserSchema = new Schema<IUser>(
+export const faydaSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     role: {
       type: String,
-      enum: ['startup', 'user'],
+      enum: ['Admin', 'collab', 'founders'],
       required: true,
       default: 'user',
     },
@@ -27,4 +27,4 @@ export const UserSchema = new Schema<IUser>(
 );
 
 // Prevent model redefi nition
-export const User = models.user;
+export const Fayda = models.user;

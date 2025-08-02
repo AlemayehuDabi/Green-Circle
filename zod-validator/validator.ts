@@ -26,20 +26,59 @@ export const SignUpSchema = z
 // });
 
 export const faydaSchema = z.object({
-  faydaId: z.literal(true), // must be checked
+  faydaId: z.literal(true, {
+    message: 'Fayda ID verification is required to proceed.',
+  }),
 });
 
 export const StartupZodSchema = z.object({
-  startupName: z.string().min(1, 'Startup name is required'),
-  sector: z.string().min(1, 'Sector is required'),
-  location: z.string().min(1, 'Location is required'),
-  description: z.string().min(1, 'Description is required'),
-  founderName: z.string().min(1, 'Founder name is required'),
-  founderRole: z.string().min(1, 'Founder role is required'),
-  pitch: z.string().min(1, 'Pitch is required'),
-  startupLaw: z.literal(true, { message: 'You must agree to startup law.' }),
-  faydaId: z.literal(true, { message: 'Fayda ID must be verified.' }),
-  terms: z.literal(true, { message: 'You must accept the terms.' }),
+  startupName: z.string().min(1, 'Startup name is required.'),
+  website: z
+    .string()
+    .url('Please enter a valid URL (e.g., https://example.com).')
+    .optional()
+    .or(z.literal('')),
+  sector: z.enum(
+    [
+      'fintech',
+      'agriculture',
+      'education',
+      'healthcare',
+      'energy',
+      'logistics',
+      'ecommerce',
+      'other',
+    ],
+    { message: 'Please select a valid sector.' }
+  ),
+  location: z.enum(
+    [
+      'addis-ababa',
+      'bahir-dar',
+      'mekelle',
+      'hawassa',
+      'dire-dawa',
+      'adama',
+      'other',
+    ],
+    { message: 'Please select a valid location.' }
+  ),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters.')
+    .max(500, 'Description cannot exceed 500 characters.'),
+  founderName: z.string().min(1, 'Founder name is required.'),
+  founderRole: z.string().min(1, 'Founder role is required.'),
+  pitch: z
+    .string()
+    .min(10, 'Pitch must be at least 10 characters.')
+    .max(2000, 'Pitch cannot exceed 2000 characters.'),
+  startupLaw: z.literal(true, {
+    message: 'You must confirm compliance with Ethiopia’s Startup Law.',
+  }),
+  terms: z.literal(true, {
+    message: 'You must accept the Terms of Service and Privacy Policy.',
+  }),
 });
 
 export type LoginInput = z.infer<typeof LoginSchema>;

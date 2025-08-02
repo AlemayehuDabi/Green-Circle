@@ -102,14 +102,13 @@ export const mockStartups: Startup[] = [
       phone: '+251-911-345678',
     },
   },
- {
+  {
     id: 4,
     name: 'HealthBridge',
     logo: '/placeholder.svg?height=60&width=60&text=HB',
     sector: 'HealthTech',
     location: 'Addis Ababa',
-    description:
-      'Telemedicine platform connecting rural patients with doctors',
+    description: 'Telemedicine platform connecting rural patients with doctors',
     foundedYear: 2020,
     employees: '51-100',
     website: 'https://healthbridge.et',
@@ -242,7 +241,7 @@ export const mockSubmissions: SubmissionStatus[] = [
     status: 'pending',
     fayda_verified: false,
   },
-    {
+  {
     id: 4,
     name: 'Green Energy Solutions',
     founder: 'Fikadu Alemu',
