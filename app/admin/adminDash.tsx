@@ -253,8 +253,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, data }) => {
             },
             { tab: 'startups', icon: Building2, label: 'Startups' },
             { tab: 'analytics', icon: BarChart3, label: 'Analytics' },
-            { tab: 'users', icon: Users, label: 'Users' },
-            { tab: 'settings', icon: Settings, label: 'Settings' },
           ].map(({ tab, icon: Icon, label, badge }) => (
             <Button
               key={tab}
@@ -683,8 +681,6 @@ export default function AdminDashboard() {
                 {activeTab === 'verification' && 'Startup Verification'}
                 {activeTab === 'startups' && 'Startup Management'}
                 {activeTab === 'analytics' && 'Platform Analytics'}
-                {activeTab === 'users' && 'User Management'}
-                {activeTab === 'settings' && 'Platform Settings'}
               </h2>
               <p className="text-gray-600">
                 Ministry of Innovation and Technology - Ethiopia
@@ -694,9 +690,6 @@ export default function AdminDashboard() {
               <Button variant="outline" size="sm">
                 <Download className="w-4 h-4 mr-2" />
                 Export Report
-              </Button>
-              <Button variant="outline" size="icon">
-                <Bell className="w-4 h-4" />
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -708,8 +701,6 @@ export default function AdminDashboard() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuItem>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
