@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import SubmitStartupForm from '../submit-form';
 import { useRouter } from 'next/navigation';
-import { authClient, type Session } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth-client';
 
 export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

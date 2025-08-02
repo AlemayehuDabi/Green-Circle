@@ -1,5 +1,4 @@
-import { Schema, models, type Document } from 'mongoose';
-import { model } from 'mongoose';
+import { Schema, model, models, type Document } from 'mongoose';
 
 export interface IUser extends Document {
   name: string;
@@ -11,7 +10,7 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-export const UserSchema = new Schema<IUser>(
+export const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -27,4 +26,4 @@ export const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-export const User = models.user || model<IUser>('user', UserSchema);
+export const User = models.user || model<IUser>('User', userSchema);

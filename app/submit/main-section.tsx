@@ -27,7 +27,6 @@ import { generatePKCEPair } from '@/utils/faydaUtils';
 import { useState } from 'react';
 import { StartupZodSchema } from '@/zod-validator/validator';
 import z from 'zod';
-import { cn } from '@/lib/utils';
 import { authClient } from '@/lib/auth-client';
 
 export const MainSection: React.FC<{

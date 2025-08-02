@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { exchangeFaydaCodeForToken, getUserInfo } from '@/lib/fayda';
 import { connectToDB } from '@/lib/db';
-import { User } from '@/models/user'; // Ensure this import is correct
-import { Fayda } from '@/models/fayda';
+import { User } from '@/models/user';
 
 export async function POST(request: NextRequest) {
   // const { searchParams } = request.nextUrl;
@@ -71,7 +70,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Update the user by email
-    const faydaUser = await Fayda.create(updateData);
+    const faydaUser = await User.create(updateData);
 
     if (!faydaUser) {
       console.error('Failed to create user with email:', userEmail);
