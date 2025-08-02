@@ -132,3 +132,37 @@ export async function GET() {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { startupId } = await request.json();
+
+    if (!startupId) {
+      return NextResponse.json(
+        { error: '`startupId` is required' },
+        { status: 400 }
+      );
+    }
+
+    await connectToDB();
+
+    const deleted = await Startup.findByIdAndDelete(startupId);
+
+    if (!deleted) {
+      return NextResponse.json(
+        { error: 'Start-up not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: 'Start-up rejected (deleted) successfully', data: deleted },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: 'Failed to reject start-up', details: error.message },
+      { status: 500 }
+    );
+  }
+}

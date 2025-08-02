@@ -91,7 +91,7 @@ export const MainSection: React.FC<{
       StartupZodSchema.parse(formData);
 
       // Submit to API
-      const response = await fetch(`/api/submit-startup`, {
+      const response = await fetch(`/api/startups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ formData, email }),

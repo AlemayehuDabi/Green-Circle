@@ -171,6 +171,30 @@ interface SidebarProps {
   data: Startup[] | null;
 }
 
+// delete
+
+const handleRejection = async (startupId: string) => {
+  try {
+    const res = await fetch('/api/startups', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ startupId }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to reject startup');
+    }
+
+    console.log('Startup rejected successfully:', data);
+  } catch (error) {
+    console.error('Error rejecting startup:', error);
+  }
+};
+
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, data }) => {
   return (
     <div className="w-64 bg-white shadow-lg border-r">
@@ -538,7 +562,11 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
                         <CheckCircle className="w-4 h-4 mr-1" />
                         Approve
                       </Button>
-                      <Button size="sm" variant="destructive">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleRejection(startup._id)}
+                      >
                         <X className="w-4 h-4 mr-1" />
                         Reject
                       </Button>
