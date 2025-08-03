@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { authClient, type Session } from '@/lib/auth-client';
 import { useEffect, useState } from 'react';
 import { UserProfileDropdown } from './user-profile-dropdown';
+import StartupProfile from './startup-profile/startup-profile';
 
 interface HeaderProps {
   currentPage?: string;
@@ -66,6 +67,9 @@ export function Header({ currentPage }: HeaderProps) {
             ) : session ? (
               <>
                 <UserProfileDropdown session={session} />
+                <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
+                  <Link href="/startup-profile">Profile</Link>
+                </Button>
               </>
             ) : (
               // If no session, show Login and Get Started buttons
@@ -78,6 +82,9 @@ export function Header({ currentPage }: HeaderProps) {
                 </Link>
                 <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
                   <Link href="/register">Get Started</Link>
+                </Button>
+                <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
+                  <Link href="/startup-profile">Profile</Link>
                 </Button>
               </>
             )}
