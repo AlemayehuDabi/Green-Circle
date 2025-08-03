@@ -2,8 +2,8 @@ import { Schema, model, models } from 'mongoose';
 export interface IUser {
   name: string;
   email: string;
-  role: 'startup' | 'user';
-  isValidate: boolean;
+  role?: 'startup' | 'user';
+  isValidate?: boolean;
   faydaId?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -25,4 +25,4 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-export const User = models.User || model<IUser>('User', userSchema);
+export const User = models.User || model<IUser>('User', userSchema, 'user');

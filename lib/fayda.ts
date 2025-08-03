@@ -79,12 +79,12 @@ export async function getUserInfo(accessToken: string) {
       throw new Error(`Failed to fetch user info: ${errorText}`);
     }
 
-    // The user info endpoint returns a JWT string, not a JSON object.
+    // The user info endpoint returns a JWT string, not a JSclsON object.
     const userInfoJwtToken = await res.text();
 
-    console.log('User info response (raw JWT):', userInfoJwtToken); // Log the raw JWT
+    // console.log('User info response (raw JWT):', userInfoJwtToken); // Log the raw JWT
     const decodedUserInfo = decodeUserInfoResponse(userInfoJwtToken);
-    console.log('Decoded user info:', decodedUserInfo);
+    // console.log('Decoded user info:', decodedUserInfo);
     return decodedUserInfo;
   } catch (error) {
     console.error('Fayda auth error during user info retrieval:', error);

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 
 interface User {
   name: string;
@@ -34,12 +35,15 @@ function VerifyPageContent() {
 
     const codeVerifier = getVerifier();
 
-    const getUser = () => {
+    const getUser = async () => {
+      const session = await authClient.getSession();
+      const email = session.data?.user.email.toString();
+
       try {
         fetch('/api/callback', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code, codeVerifier }),
+          body: JSON.stringify({ code, codeVerifier, email }),
         })
           .then((res) => res.json())
           .then((data) => {
