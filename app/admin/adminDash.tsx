@@ -234,9 +234,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, data }) => {
             <Building2 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-gray-900">
-              Ethiopia Startup Hub
-            </h1>
+            <h1 className="font-bold text-lg text-gray-900">Green Circle</h1>
             <p className="text-sm text-gray-500">Admin Portal</p>
           </div>
         </div>
