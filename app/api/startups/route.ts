@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { StartupZodSchema } from '@/zod-validator/validator';
 import { Startup } from '@/models/start-up';
 
+// post start-up
 export async function POST(request: NextRequest) {
   try {
     await connectToDB();
@@ -83,22 +84,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// get all start-up
 export async function GET() {
   try {
     await connectToDB();
-
-    // const startupProjection = {
-    //   _id: 1,
-    //   name: 1,
-    //   founders: 1,
-    //   sector: 1,
-    //   createdAt: 1,
-    //   employees: 1,
-    //   revenue: 1,
-    //   location: 1,
-    //   status: 1,
-    // };
-
     // for the admin
     const startups = await Startup.find({})
       // .select(startupProjection)
@@ -133,6 +122,7 @@ export async function GET() {
   }
 }
 
+// delete start-up
 export async function DELETE(request: NextRequest) {
   try {
     const { startupId } = await request.json();
@@ -167,6 +157,7 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
+// patch start-up
 export async function PATCH(request: NextRequest) {
   try {
     const { startupId } = await request.json();
