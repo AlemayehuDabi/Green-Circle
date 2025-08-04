@@ -35,9 +35,11 @@ import {
   LogOut,
   Bell,
   X,
+  Link,
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import Loading from '../startups/loading';
+import { useRouter } from 'next/navigation';
 
 const userData = {
   name: 'John Doe',
@@ -87,6 +89,8 @@ export default function UserProfile() {
     bio: '',
   });
 
+  const router = useRouter();
+
   const handleSave = () => {
     setIsEditing(false);
     console.log('User data saved:', user);
@@ -126,6 +130,11 @@ export default function UserProfile() {
     return <Loading />;
   }
 
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.replace('/login');
+  };
+
   return (
     <main className="min-h-screen  p-6">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -145,8 +154,10 @@ export default function UserProfile() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem className="text-red-600">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                <Button variant="link" onClick={() => handleSignOut()}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

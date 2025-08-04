@@ -7,10 +7,12 @@ import { BetterAuthSession } from '@/types';
 
 interface HeaderProps {
   currentPage?: string;
-  session?: BetterAuthSession;
+  session?: BetterAuthSession | null;
 }
 
 export function Header({ currentPage, session }: HeaderProps) {
+  console.log(session, 'this is from user drop down');
+
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

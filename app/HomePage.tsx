@@ -14,9 +14,7 @@ import AdminDashboard from './admin/adminDash';
 
 export default function HomePage() {
   const [data, setData] = useState<Startup[]>([]);
-  const [session, setSession] = useState<BetterAuthSession | undefined>(
-    undefined
-  );
+  const [session, setSession] = useState<BetterAuthSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export default function HomePage() {
         const { data, error } = await authClient.getSession();
 
         if (error) {
-          setSession(undefined);
+          setSession(null);
         } else {
           setSession(data?.user || ({} as any));
         }

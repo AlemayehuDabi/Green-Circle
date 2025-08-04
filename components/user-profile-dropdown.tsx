@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { BetterAuthSession } from '@/types';
 
 interface UserProfileDropdownProps {
-  session: BetterAuthSession;
+  session: BetterAuthSession | null;
 }
 
 export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
@@ -27,7 +27,7 @@ export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
   };
 
   // Get user initials for fallback avatar
-  const userInitials = session.email
+  const userInitials = session?.email
     ? session.email.charAt(0).toUpperCase()
     : 'U'; // Default to 'U' if email is not available
 
@@ -47,14 +47,14 @@ export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-2">
             <p className="text-sm font-medium leading-none truncate">
-              {session.email || 'User'}
+              {session?.email || 'User'}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
-            href={session.role === 'startup' ? '/founder-profile' : '/profile'}
+            href={session?.role === 'startup' ? '/founder-profile' : '/profile'}
           >
             Profile
           </Link>
