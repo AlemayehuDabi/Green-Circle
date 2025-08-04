@@ -34,7 +34,7 @@ export interface SubmissionStatus {
   sector: string;
   location: string;
   submittedDate: string;
-  status: 'pending' | 'under_review' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected';
   fayda_verified: boolean;
 }
 
@@ -61,4 +61,17 @@ export interface RawStartup {
   achievements?: string;
   founderEmail: string;
   founderPhone: string;
+}
+
+export interface BetterAuthSession {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  image?: string | null;
+  role: string;
+  isValidate?: boolean | null;
+  faydaId?: string;
 }

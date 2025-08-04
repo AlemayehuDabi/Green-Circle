@@ -9,13 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { Session } from '@/lib/auth-client';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { BetterAuthSession } from '@/types';
 
 interface UserProfileDropdownProps {
-  session: Session;
+  session: BetterAuthSession;
 }
 
 export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
@@ -27,8 +27,8 @@ export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
   };
 
   // Get user initials for fallback avatar
-  const userInitials = session.user?.email
-    ? session.user.email.charAt(0).toUpperCase()
+  const userInitials = session.email
+    ? session.email.charAt(0).toUpperCase()
     : 'U'; // Default to 'U' if email is not available
 
   return (
@@ -47,16 +47,17 @@ export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-2">
             <p className="text-sm font-medium leading-none truncate">
-              {session.user?.email || 'User'}
+              {session.email || 'User'}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/profile">Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/settings">Settings</Link>
+          <Link
+            href={session.role === 'startup' ? '/founder-profile' : '/profile'}
+          >
+            Profile
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>

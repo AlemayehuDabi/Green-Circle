@@ -8,27 +8,30 @@ import { FeaturedStartups } from '@/components/featured-startups';
 import { TrustSection } from '@/components/trust-section';
 import { authClient } from '@/lib/auth-client';
 import { useEffect, useState } from 'react';
-import { Startup } from '@/types';
+import Loading from './startups/loading';
+import { BetterAuthSession, Startup } from '@/types';
+import AdminDashboard from './admin/adminDash';
 
 export default function HomePage() {
-  const [role, setRole] = useState<string | undefined>('');
   const [data, setData] = useState<Startup[]>([]);
+  const [session, setSession] = useState<BetterAuthSession | undefined>(
+    undefined
+  );
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSessionFromBetterAuth = async () => {
-      const session = await authClient.getSession();
+    try {
+      const getSession = async () => {
+        const { data, error } = await authClient.getSession();
 
-      if (!session) {
-        console.log('No role');
-        return;
-      }
+        if (error) {
+          setSession(undefined);
+        } else {
+          setSession(data?.user || ({} as any));
+        }
+      };
 
-      setRole(session.data?.user.role);
-      console.log('Session:', session);
-    };
-
-    const fetchData = async () => {
-      try {
+      const fetchData = async () => {
         const response = await fetch('/api/startups');
         const result = await response.json();
 
@@ -58,24 +61,34 @@ export default function HomePage() {
         } else {
           setData([]);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setData([]);
-      }
-    };
+      };
 
-    // Define and run the async function correctly
-    const runEffect = async () => {
-      await getSessionFromBetterAuth();
-      await fetchData();
-    };
+      // Define and run the async function correctly
+      const runEffect = async () => {
+        await getSession();
+        await fetchData();
+      };
 
-    runEffect();
+      runEffect();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (session?.role === 'admin') {
+    return <AdminDashboard />;
+  }
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Header session={session} />
       <main>
         <HeroSection />
         <StatsSection />

@@ -14,7 +14,6 @@ export function HeroSection() {
           national startup support framework. Connect with forward-thinking
           founders driving innovation across the country.
         </p>
-        s
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Button
             asChild
@@ -26,7 +25,7 @@ export function HeroSection() {
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="/submit">Submit Your Startup</Link>
+            <Link href="/submit/verify">Submit Your Startup</Link>
           </Button>
         </div>
       </div>

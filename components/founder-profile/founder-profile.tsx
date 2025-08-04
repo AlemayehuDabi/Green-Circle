@@ -1,20 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import {
-  Building2,
-  CheckCircle,
-  Clock,
-  XCircle,
-  MapPin,
-  Mail,
-  Calendar,
-} from 'lucide-react';
+import { Building2, CheckCircle, Clock, XCircle, Mail } from 'lucide-react';
 import { userStartups } from '@/lib/call-api/call-api';
 import { Startup, User } from '@/types';
 import Loading from '@/app/startups/loading';
@@ -50,8 +42,7 @@ const getStatusIcon = (status: string) => {
 export default function StartupProfile() {
   const [activeTab, setActiveTab] = useState('all');
   const [startups, setStartups] = useState<Startup[] | null>(null);
-  const [userLoading, setUserLoading] = useState(true);
-  const [startupLoading, setStartupLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User>({
     id: '',
     name: '',
@@ -59,10 +50,10 @@ export default function StartupProfile() {
     role: 'startup',
   });
 
-  // get user info
   useEffect(() => {
     try {
-      const getUser = async () => {
+      const getUserfetchStartups = async () => {
+        // get user info
         const session = await authClient.getSession();
 
         const user = session.data?.user;
@@ -73,38 +64,21 @@ export default function StartupProfile() {
           email: user?.email || '',
           role: (user?.role as 'user' | 'admin' | 'startup') || 'startup',
         });
-      };
 
-      getUser();
-    } catch (error) {
-      console.log(error);
+        // fetch startup
+        const data = await userStartups();
+        setStartups(data);
+      };
+      getUserfetchStartups();
+    } catch (err) {
+      console.error('Failed to load user startups:', err);
     } finally {
-      setUserLoading(false);
+      setLoading(false);
     }
   }, []);
 
-  // fetch startup
-  useEffect(() => {
-    const fetchUserStartups = async () => {
-      try {
-        const data = await userStartups();
-        setStartups(data);
-      } catch (err) {
-        console.error('Failed to load user startups:', err);
-      } finally {
-        setStartupLoading(false);
-      }
-    };
-
-    fetchUserStartups(); // Call the function
-  }, []);
-
-  if (userLoading) {
-    return <Loading />;
-  }
-
   // loading
-  if (startupLoading) {
+  if (loading) {
     return <Loading />;
   }
 
