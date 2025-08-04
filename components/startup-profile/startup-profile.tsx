@@ -19,6 +19,7 @@ import { userStartups } from '@/lib/call-api/call-api';
 import { Startup, User } from '@/types';
 import Loading from '@/app/startups/loading';
 import { authClient } from '@/lib/auth-client';
+import Link from 'next/link';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -49,7 +50,8 @@ const getStatusIcon = (status: string) => {
 export default function StartupProfile() {
   const [activeTab, setActiveTab] = useState('all');
   const [startups, setStartups] = useState<Startup[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
+  const [startupLoading, setStartupLoading] = useState(true);
   const [user, setUser] = useState<User>({
     id: '',
     name: '',
@@ -77,7 +79,7 @@ export default function StartupProfile() {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      setUserLoading(false);
     }
   }, []);
 
@@ -90,15 +92,19 @@ export default function StartupProfile() {
       } catch (err) {
         console.error('Failed to load user startups:', err);
       } finally {
-        setLoading(false);
+        setStartupLoading(false);
       }
     };
 
     fetchUserStartups(); // Call the function
   }, []);
 
+  if (userLoading) {
+    return <Loading />;
+  }
+
   // loading
-  if (loading) {
+  if (startupLoading) {
     return <Loading />;
   }
 
@@ -210,13 +216,15 @@ export default function StartupProfile() {
                   </div>
 
                   <div className="ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs bg-transparent"
-                    >
-                      View Details
-                    </Button>
+                    <Link href={`/startups/${startup._id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs bg-transparent"
+                      >
+                        View Details
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </Card>
