@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Building2, CheckCircle, Clock, XCircle, Mail } from 'lucide-react';
 import { userStartups } from '@/lib/call-api/call-api';
 import { Startup, User } from '@/types';
-import Loading from '@/app/startups/loading';
+import Loading from '@/app/loading';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 

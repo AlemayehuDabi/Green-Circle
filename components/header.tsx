@@ -3,15 +3,35 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { UserProfileDropdown } from './user-profile-dropdown';
-import { BetterAuthSession } from '@/types';
+import { useEffect, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
+import Loading from '@/app/loading';
 
 interface HeaderProps {
   currentPage?: string;
-  session?: BetterAuthSession | null;
 }
 
-export function Header({ currentPage, session }: HeaderProps) {
-  console.log(session, 'this is from user drop down');
+export function Header({ currentPage }: HeaderProps) {
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    try {
+      const fetchSession = async () => {
+        const { data } = await authClient.getSession();
+        setSession(data?.user || null);
+      };
+
+      fetchSession();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <header className="border-b border-gray-200 bg-white">
@@ -37,7 +57,15 @@ export function Header({ currentPage, session }: HeaderProps) {
               Directory
             </Link>
             <Link
-              href={session ? '/submit/verify' : '/login'}
+              href={
+                session
+                  ? session.role === 'user'
+                    ? '/submit/verify'
+                    : session.role === 'startup'
+                    ? '/submit/startup-info'
+                    : '/login'
+                  : '/login?callbackUrl=/submit/verify'
+              }
               className={`${
                 currentPage === 'submit'
                   ? 'font-medium text-emerald-600'
@@ -46,9 +74,7 @@ export function Header({ currentPage, session }: HeaderProps) {
             >
               Submit Startup
             </Link>
-
             {session === undefined ? (
-              // Optional: Show a loading skeleton or nothing while session is being fetched
               <div className="h-8 w-24 animate-pulse rounded-md bg-gray-200" />
             ) : session ? (
               <>

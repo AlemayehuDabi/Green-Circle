@@ -8,7 +8,7 @@ import { FeaturedStartups } from '@/components/featured-startups';
 import { TrustSection } from '@/components/trust-section';
 import { authClient } from '@/lib/auth-client';
 import { useEffect, useState } from 'react';
-import Loading from './startups/loading';
+import Loading from './loading';
 import { BetterAuthSession, Startup } from '@/types';
 import AdminDashboard from './admin/adminDash';
 
@@ -86,7 +86,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header session={session} />
+      <Header />
       <main>
         <HeroSection />
         <StatsSection />

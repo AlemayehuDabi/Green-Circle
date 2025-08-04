@@ -26,6 +26,7 @@ import {
 import { ImageWithFallback } from '@/components/image-withfallback';
 import { getStartupById } from '@/lib/call-api/call-api';
 import { cn } from '@/lib/utils';
+import Loading from '@/app/loading';
 
 export default function StartupDetailPage({ id }: { id: string }) {
   console.log('id', id);
@@ -47,7 +48,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
     fetch();
   }, [id]);
 
-  if (loading) return <div className="p-4 text-gray-600">Loading...</div>;
+  if (loading) return <Loading />;
   if (!startup) return notFound();
 
   console.log('this is a start-up', startup);

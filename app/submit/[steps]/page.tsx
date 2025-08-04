@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import SubmitStartupForm from '../submit-form';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import Loading from '@/app/loading';
 
 export default function Page() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,6 +35,6 @@ export default function Page() {
     }
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading />;
   if (session) return <SubmitStartupForm verified={verified} />;
 }

@@ -15,7 +15,7 @@ import {
 import { Search } from 'lucide-react';
 import { Startup } from '@/types';
 import { getStartups } from '@/lib/call-api/call-api';
-import Loading from './loading';
+import Loading from '../loading';
 
 export default function StartupsForm() {
   const [searchTerm, setSearchTerm] = useState('');

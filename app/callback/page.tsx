@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import Loading from '../loading';
 
 interface User {
   name: string;
@@ -68,7 +69,7 @@ function VerifyPageContent() {
     getUser();
   }, [params, router]);
 
-  if (isLoading) return <p>Verifying...</p>;
+  if (isLoading) return <Loading />;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
   return null;

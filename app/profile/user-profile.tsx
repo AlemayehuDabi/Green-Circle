@@ -38,7 +38,7 @@ import {
   Link,
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import Loading from '../startups/loading';
+import Loading from '../loading';
 import { useRouter } from 'next/navigation';
 
 const userData = {

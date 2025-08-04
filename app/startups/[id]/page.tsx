@@ -1,6 +1,6 @@
 import React from 'react';
 import StartupDetailPage from './startupById';
-import Loading from '../loading';
+import Loading from '../../loading';
 
 interface StartupPageProps {
   params: { id: string };
