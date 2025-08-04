@@ -1,57 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useEffect, useState } from 'react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import {
-  Building2,
-  CheckCircle,
-  Clock,
-  XCircle,
-  MapPin,
-  Mail,
-  Calendar,
-} from 'lucide-react';
-
-// Mock data
-const developer = {
-  name: 'Alex Chen',
-  email: 'alex@example.com',
-  location: 'San Francisco, CA',
-  joinedDate: 'Jan 2024',
-  avatar: '/placeholder.svg?height=40&width=40',
-};
-
-const startups = [
-  {
-    id: '1',
-    name: 'FinanceFlow',
-    description: 'AI-powered financial planning platform',
-    status: 'approved',
-    category: 'Fintech',
-    submittedDate: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'EcoTrack',
-    description: 'Carbon footprint tracking platform',
-    status: 'pending',
-    category: 'Climate Tech',
-    submittedDate: '2024-02-10',
-  },
-
-  {
-    id: '4',
-    name: 'LearnAI',
-    description: 'Personalized learning with ML',
-    status: 'approved',
-    category: 'EdTech',
-    submittedDate: '2023-12-20',
-  },
-];
+import { Building2, CheckCircle, Clock, XCircle, Mail } from 'lucide-react';
+import { userStartups } from '@/lib/call-api/call-api';
+import { Startup, User } from '@/types';
+import Loading from '@/app/startups/loading';
+import { authClient } from '@/lib/auth-client';
+import Link from 'next/link';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -79,19 +39,59 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-export default function StartupProfileCompact() {
+export default function StartupProfile() {
   const [activeTab, setActiveTab] = useState('all');
+  const [startups, setStartups] = useState<Startup[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User>({
+    id: '',
+    name: '',
+    email: '',
+    role: 'startup',
+  });
 
-  const filteredStartups = startups.filter((startup) => {
+  useEffect(() => {
+    try {
+      const getUserfetchStartups = async () => {
+        // get user info
+        const session = await authClient.getSession();
+
+        const user = session.data?.user;
+
+        setUser({
+          id: user?.id || '',
+          name: user?.name || '',
+          email: user?.email || '',
+          role: (user?.role as 'user' | 'admin' | 'startup') || 'startup',
+        });
+
+        // fetch startup
+        const data = await userStartups();
+        setStartups(data);
+      };
+      getUserfetchStartups();
+    } catch (err) {
+      console.error('Failed to load user startups:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // loading
+  if (loading) {
+    return <Loading />;
+  }
+
+  const filteredStartups = startups?.filter((startup) => {
     if (activeTab === 'all') return true;
     return startup.status === activeTab;
   });
 
   const counts = {
-    all: startups.length,
-    approved: startups.filter((s) => s.status === 'approved').length,
-    pending: startups.filter((s) => s.status === 'pending').length,
-    rejected: startups.filter((s) => s.status === 'rejected').length,
+    all: startups?.length,
+    approved: startups?.filter((s) => s.status === 'approved').length,
+    pending: startups?.filter((s) => s.status === 'pending').length,
+    rejected: startups?.filter((s) => s.status === 'rejected').length,
   };
 
   return (
@@ -102,38 +102,26 @@ export default function StartupProfileCompact() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage
-                  src={developer.avatar || '/placeholder.svg'}
-                  alt={developer.name}
-                />
                 <AvatarFallback>
-                  {developer.name
+                  {user.name
                     .split(' ')
                     .map((n) => n[0])
                     .join('')}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-xl font-semibold">{developer.name}</h1>
+                <h1 className="text-xl font-semibold">{user.name}</h1>
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                   <div className="flex items-center space-x-1">
                     <Mail className="h-3 w-3" />
-                    <span>{developer.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <MapPin className="h-3 w-3" />
-                    <span>{developer.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>Joined {developer.joinedDate}</span>
+                    <span>{user.email}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <div className="text-right">
-                <div className="text-2xl font-bold">{startups.length}</div>
+                <div className="text-2xl font-bold">{startups?.length}</div>
                 <div className="text-sm text-gray-600">Total Startups</div>
               </div>
             </div>
@@ -164,10 +152,10 @@ export default function StartupProfileCompact() {
 
         {/* Startup List */}
         <div className="space-y-3">
-          {filteredStartups.length > 0 ? (
+          {Array.isArray(filteredStartups) && filteredStartups?.length > 0 ? (
             filteredStartups.map((startup) => (
               <Card
-                key={startup.id}
+                key={startup._id}
                 className="p-4 hover:shadow-sm transition-shadow"
               >
                 <div className="flex items-start justify-between">
@@ -192,23 +180,25 @@ export default function StartupProfileCompact() {
                     </p>
 
                     <div className="flex items-center space-x-4 text-xs text-gray-500">
-                      <span>{startup.category}</span>
+                      {/* <span>{startup.category}</span> */}
                       <Separator orientation="vertical" className="h-3" />
                       <span>
                         Submitted{' '}
-                        {new Date(startup.submittedDate).toLocaleDateString()}
+                        {new Date(startup.foundedYear).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
 
                   <div className="ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs bg-transparent"
-                    >
-                      View Details
-                    </Button>
+                    <Link href={`/startups/${startup._id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs bg-transparent"
+                      >
+                        View Details
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </Card>

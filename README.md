@@ -1,4 +1,4 @@
-# Project Title: Ethiopia Startup — Verified Startup Ecosystem Platform
+# Project Title: Green Cricle — Verified Startup Ecosystem Platform
 
 ## Contributors
 - Alemayehu Dabi *(Registered participant)*
