@@ -1,5 +1,13 @@
+export interface Founder {
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  bio: string;
+}
+
 export interface Startup {
-  id: number;
+  _id: string;
   name: string;
   logo: string;
   sector: string;
@@ -8,7 +16,7 @@ export interface Startup {
   foundedYear: number;
   employees: string;
   website?: string;
-  verified: boolean;
+  status: string;
   founders: Founder[];
   pitch: string;
   achievements: string[];
@@ -16,13 +24,6 @@ export interface Startup {
     email: string;
     phone: string;
   };
-}
-
-export interface Founder {
-  name: string;
-  role: string;
-  bio: string;
-  image: string;
 }
 
 export interface SubmissionStatus {
@@ -41,4 +42,21 @@ export interface User {
   name: string;
   email: string;
   role: 'user' | 'admin';
+}
+
+export interface RawStartup {
+  _id: string;
+  name: string;
+  sector: string;
+  location: string;
+  description: string;
+  foundedYear: string;
+  employees: string;
+  website?: string;
+  status: string;
+  founders: any[]; // Ideally, replace `any` with your Founder type
+  pitch: string;
+  achievements?: string;
+  founderEmail: string;
+  founderPhone: string;
 }

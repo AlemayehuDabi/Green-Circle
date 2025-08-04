@@ -87,21 +87,21 @@ export async function GET() {
   try {
     await connectToDB();
 
-    const startupProjection = {
-      _id: 1,
-      name: 1,
-      founders: 1,
-      sector: 1,
-      createdAt: 1,
-      employees: 1,
-      revenue: 1,
-      location: 1,
-      status: 1,
-    };
+    // const startupProjection = {
+    //   _id: 1,
+    //   name: 1,
+    //   founders: 1,
+    //   sector: 1,
+    //   createdAt: 1,
+    //   employees: 1,
+    //   revenue: 1,
+    //   location: 1,
+    //   status: 1,
+    // };
 
     // for the admin
     const startups = await Startup.find({})
-      .select(startupProjection)
+      // .select(startupProjection)
       .populate<{ founders: IUser[] }>({
         path: 'founders',
         model: 'User',
