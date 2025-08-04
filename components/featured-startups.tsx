@@ -1,13 +1,16 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StartupCard } from '@/components/startup-card';
-import { Startup } from '@/types'; // Assuming your types are in a separate file like "@/types/index"
+import { Startup } from '@/types';
 
 interface FeaturedStartupsProps {
   startups: Startup[];
 }
 
 export function FeaturedStartups({ startups }: FeaturedStartupsProps) {
+  console.log('startups', startups);
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -23,7 +26,7 @@ export function FeaturedStartups({ startups }: FeaturedStartupsProps) {
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {startups.map((startup) => (
-            <StartupCard key={startup.id} startup={startup} />
+            <StartupCard key={startup._id} startup={startup} />
           ))}
         </div>
 

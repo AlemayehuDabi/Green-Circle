@@ -1,28 +1,29 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { MapPin, Users } from "lucide-react"
-import type { Startup } from "@/types"
-import Image from "next/image"
-import { useState } from "react" // Import useState
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, Users } from 'lucide-react';
+import type { Startup } from '@/types';
+import Image from 'next/image';
+import { useState } from 'react'; // Import useState
+import { cn } from '@/lib/utils';
 
 interface StartupCardProps {
-  startup: Startup
+  startup: Startup;
 }
 
 export function StartupCard({ startup }: StartupCardProps) {
-  const [imageError, setImageError] = useState(false) // State to track image loading error
+  const [imageError, setImageError] = useState(false); // State to track image loading error
 
   // Generate initials for fallback
   const initials = startup.name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .substring(0, 2) // Take first two initials
+    .substring(0, 2); // Take first two initials
 
   return (
     <Card className="transition-shadow hover:shadow-lg">
@@ -37,7 +38,7 @@ export function StartupCard({ startup }: StartupCardProps) {
             ) : (
               // Original Image component
               <Image
-                src={startup.logo || "/placeholder.svg"} // Use startup.logo directly
+                src={startup.logo || '/placeholder.svg'} // Use startup.logo directly
                 alt={startup.name}
                 width={48}
                 height={48}
@@ -53,16 +54,27 @@ export function StartupCard({ startup }: StartupCardProps) {
               </div>
             </div>
           </div>
-          {startup.verified && (
-            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-              Verified
+          {startup.status && (
+            <Badge
+              variant="secondary"
+              className={cn(
+                startup.status.toLowerCase() === 'rejected'
+                  ? 'text-red-700 bg-red-100'
+                  : startup.status.toLowerCase() === 'pending'
+                  ? 'text-yellow-700 bg-yellow-100'
+                  : 'text-emerald-700 bg-emerald-100'
+              )}
+            >
+              {startup.status}
             </Badge>
           )}
         </div>
         <Badge variant="outline" className="mb-3">
           {startup.sector}
         </Badge>
-        <p className="mb-4 line-clamp-2 text-sm text-gray-800">{startup.description}</p>
+        <p className="mb-4 line-clamp-2 text-sm text-gray-800">
+          {startup.description}
+        </p>
         <div className="mb-4 flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center space-x-1">
             <Users className="h-3 w-3" />
@@ -71,9 +83,9 @@ export function StartupCard({ startup }: StartupCardProps) {
           <span>Founded {startup.foundedYear}</span>
         </div>
         <Button asChild className="w-full bg-emerald-500 hover:bg-emerald-600">
-          <Link href={`/startups/${startup.id}`}>View Details</Link>
+          <Link href={`/startups/${startup._id}`}>View Details</Link>
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }

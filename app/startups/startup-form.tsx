@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/header';
 import { StartupCard } from '@/components/startup-card';
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,37 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { mockStartups } from '@/lib/data';
+import { Startup } from '@/types';
+import { getStartups } from '@/lib/call-api/call-api';
+import Loading from './loading';
 
 export default function StartupsForm() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSector, setSelectedSector] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
+  const [startup, setStartup] = useState<Startup[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredStartups = mockStartups.filter((startup) => {
+  useEffect(() => {
+    const fetchStartups = async () => {
+      try {
+        const data = await getStartups();
+        setStartup(data);
+      } catch (err) {
+        console.error('Failed to load startups:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStartups();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const filteredStartups = startup?.filter((startup) => {
     const matchesSearch =
       startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       startup.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -47,7 +70,7 @@ export default function StartupsForm() {
             Startup Directory
           </h1>
           <p className="text-gray-800">
-            Discover {mockStartups.length} verified startups approved under
+            Discover {startup?.length} verified startups approved under
             Ethiopia&apos;s national Startup Law
           </p>
         </div>
@@ -96,12 +119,12 @@ export default function StartupsForm() {
 
         {/* Startup Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredStartups.map((startup) => (
-            <StartupCard key={startup.id} startup={startup} />
+          {filteredStartups?.map((startup) => (
+            <StartupCard key={startup._id} startup={startup} />
           ))}
         </div>
 
-        {filteredStartups.length === 0 && (
+        {filteredStartups?.length === 0 && (
           <div className="py-12 text-center">
             <p className="text-gray-500">
               No startups found matching your criteria.
@@ -110,7 +133,7 @@ export default function StartupsForm() {
         )}
 
         {/* Load More */}
-        {filteredStartups.length > 0 && (
+        {Array.isArray(filteredStartups) && filteredStartups.length > 0 && (
           <div className="mt-12 text-center">
             <Button variant="outline" size="lg">
               Load More Startups

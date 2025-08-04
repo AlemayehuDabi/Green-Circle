@@ -9,11 +9,12 @@ export function HeroSection() {
         <h1 className="mb-6 text-5xl font-bold text-gray-900 md:text-6xl">
           Accelerate Ethiopia
         </h1>
-      <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-800 md:text-2xl">
-  Discover startups officially recognized and verified by Ethiopia’s national startup support framework. Connect with forward-thinking founders driving innovation across the country.
-</p>
-s
-
+        <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-800 md:text-2xl">
+          Discover startups officially recognized and verified by Ethiopia’s
+          national startup support framework. Connect with forward-thinking
+          founders driving innovation across the country.
+        </p>
+        s
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Button
             asChild

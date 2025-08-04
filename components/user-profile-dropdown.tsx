@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,41 +8,47 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import type { Session } from "@/lib/auth-client"
-import { authClient } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+} from '@/components/ui/dropdown-menu';
+import type { Session } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface UserProfileDropdownProps {
-  session: Session
+  session: Session;
 }
 
 export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleLogout = async () => {
-    await authClient.signOut()
-    router.push("/login") // Redirect to login page after logout
-  }
+    await authClient.signOut();
+    router.push('/login'); // Redirect to login page after logout
+  };
 
   // Get user initials for fallback avatar
-  const userInitials = session.user?.email ? session.user.email.charAt(0).toUpperCase() : "U" // Default to 'U' if email is not available
+  const userInitials = session.user?.email
+    ? session.user.email.charAt(0).toUpperCase()
+    : 'U'; // Default to 'U' if email is not available
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
         <Avatar className="h-8 w-8 cursor-pointer">
           {/* You can replace this with an actual user image if available */}
-          <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User Avatar" />
+          <AvatarImage
+            src="/placeholder.svg?height=32&width=32"
+            alt="User Avatar"
+          />
           <AvatarFallback>{userInitials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{session.user?.email || "User"}</p>
-            <p className="text-xs leading-none text-muted-foreground">{session.user?.id || "ID not available"}</p>
+          <div className="flex flex-col space-y-2">
+            <p className="text-sm font-medium leading-none truncate">
+              {session.user?.email || 'User'}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -56,5 +62,5 @@ export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
         <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
