@@ -1,358 +1,235 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import * as Tabs from '@radix-ui/react-tabs';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
   Building2,
-  Calendar,
-  DollarSign,
-  Edit,
-  Eye,
-  MapPin,
-  Plus,
-  TrendingUp,
-  Users,
   CheckCircle,
-  XCircle,
   Clock,
+  XCircle,
+  MapPin,
+  Mail,
+  Calendar,
 } from 'lucide-react';
-
-// Mock data
-const mockUser = {
-  id: '1',
-  name: 'Sarah Johnson',
-  email: 'sarah@example.com',
-  phone: '+1 (555) 123-4567',
-  bio: 'Serial entrepreneur with 10+ years of experience in fintech and SaaS. Passionate about building solutions that make a difference.',
-  location: 'San Francisco, CA',
-  avatar: '/placeholder.svg?height=100&width=100',
-  joinedDate: 'January 2024',
-};
-
-const mockStartups = [
-  {
-    id: '1',
-    name: 'FinanceFlow',
-    description: 'AI-powered financial planning platform for small businesses',
-    status: 'approved',
-    category: 'Fintech',
-    funding: '$250K',
-    employees: 8,
-    submittedDate: '2024-01-15',
-    reviewDate: '2024-01-20',
-    logo: '/placeholder.svg?height=60&width=60',
-  },
-  {
-    id: '2',
-    name: 'EcoTrack',
-    description:
-      'Carbon footprint tracking and reduction platform for enterprises',
-    status: 'pending',
-    category: 'Climate Tech',
-    funding: '$150K',
-    employees: 5,
-    submittedDate: '2024-02-10',
-    reviewDate: null,
-    logo: '/placeholder.svg?height=60&width=60',
-  },
-  {
-    id: '4',
-    name: 'LearnAI',
-    description: 'Personalized learning platform using machine learning',
-    status: 'approved',
-    category: 'EdTech',
-    funding: '$300K',
-    employees: 12,
-    submittedDate: '2023-12-20',
-    reviewDate: '2023-12-28',
-    logo: '/placeholder.svg?height=60&width=60',
-  },
-];
+import { userStartups } from '@/lib/call-api/call-api';
+import { Startup, User } from '@/types';
+import Loading from '@/app/startups/loading';
+import { authClient } from '@/lib/auth-client';
 
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'approved':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-green-100 text-green-700';
     case 'rejected':
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-red-100 text-red-700';
     case 'pending':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-yellow-100 text-yellow-700';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-gray-100 text-gray-700';
   }
 };
 
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'approved':
-      return <CheckCircle className="h-4 w-4" />;
+      return <CheckCircle className="h-3 w-3" />;
     case 'rejected':
-      return <XCircle className="h-4 w-4" />;
+      return <XCircle className="h-3 w-3" />;
     case 'pending':
-      return <Clock className="h-4 w-4" />;
+      return <Clock className="h-3 w-3" />;
     default:
       return null;
   }
 };
 
 export default function StartupProfile() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+  const [startups, setStartups] = useState<Startup[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User>({
+    id: '',
+    name: '',
+    email: '',
+    role: 'startup',
+  });
 
-  const approvedStartups = mockStartups.filter((s) => s.status === 'approved');
-  const pendingStartups = mockStartups.filter((s) => s.status === 'pending');
-  const rejectedStartups = mockStartups.filter((s) => s.status === 'rejected');
+  // get user info
+  useEffect(() => {
+    try {
+      const getUser = async () => {
+        const session = await authClient.getSession();
 
-  const StartupCard = ({ startup }: { startup: any }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage
-                src={startup.logo || '/placeholder.svg'}
-                alt={startup.name}
-              />
-              <AvatarFallback>{startup.name.slice(0, 2)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle className="text-lg">{startup.name}</CardTitle>
-              <CardDescription className="text-sm">
-                {startup.category}
-              </CardDescription>
-            </div>
-          </div>
-          <Badge className={getStatusColor(startup.status)}>
-            {getStatusIcon(startup.status)}
-            <span className="ml-1 capitalize">{startup.status}</span>
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          {startup.description}
-        </p>
+        const user = session.data?.user;
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="flex items-center space-x-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{startup.funding}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{startup.employees} employees</span>
-          </div>
-        </div>
+        setUser({
+          id: user?.id || '',
+          name: user?.name || '',
+          email: user?.email || '',
+          role: (user?.role as 'user' | 'admin' | 'startup') || 'startup',
+        });
+      };
 
-        <div className="text-xs text-muted-foreground mb-4">
-          <div>
-            Submitted: {new Date(startup.submittedDate).toLocaleDateString()}
-          </div>
-          {startup.reviewDate && (
-            <div>
-              Reviewed: {new Date(startup.reviewDate).toLocaleDateString()}
-            </div>
-          )}
-        </div>
+      getUser();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-        {startup.status === 'rejected' && startup.rejectionReason && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
-            <p className="text-sm text-red-800">
-              <strong>Rejection Reason:</strong> {startup.rejectionReason}
-            </p>
-          </div>
-        )}
+  // fetch startup
+  useEffect(() => {
+    const fetchUserStartups = async () => {
+      try {
+        const data = await userStartups();
+        setStartups(data);
+      } catch (err) {
+        console.error('Failed to load user startups:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-            <Eye className="h-4 w-4 mr-1" />
-            View Details
-          </Button>
-          {startup.status !== 'approved' && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 bg-transparent"
-            >
-              <Edit className="h-4 w-4 mr-1" />
-              Edit
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+    fetchUserStartups(); // Call the function
+  }, []);
+
+  // loading
+  if (loading) {
+    return <Loading />;
+  }
+
+  const filteredStartups = startups?.filter((startup) => {
+    if (activeTab === 'all') return true;
+    return startup.status === activeTab;
+  });
+
+  const counts = {
+    all: startups?.length,
+    approved: startups?.filter((s) => s.status === 'approved').length,
+    pending: startups?.filter((s) => s.status === 'pending').length,
+    rejected: startups?.filter((s) => s.status === 'rejected').length,
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Founder Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage your startups and profile
-            </p>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-4xl mx-auto space-y-4">
+        {/* Compact Header */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-12 w-12">
+                <AvatarFallback>
+                  {user.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-xl font-semibold">{user.name}</h1>
+                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                  <div className="flex items-center space-x-1">
+                    <Mail className="h-3 w-3" />
+                    <span>{user.email}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="text-right">
+                <div className="text-2xl font-bold">{startups?.length}</div>
+                <div className="text-sm text-gray-600">Total Startups</div>
+              </div>
+            </div>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Submit New Startup
-          </Button>
-        </div>
+        </Card>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Building2 className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-2xl font-bold">{mockStartups.length}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Total Startups
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    {approvedStartups.length}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Approved</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-yellow-600" />
-                <div>
-                  <p className="text-2xl font-bold">{pendingStartups.length}</p>
-                  <p className="text-sm text-muted-foreground">Pending</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
-                <div>
-                  <p className="text-2xl font-bold">$700K</p>
-                  <p className="text-sm text-muted-foreground">Total Funding</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Compact Navigation */}
+        <Card className="p-2">
+          <div className="flex space-x-1">
+            {[
+              { key: 'all', label: 'All Startups', count: counts.all },
+              { key: 'approved', label: 'Approved', count: counts.approved },
+              { key: 'pending', label: 'Pending', count: counts.pending },
+              { key: 'rejected', label: 'Rejected', count: counts.rejected },
+            ].map((tab) => (
+              <Button
+                key={tab.key}
+                variant={activeTab === tab.key ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveTab(tab.key)}
+                className="flex-1 text-xs"
+              >
+                {tab.label} ({tab.count})
+              </Button>
+            ))}
+          </div>
+        </Card>
 
-        {/* Main Content */}
-        <Tabs.Root
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-6"
-        >
-          <Tabs.List className="grid w-full grid-cols-5">
-            <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-          </Tabs.List>
-          <Tabs.Content value="overview" className="space-y-6">
-            {/* All Startups Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle>All Startups</CardTitle>
-                <CardDescription>
-                  Quick overview of all your submitted startups
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mockStartups.slice(0, 3).map((startup) => (
-                    <StartupCard key={startup.id} startup={startup} />
-                  ))}
-                </div>
-                {mockStartups.length > 3 && (
-                  <div className="mt-4 text-center">
-                    <Button variant="outline">View All Startups</Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </Tabs.Content>
+        {/* Startup List */}
+        <div className="space-y-3">
+          {Array.isArray(filteredStartups) && filteredStartups?.length > 0 ? (
+            filteredStartups.map((startup) => (
+              <Card
+                key={startup._id}
+                className="p-4 hover:shadow-sm transition-shadow"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex items-center space-x-2">
+                        <Building2 className="h-4 w-4 text-gray-500" />
+                        <h3 className="font-medium">{startup.name}</h3>
+                      </div>
+                      <Badge
+                        className={`text-xs ${getStatusColor(startup.status)}`}
+                      >
+                        {getStatusIcon(startup.status)}
+                        <span className="ml-1 capitalize">
+                          {startup.status}
+                        </span>
+                      </Badge>
+                    </div>
 
-          <Tabs.Content value="approved" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Approved Startups</CardTitle>
-                <CardDescription>
-                  Startups that have been approved by the admin team
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {approvedStartups.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {approvedStartups.map((startup) => (
-                      <StartupCard key={startup.id} startup={startup} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <CheckCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      No approved startups yet
+                    <p className="text-sm text-gray-600 mb-2">
+                      {startup.description}
                     </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </Tabs.Content>
 
-          <Tabs.Content value="pending" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pending Review</CardTitle>
-                <CardDescription>
-                  Startups currently under review by the admin team
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {pendingStartups.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {pendingStartups.map((startup) => (
-                      <StartupCard key={startup.id} startup={startup} />
-                    ))}
+                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                      {/* <span>{startup.category}</span> */}
+                      <Separator orientation="vertical" className="h-3" />
+                      <span>
+                        Submitted{' '}
+                        {new Date(startup.foundedYear).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      No startups pending review
-                    </p>
+
+                  <div className="ml-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs bg-transparent"
+                    >
+                      View Details
+                    </Button>
                   </div>
-                )}
-              </CardContent>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <Card className="p-8">
+              <div className="text-center text-gray-500">
+                <Building2 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No startups found for this category</p>
+              </div>
             </Card>
-          </Tabs.Content>
-        </Tabs.Root>
+          )}
+        </div>
       </div>
     </div>
   );

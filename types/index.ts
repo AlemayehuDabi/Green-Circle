@@ -1,3 +1,4 @@
+// this are sstartup founders
 export interface Founder {
   name: string;
   email: string;
@@ -37,11 +38,12 @@ export interface SubmissionStatus {
   fayda_verified: boolean;
 }
 
+// loged in user
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'startup';
 }
 
 export interface RawStartup {
