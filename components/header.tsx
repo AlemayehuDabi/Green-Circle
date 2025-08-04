@@ -2,31 +2,15 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { authClient, type Session } from '@/lib/auth-client';
-import { useEffect, useState } from 'react';
 import { UserProfileDropdown } from './user-profile-dropdown';
-import StartupProfile from './startup-profile/startup-profile';
+import { BetterAuthSession } from '@/types';
 
 interface HeaderProps {
   currentPage?: string;
+  session?: BetterAuthSession;
 }
 
-export function Header({ currentPage }: HeaderProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [session, setSession] = useState<any>(null);
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data: sessionData, error } = await authClient.getSession();
-      if (!error) {
-        setSession(sessionData);
-      } else {
-        setSession(null); // Set to null if no session or error
-      }
-    };
-    getSession();
-  }, []);
-
+export function Header({ currentPage, session }: HeaderProps) {
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -67,9 +51,6 @@ export function Header({ currentPage }: HeaderProps) {
             ) : session ? (
               <>
                 <UserProfileDropdown session={session} />
-                <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
-                  <Link href="/startup-profile">Profile</Link>
-                </Button>
               </>
             ) : (
               // If no session, show Login and Get Started buttons
@@ -82,9 +63,6 @@ export function Header({ currentPage }: HeaderProps) {
                 </Link>
                 <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
                   <Link href="/register">Get Started</Link>
-                </Button>
-                <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
-                  <Link href="/startup-profile">Profile</Link>
                 </Button>
               </>
             )}

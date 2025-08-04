@@ -1,3 +1,4 @@
+// this are sstartup founders
 export interface Founder {
   name: string;
   email: string;
@@ -33,15 +34,16 @@ export interface SubmissionStatus {
   sector: string;
   location: string;
   submittedDate: string;
-  status: 'pending' | 'under_review' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected';
   fayda_verified: boolean;
 }
 
+// loged in user
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'startup';
 }
 
 export interface RawStartup {
@@ -59,4 +61,17 @@ export interface RawStartup {
   achievements?: string;
   founderEmail: string;
   founderPhone: string;
+}
+
+export interface BetterAuthSession {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  image?: string | null;
+  role: string;
+  isValidate?: boolean | null;
+  faydaId?: string;
 }
