@@ -147,3 +147,32 @@ export const filterStartup = async (): Promise<Startup[]> => {
     throw error;
   }
 };
+
+export const updatedUser = async ({
+  email,
+  phone,
+  bio,
+}: {
+  email: string;
+  phone: string;
+  bio: string;
+}) => {
+  try {
+    console.log('sadfdgdf', email, phone, bio);
+
+    const res = await fetch('/api/updateUser', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, phone, bio }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Failed to update');
+
+    return data;
+  } catch (error) {
+    console.error('Update user failed:', error);
+    throw error;
+  }
+};

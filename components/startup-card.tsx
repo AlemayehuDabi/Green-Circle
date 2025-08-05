@@ -65,7 +65,7 @@ export function StartupCard({ startup }: StartupCardProps) {
                   : 'text-emerald-700 bg-emerald-100'
               )}
             >
-              {startup.status}
+              {startup.status === 'approved' ? 'Verified' : startup.status}
             </Badge>
           )}
         </div>

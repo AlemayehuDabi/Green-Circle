@@ -96,12 +96,6 @@ export async function GET() {
           'name email role isValidate faydaId phone_number nationality bio',
       })
       .exec();
-    //
-    startups.forEach((s) => {
-      console.log(s.founders);
-    });
-    //
-    console.log(startups[0]);
 
     return NextResponse.json(
       {

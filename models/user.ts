@@ -59,7 +59,7 @@ const userSchema = new Schema<IUser>(
     },
     bio: {
       type: String,
-      default: 'N/A',
+      default: 'No bio provided',
     },
   },
   { timestamps: true }

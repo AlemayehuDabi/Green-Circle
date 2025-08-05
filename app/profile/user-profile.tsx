@@ -40,6 +40,7 @@ import {
 import { authClient } from '@/lib/auth-client';
 import Loading from '../loading';
 import { useRouter } from 'next/navigation';
+import { updatedUser } from '@/lib/call-api/call-api';
 
 const userData = {
   name: 'John Doe',
@@ -89,44 +90,51 @@ export default function UserProfile() {
     bio: '',
   });
 
+  const [formData, setFormData] = useState({
+    phone: user.phone,
+    bio: user.bio,
+  });
+
   const router = useRouter();
 
-  const handleSave = () => {
-    setIsEditing(false);
-    console.log('User data saved:', user);
-  };
-
   const handleChange = (field: string, value: string) => {
-    setUser((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // update user
-
-  // get user
-  useEffect(() => {
+  const getUser = async () => {
     try {
-      const getUser = async () => {
-        const session = await authClient.getSession();
+      const session = await authClient.getSession();
 
-        setUser({
-          name: session.data?.user.name || '',
-          email: session.data?.user.email || '',
-          location: session.data?.user.address || '',
-          phone: session.data?.user.phone_number || '',
-          nationality: session.data?.user.nationality || '',
-          joinedDate: session.data?.user.createdAt.toString() || '',
-          role: session.data?.user.role || '',
-          bio: session.data?.user.bio || '',
-        });
-      };
-
-      getUser();
+      setUser({
+        name: session.data?.user.name || '',
+        email: session.data?.user.email || '',
+        location: session.data?.user.address || '',
+        phone: session.data?.user.phone_number || '',
+        nationality: session.data?.user.nationality || '',
+        joinedDate: session.data?.user.createdAt.toString() || '',
+        role: session.data?.user.role || '',
+        bio: session.data?.user.bio || '',
+      });
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // get user
+  useEffect(() => {
+    getUser();
   }, []);
+
+  useEffect(() => {
+    if (user.phone || user.bio) {
+      setFormData({
+        phone: user.phone,
+        bio: user.bio,
+      });
+    }
+  }, [user]);
 
   if (loading) {
     return <Loading />;
@@ -226,44 +234,13 @@ export default function UserProfile() {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    value={user.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    value={user.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
-                    disabled={!isEditing}
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
                   <Label htmlFor="phone">Phone</Label>
                   <Input
                     id="phone"
-                    value={user.phone}
+                    value={formData.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
                     disabled={!isEditing}
                     placeholder="+251-975-4..."
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={user.location}
-                    onChange={(e) => handleChange('location', e.target.value)}
-                    disabled={!isEditing}
-                    placeholder="Ethiopian-A.A"
                   />
                 </div>
               </div>
@@ -273,7 +250,7 @@ export default function UserProfile() {
                 <Textarea
                   id="bio"
                   rows={4}
-                  value={user.bio}
+                  value={formData.bio}
                   onChange={(e) => handleChange('bio', e.target.value)}
                   disabled={!isEditing}
                   placeholder="Tell us something about yourself..."
@@ -284,7 +261,28 @@ export default function UserProfile() {
                 <div className="flex justify-end gap-3 pt-2">
                   <Button
                     className="bg-green-600 hover:bg-green-700"
-                    onClick={handleSave}
+                    onClick={async () => {
+                      try {
+                        const update = await updatedUser({
+                          phone: formData.phone,
+                          bio: formData.bio,
+                          email: user.email,
+                        });
+
+                        // Update local state
+                        setUser((prev) => ({
+                          ...prev,
+                          phone: update.phone_number,
+                          bio: update.bio,
+                        }));
+
+                        getUser();
+
+                        setIsEditing(false);
+                      } catch (err) {
+                        console.error('Failed to update user:', err);
+                      }
+                    }}
                   >
                     Save
                   </Button>

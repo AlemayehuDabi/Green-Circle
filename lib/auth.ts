@@ -68,7 +68,7 @@ export const auth = betterAuth({
       bio: {
         type: 'string',
         required: false,
-        defaultValue: 'N/A',
+        defaultValue: 'No bio provided',
         input: false,
       },
     },

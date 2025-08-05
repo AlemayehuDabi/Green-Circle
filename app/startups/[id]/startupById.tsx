@@ -100,7 +100,9 @@ export default function StartupDetailPage({ id }: { id: string }) {
                                 : 'text-emerald-700 bg-emerald-100'
                             )}
                           >
-                            {startup.status}
+                            {startup.status === 'approved'
+                              ? 'Verified'
+                              : startup.status}
                           </Badge>
                         )}
                       </div>
@@ -195,7 +197,9 @@ export default function StartupDetailPage({ id }: { id: string }) {
                                   : 'text-emerald-700 bg-emerald-100'
                               )}
                             >
-                              {startup.status}
+                              {startup.status === 'approved'
+                                ? 'Verified'
+                                : startup.status}
                             </Badge>
                           </div>
                           <p className="mb-2 text-sm text-blue-950">

@@ -6,6 +6,15 @@ export interface Founder {
   role: string;
   bio: string;
   image: string;
+  nationality: string;
+}
+
+// loged in user
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'user' | 'startup' | 'admin';
 }
 
 export interface Startup {
@@ -42,14 +51,6 @@ export interface SubmissionStatus {
   submittedDate: string;
   status: 'pending' | 'approved' | 'rejected';
   fayda_verified: boolean;
-}
-
-// loged in user
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'user' | 'admin' | 'startup';
 }
 
 export interface RawStartup {

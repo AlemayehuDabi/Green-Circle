@@ -6,12 +6,26 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Building2, CheckCircle, Clock, XCircle, Mail } from 'lucide-react';
-import { userStartups } from '@/lib/call-api/call-api';
-import { Startup, User } from '@/types';
+import {
+  Building2,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Mail,
+  FileText,
+  Globe,
+  Phone,
+  X,
+  Edit,
+} from 'lucide-react';
+import { updatedUser, userStartups } from '@/lib/call-api/call-api';
+import { Founder, Startup } from '@/types';
 import Loading from '@/app/loading';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
+import * as Dialog from '@radix-ui/react-dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -43,14 +57,24 @@ export default function StartupProfile() {
   const [activeTab, setActiveTab] = useState('all');
   const [startups, setStartups] = useState<Startup[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User>({
-    id: '',
+  const [user, setUser] = useState<Founder>({
     name: '',
     email: '',
     role: 'startup',
+    bio: '',
+    image: '',
+    phone: '',
+    nationality: '',
   });
 
-  useEffect(() => {
+  const [open, setOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    phone: user.phone,
+    bio: user.bio,
+  });
+
+  const handleFetch = () => {
     try {
       const getUserfetchStartups = async () => {
         // get user info
@@ -59,10 +83,13 @@ export default function StartupProfile() {
         const user = session.data?.user;
 
         setUser({
-          id: user?.id || '',
           name: user?.name || '',
           email: user?.email || '',
           role: (user?.role as 'user' | 'admin' | 'startup') || 'startup',
+          bio: user?.bio || '',
+          image: user?.image || '',
+          phone: user?.phone_number || '',
+          nationality: user?.nationality || '',
         });
 
         // fetch startup
@@ -75,12 +102,20 @@ export default function StartupProfile() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    handleFetch();
   }, []);
 
-  // loading
-  if (loading) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    if (user.phone || user.bio) {
+      setFormData({
+        phone: user.phone,
+        bio: user.bio,
+      });
+    }
+  }, [user]);
 
   const filteredStartups = startups?.filter((startup) => {
     if (activeTab === 'all') return true;
@@ -94,125 +129,224 @@ export default function StartupProfile() {
     rejected: startups?.filter((s) => s.status === 'rejected').length,
   };
 
+  // loading
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto space-y-4">
-        {/* Compact Header */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback>
-                  {user.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
-                </AvatarFallback>
-              </Avatar>
+    <>
+      <div className="min-h-screen bg-gray-100 py-8 px-4">
+        <div className="max-w-5xl mx-auto space-y-6">
+          {/* Compact Header */}
+          <Card className="p-6 shadow-sm border border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {/* User Info */}
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-14 w-14">
+                  <AvatarFallback className="text-lg font-semibold">
+                    {user.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-800">
+                    {user.name}
+                  </h1>
+                  <div className="mt-1 text-sm text-gray-600 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      <span>{user.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" />
+                      <span>{user.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span>{user.bio || 'No bio provided'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats */}
               <div>
-                <h1 className="text-xl font-semibold">{user.name}</h1>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <div className="flex items-center space-x-1">
-                    <Mail className="h-3 w-3" />
-                    <span>{user.email}</span>
-                  </div>
+                <div className="text-3xl font-bold text-primary text-center">
+                  {startups?.length}
                 </div>
+                <p className="text-sm text-gray-500">Total Startups</p>
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="text-right">
-                <div className="text-2xl font-bold">{startups?.length}</div>
-                <div className="text-sm text-gray-600">Total Startups</div>
-              </div>
-            </div>
-          </div>
-        </Card>
 
-        {/* Compact Navigation */}
-        <Card className="p-2">
-          <div className="flex space-x-1">
-            {[
-              { key: 'all', label: 'All Startups', count: counts.all },
-              { key: 'approved', label: 'Approved', count: counts.approved },
-              { key: 'pending', label: 'Pending', count: counts.pending },
-              { key: 'rejected', label: 'Rejected', count: counts.rejected },
-            ].map((tab) => (
+              {/* Edit Button */}
               <Button
-                key={tab.key}
-                variant={activeTab === tab.key ? 'default' : 'ghost'}
+                className="focus:border-none border-none"
+                variant="outline"
                 size="sm"
-                onClick={() => setActiveTab(tab.key)}
-                className="flex-1 text-xs"
+                onClick={() => setOpen(true)}
               >
-                {tab.label} ({tab.count})
+                <Edit />
               </Button>
-            ))}
-          </div>
-        </Card>
+            </div>
+          </Card>
 
-        {/* Startup List */}
-        <div className="space-y-3">
-          {Array.isArray(filteredStartups) && filteredStartups?.length > 0 ? (
-            filteredStartups.map((startup) => (
-              <Card
-                key={startup._id}
-                className="p-4 hover:shadow-sm transition-shadow"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className="flex items-center space-x-2">
-                        <Building2 className="h-4 w-4 text-gray-500" />
-                        <h3 className="font-medium">{startup.name}</h3>
+          {/* Tabs */}
+          <Card className="p-3 border border-gray-200 shadow-sm">
+            <div className="flex gap-2">
+              {[
+                { key: 'all', label: 'All Startups', count: counts.all },
+                { key: 'approved', label: 'Approved', count: counts.approved },
+                { key: 'pending', label: 'Pending', count: counts.pending },
+                { key: 'rejected', label: 'Rejected', count: counts.rejected },
+              ].map((tab) => (
+                <Button
+                  key={tab.key}
+                  variant={activeTab === tab.key ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setActiveTab(tab.key)}
+                  className="flex-1 text-xs sm:text-sm"
+                >
+                  {tab.label} ({tab.count})
+                </Button>
+              ))}
+            </div>
+          </Card>
+
+          {/* Startup List */}
+          <div className="space-y-4">
+            {Array.isArray(filteredStartups) && filteredStartups.length > 0 ? (
+              filteredStartups.map((startup) => (
+                <Card
+                  key={startup._id}
+                  className="p-5 hover:shadow-md transition-shadow border border-gray-200"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-gray-500" />
+                          <h3 className="font-semibold text-gray-800 text-base">
+                            {startup.name}
+                          </h3>
+                        </div>
+                        <Badge
+                          className={`text-xs ${getStatusColor(
+                            startup.status
+                          )}`}
+                        >
+                          {getStatusIcon(startup.status)}
+                          <span className="ml-1 capitalize">
+                            {startup.status}
+                          </span>
+                        </Badge>
                       </div>
-                      <Badge
-                        className={`text-xs ${getStatusColor(startup.status)}`}
-                      >
-                        {getStatusIcon(startup.status)}
-                        <span className="ml-1 capitalize">
-                          {startup.status}
-                        </span>
-                      </Badge>
+
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {startup.description}
+                      </p>
+
+                      <div className="flex items-center text-xs text-gray-500 gap-2">
+                        <Separator orientation="vertical" className="h-3" />
+                        <span>Founded in {startup.foundedYear}</span>
+                      </div>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-2">
-                      {startup.description}
-                    </p>
-
-                    <div className="flex items-center space-x-4 text-xs text-gray-500">
-                      {/* <span>{startup.category}</span> */}
-                      <Separator orientation="vertical" className="h-3" />
-                      <span>
-                        Submitted{' '}
-                        {new Date(startup.foundedYear).toLocaleDateString()}
-                      </span>
+                    <div className="shrink-0">
+                      <Link href={`/startups/${startup._id}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs bg-white"
+                        >
+                          View Details
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-
-                  <div className="ml-4">
-                    <Link href={`/startups/${startup._id}`}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs bg-transparent"
-                      >
-                        View Details
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-            ))
-          ) : (
-            <Card className="p-8">
-              <div className="text-center text-gray-500">
-                <Building2 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                </Card>
+              ))
+            ) : (
+              <Card className="p-10 border border-gray-200 text-center text-gray-500">
+                <Building2 className="h-8 w-8 mx-auto mb-3 opacity-50" />
                 <p className="text-sm">No startups found for this category</p>
-              </div>
-            </Card>
-          )}
+              </Card>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* modal */}
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40" />
+          <Dialog.Content className="fixed z-50 top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-lg space-y-6">
+            <div className="flex items-center justify-between">
+              <Dialog.Title className="text-lg font-semibold text-gray-900">
+                Edit Profile
+              </Dialog.Title>
+              <Dialog.Close asChild>
+                <button className="text-gray-500 hover:text-gray-700">
+                  <X className="h-5 w-5" />
+                </button>
+              </Dialog.Close>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Phone</label>
+                <Input
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Bio</label>
+                <Textarea
+                  rows={3}
+                  value={formData.bio}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button
+                onClick={async () => {
+                  try {
+                    const update = await updatedUser({
+                      phone: formData.phone,
+                      bio: formData.bio,
+                      email: user.email,
+                    });
+
+                    // Update local state
+                    setUser((prev) => ({
+                      ...prev,
+                      phone: update.phone_number,
+                      bio: update.bio,
+                    }));
+
+                    handleFetch();
+
+                    setOpen(false);
+                  } catch (err) {
+                    console.error('Failed to update user:', err);
+                  }
+                }}
+                className="px-4 py-2 text-sm font-medium text-white rounded"
+              >
+                Save Changes
+              </Button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   );
 }
