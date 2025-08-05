@@ -89,42 +89,34 @@ export default function StartupDetailPage({ id }: { id: string }) {
                         <h1 className="text-3xl font-bold text-gray-900">
                           {startup.name}
                         </h1>
-                        {startup.status && (
+                        {startup.status === 'approved' && (
                           <Badge
                             variant="secondary"
-                            className={cn(
-                              startup.status.toLowerCase() === 'rejected'
-                                ? 'text-red-700 bg-red-100'
-                                : startup.status.toLowerCase() === 'pending'
-                                ? 'text-yellow-700 bg-yellow-100'
-                                : 'text-emerald-700 bg-emerald-100'
-                            )}
+                            className={cn('text-emerald-700 bg-emerald-100')}
                           >
-                            {startup.status === 'approved'
-                              ? 'Verified'
-                              : startup.status}
+                            {startup.status === 'approved' && 'Verified'}
                           </Badge>
                         )}
                       </div>
                       <div className="mb-4 flex items-center space-x-4 text-gray-700 text-sm">
                         <div className="flex items-center space-x-1">
                           <MapPin className="h-4 w-4" />
-                          <span>{startup.location}</span>
+                          <span>{startup.location || ''}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Users className="h-4 w-4" />
-                          <span>{startup.employees} employees</span>
+                          <span>{startup.employees || ''} employees</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
-                          <span>Founded {startup.foundedYear}</span>
+                          <span>Founded {startup.foundedYear || ''}</span>
                         </div>
                       </div>
                       <Badge variant="outline" className="mb-4 text-gray-700">
                         {startup.sector}
                       </Badge>
                       <p className="text-gray-800 text-base leading-relaxed">
-                        {startup.description}
+                        {startup.description || ''}
                       </p>
                     </div>
                   </div>
@@ -138,7 +130,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                 </CardHeader>
                 <CardContent>
                   <p className="leading-relaxed text-gray-800 text-base">
-                    {startup.pitch}
+                    {startup.pitch || ''}
                   </p>
                 </CardContent>
               </Card>
@@ -185,32 +177,18 @@ export default function StartupDetailPage({ id }: { id: string }) {
                         <div>
                           <div className="flex items-center gap-2">
                             <h4 className="font-semibold text-gray-900">
-                              {founder.name}
+                              {founder.name || ''}
                             </h4>
-                            <Badge
-                              variant="secondary"
-                              className={cn(
-                                startup.status.toLowerCase() === 'rejected'
-                                  ? 'text-red-700 bg-red-100'
-                                  : startup.status.toLowerCase() === 'pending'
-                                  ? 'text-yellow-700 bg-yellow-100'
-                                  : 'text-emerald-700 bg-emerald-100'
-                              )}
-                            >
-                              {startup.status === 'approved'
-                                ? 'Verified'
-                                : startup.status}
-                            </Badge>
                           </div>
                           <p className="mb-2 text-sm text-blue-950">
-                            {founder.email}
+                            {founder.email || ''}
                           </p>
 
                           <p className="mb-2 text-sm text-emerald-700 ml-1 mt-1">
-                            {startup.founderRole}
+                            {startup.founderRole || ''}
                           </p>
                           <p className="text-sm text-gray-800">
-                            {startup.founderBio}
+                            {startup.founderBio || ''}
                           </p>
                         </div>
                       </div>
@@ -262,7 +240,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                         className="text-emerald-600 hover:text-emerald-700 text-base truncate"
                         style={{ maxWidth: '200px' }}
                       >
-                        {startup.website}
+                        {startup.website || 'no website'}
                       </Link>
                     </div>
                   )}
@@ -273,7 +251,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                       className="text-emerald-600 hover:text-emerald-700 text-base truncate"
                       style={{ maxWidth: '200px' }}
                     >
-                      {startup.contact?.email}
+                      {startup.contact?.email || 'no email'}
                     </Link>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -283,7 +261,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                       className="text-emerald-600 hover:text-emerald-700 text-base truncate"
                       style={{ maxWidth: '200px' }}
                     >
-                      {startup.contact?.phone}
+                      {startup.contact?.phone || 'no phone_contact'}
                     </Link>
                   </div>
                 </CardContent>
@@ -309,7 +287,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                       className="font-medium text-gray-900 truncate"
                       style={{ maxWidth: '200px' }}
                     >
-                      {startup.foundedYear}
+                      {startup.foundedYear || ''}
                     </span>
                   </div>
                   <Separator />
@@ -319,7 +297,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                       className="font-medium text-gray-900 truncate"
                       style={{ maxWidth: '200px' }}
                     >
-                      {startup.employees}
+                      {startup.employees || '0'}
                     </span>
                   </div>
                   <Separator />
@@ -329,7 +307,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                       className="font-medium text-gray-900 truncate"
                       style={{ maxWidth: '200px' }}
                     >
-                      {startup.location}
+                      {startup.location || 'no location'}
                     </span>
                   </div>
                 </CardContent>

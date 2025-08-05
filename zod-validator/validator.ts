@@ -47,6 +47,7 @@ export const StartupZodSchema = z.object({
       'energy',
       'logistics',
       'ecommerce',
+      'Tech',
       'other',
     ],
     { message: 'Please select a valid sector.' }

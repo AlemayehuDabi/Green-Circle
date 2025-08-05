@@ -29,6 +29,13 @@ export interface FormData {
   startupLaw: boolean;
   faydaId: boolean;
   terms: boolean;
+
+  foundedYear: string;
+  employees: string;
+  revenue: string;
+  achievements: string;
+  founderPhone: string;
+  founderBio: string;
 }
 
 const steps = [
@@ -64,6 +71,12 @@ export default function SubmitStartupForm({ verified }: { verified: boolean }) {
     startupLaw: false,
     faydaId: false,
     terms: false,
+    foundedYear: '',
+    employees: '',
+    revenue: '',
+    achievements: '',
+    founderPhone: '',
+    founderBio: '',
   });
 
   // useEffect(() => {

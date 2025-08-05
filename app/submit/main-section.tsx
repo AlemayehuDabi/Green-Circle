@@ -121,6 +121,12 @@ export const MainSection: React.FC<{
         startupLaw: false,
         faydaId: formData.faydaId,
         terms: false,
+        foundedYear: '',
+        employees: '',
+        revenue: '',
+        achievements: '',
+        founderPhone: '',
+        founderBio: '',
       });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -413,6 +419,89 @@ export const MainSection: React.FC<{
                     {fieldErrors.pitch && (
                       <p className="text-red-500 text-sm">
                         {fieldErrors.pitch.join(', ')}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="foundedYear">Year Founded</Label>
+                      <Input
+                        id="foundedYear"
+                        type="number"
+                        placeholder="e.g., 2023"
+                        value={formData.foundedYear}
+                        onChange={(e) =>
+                          handleInputChange('foundedYear', e.target.value)
+                        }
+                        className={
+                          fieldErrors.foundedYear ? 'border-red-500' : ''
+                        }
+                      />
+                      {fieldErrors.foundedYear && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.foundedYear.join(', ')}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="employees">Number of Employees</Label>
+                      <Input
+                        id="employees"
+                        type="number"
+                        placeholder="e.g., 10"
+                        value={formData.employees}
+                        onChange={(e) =>
+                          handleInputChange('employees', e.target.value)
+                        }
+                        className={
+                          fieldErrors.employees ? 'border-red-500' : ''
+                        }
+                      />
+                      {fieldErrors.employees && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.employees.join(', ')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="revenue">Annual Revenue (ETB)</Label>
+                    <Input
+                      id="revenue"
+                      type="number"
+                      placeholder="e.g., 500000"
+                      value={formData.revenue}
+                      onChange={(e) =>
+                        handleInputChange('revenue', e.target.value)
+                      }
+                      className={fieldErrors.revenue ? 'border-red-500' : ''}
+                    />
+                    {fieldErrors.revenue && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.revenue.join(', ')}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="achievements">Key Achievements</Label>
+                    <Textarea
+                      id="achievements"
+                      placeholder="List milestones, awards, or key achievements..."
+                      rows={3}
+                      value={formData.achievements}
+                      onChange={(e) =>
+                        handleInputChange('achievements', e.target.value)
+                      }
+                      className={
+                        fieldErrors.achievements ? 'border-red-500' : ''
+                      }
+                    />
+                    {fieldErrors.achievements && (
+                      <p className="text-red-500 text-sm">
+                        {fieldErrors.achievements.join(', ')}
                       </p>
                     )}
                   </div>

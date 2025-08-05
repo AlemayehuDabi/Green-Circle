@@ -3,7 +3,7 @@ import { connectToDB } from '@/lib/db';
 import { IUser, User } from '@/models/user';
 import { z } from 'zod';
 import { StartupZodSchema } from '@/zod-validator/validator';
-import { IStartup, Startup } from '@/models/start-up';
+import { Startup } from '@/models/start-up';
 
 // post start-up
 export async function POST(request: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await User.findOne({
-      email: 'chere@id.et',
+      email,
     });
 
     if (!user) {
@@ -47,17 +47,22 @@ export async function POST(request: NextRequest) {
     }
     // Create startup document
     const startup = new Startup({
-      userId: user._id,
-      name: formData.founderName,
-      startupName: formData.startupName,
-      website: formData.website,
-      sector: formData.sector,
+      name: formData.startupName,
+      website: formData.website || '',
+      sector: formData.sector || '',
       location: formData.location,
+      foundedYear: formData.foundedYear || '',
+      employees: formData.employees || '',
       description: formData.description,
-      founderName: formData.founderName,
-      founderRole: formData.founderRole,
-      pitch: formData.pitch,
-      startupLaw: formData.startupLaw,
+      pitch: formData.pitch || '',
+      achievements: formData.achievements || '',
+      documents: [],
+      founderRole: formData.founderRole || '',
+      founderEmail: email,
+      founderPhone: formData.founderPhone || '',
+      founderBio: formData.founderBio || '',
+      revenue: formData.revenue || '',
+      founders: [user._id],
       status: 'pending',
     });
 
@@ -95,6 +100,7 @@ export async function GET() {
         select:
           'name email role isValidate faydaId phone_number nationality bio',
       })
+      .sort({ createdAt: -1 })
       .exec();
 
     return NextResponse.json(

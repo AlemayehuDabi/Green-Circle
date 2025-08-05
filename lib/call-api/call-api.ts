@@ -66,7 +66,7 @@ export const userStartups = async (): Promise<Startup[]> => {
     const transformed: Startup[] = startups.map((s) => ({
       _id: s._id,
       name: s.name,
-      logo: '', // Add logo logic here if needed
+      logo: '',
       sector: s.sector,
       location: s.location,
       description: s.description,
@@ -77,6 +77,7 @@ export const userStartups = async (): Promise<Startup[]> => {
       founders: s.founders,
       founderRole: s.founderRole,
       founderBio: s.founderBio,
+      founderEmail: s.founderEmail,
       pitch: s.pitch,
       achievements: s.achievements
         ? s.achievements.split(',').map((a) => a.trim())

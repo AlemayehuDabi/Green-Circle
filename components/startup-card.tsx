@@ -50,22 +50,16 @@ export function StartupCard({ startup }: StartupCardProps) {
               <h3 className="font-semibold text-gray-900">{startup.name}</h3>
               <div className="flex items-center space-x-1 text-sm text-gray-500">
                 <MapPin className="h-3 w-3" />
-                <span>{startup.location}</span>
+                <span>{startup.location || ''}</span>
               </div>
             </div>
           </div>
-          {startup.status && (
+          {startup.status === 'approved' && (
             <Badge
               variant="secondary"
-              className={cn(
-                startup.status.toLowerCase() === 'rejected'
-                  ? 'text-red-700 bg-red-100'
-                  : startup.status.toLowerCase() === 'pending'
-                  ? 'text-yellow-700 bg-yellow-100'
-                  : 'text-emerald-700 bg-emerald-100'
-              )}
+              className={cn('text-emerald-700 bg-emerald-100')}
             >
-              {startup.status === 'approved' ? 'Verified' : startup.status}
+              {startup.status === 'approved' && 'Verified'}
             </Badge>
           )}
         </div>
@@ -78,9 +72,9 @@ export function StartupCard({ startup }: StartupCardProps) {
         <div className="mb-4 flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center space-x-1">
             <Users className="h-3 w-3" />
-            <span>{startup.employees}</span>
+            <span>{startup.employees || '0'}</span>
           </div>
-          <span>Founded {startup.foundedYear}</span>
+          <span>Founded {startup.foundedYear || ''}</span>
         </div>
         <Button asChild className="w-full bg-emerald-500 hover:bg-emerald-600">
           <Link href={`/startups/${startup._id}`}>View Details</Link>

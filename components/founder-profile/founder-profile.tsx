@@ -94,6 +94,7 @@ export default function StartupProfile() {
 
         // fetch startup
         const data = await userStartups();
+        console.log(data, "from founder's page");
         setStartups(data);
       };
       getUserfetchStartups();
@@ -297,6 +298,7 @@ export default function StartupProfile() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Phone</label>
                 <Input
+                  type="tel"
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
