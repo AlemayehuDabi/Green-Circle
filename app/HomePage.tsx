@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import Loading from './loading';
 import { BetterAuthSession, Startup } from '@/types';
 import AdminDashboard from './admin/adminDash';
+import { filterStartup } from '@/lib/call-api/call-api';
 
 export default function HomePage() {
   const [data, setData] = useState<Startup[]>([]);
@@ -30,32 +31,9 @@ export default function HomePage() {
       };
 
       const fetchData = async () => {
-        const response = await fetch('/api/startups');
-        const result = await response.json();
-
-        if (result.success) {
-          console.log('Admin fetch:', result);
-          const mappedData = result.startups.map((item: any) => ({
-            _id: item._id,
-            name: item.name,
-            founders: item.founders,
-            sector: item.sector,
-            createdAt: item.createdAt,
-            employees: item.employees,
-            revenue: item.revenue,
-            location: item.location,
-            status: item.status,
-            fayda_verified: item.fayda_verified,
-            logo: item.logo,
-            description: item.description,
-            foundedYear: item.foundedYear,
-            website: item.website,
-            verified: item.verified,
-            pitch: item.pitch,
-            achievements: item.achievements,
-            contact: item.contact,
-          }));
-          setData(mappedData);
+        const startups = await filterStartup();
+        if (startups) {
+          setData(startups);
         } else {
           setData([]);
         }

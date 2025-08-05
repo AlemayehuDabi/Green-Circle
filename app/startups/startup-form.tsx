@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import { Startup } from '@/types';
-import { getStartups } from '@/lib/call-api/call-api';
+import { filterStartup } from '@/lib/call-api/call-api';
 import Loading from '../loading';
 
 export default function StartupsForm() {
@@ -28,7 +28,7 @@ export default function StartupsForm() {
   useEffect(() => {
     const fetchStartups = async () => {
       try {
-        const data = await getStartups();
+        const data = await filterStartup();
         setStartup(data);
       } catch (err) {
         console.error('Failed to load startups:', err);
