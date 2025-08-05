@@ -60,23 +60,27 @@ export default function SubmitStartupForm({ verified }: { verified: boolean }) {
   const currentStep = steps.findIndex((s) => s.path === pathname) + 1 || 1;
 
   const [formData, setFormData] = useState<FormData>({
-    startupName: '',
-    website: '',
+    startupName: 'AfriTech Solutions',
+    website: 'https://afritech.et',
     sector: '',
     location: '',
-    description: '',
-    founderName: '',
-    founderRole: '',
-    pitch: '',
+    description:
+      'AfriTech Solutions leverages data and AI to help smallholder farmers increase crop yields, access markets, and improve sustainability.',
+    founderName: 'Selam Tesfaye',
+    founderRole: 'Co-Founder & CEO',
+    pitch:
+      'Our platform empowers farmers across Ethiopia with predictive insights, access to finance, and digital marketplaces to enhance their agricultural productivity.',
     startupLaw: false,
-    faydaId: false,
+    faydaId: true,
     terms: false,
-    foundedYear: '',
-    employees: '',
-    revenue: '',
-    achievements: '',
-    founderPhone: '',
-    founderBio: '',
+    foundedYear: '2021',
+    employees: '25',
+    revenue: '150000', // in USD
+    achievements:
+      'Winner of the 2023 African Agritech Innovation Award, Expanded to 4 regions in Ethiopia.',
+    founderPhone: '+251912345678',
+    founderBio:
+      'Selam Tesfaye is a tech entrepreneur passionate about digital agriculture, with over 7 years of experience in software development and rural innovation.',
   });
 
   // useEffect(() => {

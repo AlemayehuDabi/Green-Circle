@@ -21,13 +21,14 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Shield } from 'lucide-react';
+import { AlertCircle, LoaderPinwheel, Shield } from 'lucide-react';
 import { FormData } from './submit-form';
 import { generatePKCEPair } from '@/utils/faydaUtils';
 import { useState } from 'react';
 import { StartupZodSchema } from '@/zod-validator/validator';
 import z from 'zod';
 import { authClient } from '@/lib/auth-client';
+import { ClipLoader } from 'react-spinners';
 
 export const MainSection: React.FC<{
   step: number;
@@ -48,6 +49,8 @@ export const MainSection: React.FC<{
     type: 'success' | 'error' | null;
     message: string;
   }>({ type: null, message: '' });
+
+  const [loading, setLoading] = useState(false);
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
@@ -77,6 +80,7 @@ export const MainSection: React.FC<{
 
   // api
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
     setSubmissionStatus({ type: null, message: '' });
     setFieldErrors({});
@@ -110,23 +114,27 @@ export const MainSection: React.FC<{
 
       // Reset form (except faydaId)
       setFormData({
-        startupName: '',
-        website: '',
+        startupName: 'AfriTech Solutions',
+        website: 'https://afritech.et',
         sector: '',
         location: '',
-        description: '',
-        founderName: '',
-        founderRole: '',
-        pitch: '',
+        description:
+          'AfriTech Solutions leverages data and AI to help smallholder farmers increase crop yields, access markets, and improve sustainability.',
+        founderName: 'Selam Tesfaye',
+        founderRole: 'Co-Founder & CEO',
+        pitch:
+          'Our platform empowers farmers across Ethiopia with predictive insights, access to finance, and digital marketplaces to enhance their agricultural productivity.',
         startupLaw: false,
-        faydaId: formData.faydaId,
+        faydaId: true,
         terms: false,
-        foundedYear: '',
-        employees: '',
-        revenue: '',
-        achievements: '',
-        founderPhone: '',
-        founderBio: '',
+        foundedYear: '2021',
+        employees: '25',
+        revenue: '150000', // in USD
+        achievements:
+          'Winner of the 2023 African Agritech Innovation Award, Expanded to 4 regions in Ethiopia.',
+        founderPhone: '+251912345678',
+        founderBio:
+          'Selam Tesfaye is a tech entrepreneur passionate about digital agriculture, with over 7 years of experience in software development and rural innovation.',
       });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -143,6 +151,8 @@ export const MainSection: React.FC<{
           message: error.message || 'An error occurred during submission.',
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -581,7 +591,7 @@ export const MainSection: React.FC<{
                   className="w-full bg-emerald-500 hover:bg-emerald-600"
                   size="lg"
                 >
-                  Submit for Review
+                  {loading ? <ClipLoader /> : 'Submit for Review'}
                 </Button>
               </form>
             </CardContent>

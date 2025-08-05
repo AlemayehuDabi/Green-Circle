@@ -170,9 +170,9 @@ export default function StartupDetailPage({ id }: { id: string }) {
                         <ImageWithFallback
                           src={founder.image || '/placeholder.svg'}
                           alt={founder.name}
-                          width={64}
-                          height={64}
-                          className="h-16 w-16 rounded-full"
+                          width={80}
+                          height={80}
+                          className="h-16 w-16 rounded-full flex-shrink-0"
                         />
                         <div>
                           <div className="flex items-center gap-2">
