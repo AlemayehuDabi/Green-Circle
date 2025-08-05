@@ -100,6 +100,8 @@ export default function UserProfile() {
     setUser((prev) => ({ ...prev, [field]: value }));
   };
 
+  // update user
+
   // get user
   useEffect(() => {
     try {

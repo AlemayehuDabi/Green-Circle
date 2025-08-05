@@ -141,3 +141,53 @@ export const userStartups = async (): Promise<Startup[]> => {
     throw err;
   }
 };
+
+// Filter Rejected startups
+export const filterStartup = async (): Promise<Startup[]> => {
+  try {
+    const res = await fetch(`/api/startups`);
+    if (!res.ok) throw new Error('Failed to fetch startups');
+
+    const data = await res.json();
+    const startups: RawStartup[] = data.startups;
+
+    if (!startups || startups.length === 0) return notFound();
+
+    const filteredStartups: RawStartup[] = startups.filter(
+      (s) => s && s.status !== 'Rejected'
+    );
+
+    if (filteredStartups.length === 0) return notFound();
+
+    const transformed: Startup[] = filteredStartups.map((s) => ({
+      _id: s._id,
+      name: s.name,
+      logo: '',
+      sector: s.sector,
+      location: s.location,
+      description: s.description,
+      foundedYear: Number(s.foundedYear),
+      employees: s.employees,
+      website: s.website || '',
+      status: s.status,
+      founders: s.founders,
+      founderRole: s.founderRole,
+      founderBio: s.founderBio,
+      pitch: s.pitch,
+      achievements: s.achievements
+        ? s.achievements.split(',').map((a) => a.trim())
+        : [],
+      contact: {
+        email: s.founderEmail,
+        phone: s.founderPhone,
+      },
+      createdAt: s.createdAt,
+      updatedAt: s.updatedAt,
+    }));
+
+    return transformed;
+  } catch (error) {
+    console.error('Error filtering startups:', error);
+    throw error;
+  }
+};
