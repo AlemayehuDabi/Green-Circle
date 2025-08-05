@@ -42,18 +42,6 @@ import Loading from '../loading';
 import { useRouter } from 'next/navigation';
 import { updatedUser } from '@/lib/call-api/call-api';
 
-const userData = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  role: 'user',
-  avatar: '/placeholder.svg',
-  phone: '+1 (555) 123-4567',
-  location: 'New York, NY',
-  bio: 'Software developer passionate about creating innovative solutions. Love working with modern technologies and building user-friendly applications.',
-  joinedDate: '2023-03-01',
-  lastActive: '2 hours ago',
-};
-
 const getRoleColor = (role: string) => {
   switch (role) {
     case 'admin':
@@ -83,11 +71,11 @@ export default function UserProfile() {
     name: '',
     email: '',
     location: '',
-    phone: '',
+    phone: '+251996685119',
     nationality: '',
     joinedDate: '',
     role: '',
-    bio: '',
+    bio: 'Hi I`m Selam Tesfaye, i am CEO & founder AfriTech... ',
   });
 
   const [formData, setFormData] = useState({

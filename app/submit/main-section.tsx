@@ -184,7 +184,7 @@ export const MainSection: React.FC<{
             </Button>
             <Button
               onClick={handleNext}
-              disabled={!isStepValid}
+              disabled={true}
               className="mt-4 w-full"
             >
               Next

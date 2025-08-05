@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Model collection name:', User.collection.name);
+    console.log('fayda user return:', decodedUserInfo);
 
     // Update user by email
     const updatedUser = await User.findOneAndUpdate(
@@ -62,10 +62,8 @@ export async function POST(request: NextRequest) {
           isValidate: true,
           nationality: decodedUserInfo.nationality,
           birthdate: decodedUserInfo.birthdate,
-          address: decodedUserInfo.address,
           gender: decodedUserInfo.gender,
           phone_number: decodedUserInfo.phone_number,
-          image: decodedUserInfo.picture,
         },
       },
       { new: true }
@@ -77,8 +75,6 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-
-    console.log('User successfully updated:', updatedUser);
 
     return NextResponse.json(
       {
