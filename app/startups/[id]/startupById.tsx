@@ -37,6 +37,10 @@ export default function StartupDetailPage({ id }: { id: string }) {
     const fetch = async () => {
       try {
         const data = await getStartupById(id);
+        if (!data) {
+          console.log('no data');
+          return;
+        }
         setStartup(data);
       } catch (err) {
         console.error('Failed to load startup');
@@ -73,13 +77,13 @@ export default function StartupDetailPage({ id }: { id: string }) {
               <Card>
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-6">
-                    {/* <ImageWithFallback
+                    <ImageWithFallback
                       src={startup.logo || '/placeholder.svg'}
                       alt={startup.name}
                       width={80}
                       height={80}
                       className="h-20 w-20 rounded-xl"
-                    /> */}
+                    />
                     <div className="flex-1">
                       <div className="mb-2 flex items-center space-x-3">
                         <h1 className="text-3xl font-bold text-gray-900">
@@ -89,9 +93,11 @@ export default function StartupDetailPage({ id }: { id: string }) {
                           <Badge
                             variant="secondary"
                             className={cn(
-                              startup.status.toLowerCase() === 'rejected' &&
-                                'text-red-700 bg-red-100',
-                              'bg-emerald-100 text-emerald-700'
+                              startup.status.toLowerCase() === 'rejected'
+                                ? 'text-red-700 bg-red-100'
+                                : startup.status.toLowerCase() === 'pending'
+                                ? 'text-yellow-700 bg-yellow-100'
+                                : 'text-emerald-700 bg-emerald-100'
                             )}
                           >
                             {startup.status}
@@ -167,21 +173,41 @@ export default function StartupDetailPage({ id }: { id: string }) {
                   <div className="space-y-6">
                     {startup?.founders?.map((founder, i) => (
                       <div key={i} className="flex items-start space-x-4">
-                        {/* <ImageWithFallback
+                        <ImageWithFallback
                           src={founder.image || '/placeholder.svg'}
                           alt={founder.name}
                           width={64}
                           height={64}
                           className="h-16 w-16 rounded-full"
-                        /> */}
+                        />
                         <div>
-                          <h4 className="font-semibold text-gray-900">
-                            {founder.name}
-                          </h4>
-                          <p className="mb-2 text-sm text-emerald-700">
-                            {founder.role}
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-900">
+                              {founder.name}
+                            </h4>
+                            <Badge
+                              variant="secondary"
+                              className={cn(
+                                startup.status.toLowerCase() === 'rejected'
+                                  ? 'text-red-700 bg-red-100'
+                                  : startup.status.toLowerCase() === 'pending'
+                                  ? 'text-yellow-700 bg-yellow-100'
+                                  : 'text-emerald-700 bg-emerald-100'
+                              )}
+                            >
+                              {startup.status}
+                            </Badge>
+                          </div>
+                          <p className="mb-2 text-sm text-blue-950">
+                            {founder.email}
                           </p>
-                          <p className="text-sm text-gray-800">{founder.bio}</p>
+
+                          <p className="mb-2 text-sm text-emerald-700 ml-1 mt-1">
+                            {startup.founderRole}
+                          </p>
+                          <p className="text-sm text-gray-800">
+                            {startup.founderBio}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -239,7 +265,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                   <div className="flex items-center space-x-3">
                     <MailCheckIcon className="h-4 w-4 text-gray-700" />
                     <Link
-                      href={`mailto:${startup.contact.email}`}
+                      href={`mailto:${startup.contact?.email}`}
                       className="text-emerald-600 hover:text-emerald-700 text-base truncate"
                       style={{ maxWidth: '200px' }}
                     >
@@ -265,28 +291,40 @@ export default function StartupDetailPage({ id }: { id: string }) {
                 <CardContent className="space-y-3">
                   <div className="flex justify-between text-base">
                     <span className="text-gray-800">Sector</span>
-                    <span className="font-medium text-gray-900">
+                    <span
+                      className="font-medium text-gray-900 truncate"
+                      style={{ maxWidth: '200px' }}
+                    >
                       {startup.sector}
                     </span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base">
                     <span className="text-gray-800">Founded</span>
-                    <span className="font-medium text-gray-900">
+                    <span
+                      className="font-medium text-gray-900 truncate"
+                      style={{ maxWidth: '200px' }}
+                    >
                       {startup.foundedYear}
                     </span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base">
                     <span className="text-gray-800">Team Size</span>
-                    <span className="font-medium text-gray-900">
+                    <span
+                      className="font-medium text-gray-900 truncate"
+                      style={{ maxWidth: '200px' }}
+                    >
                       {startup.employees}
                     </span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base">
                     <span className="text-gray-800">Location</span>
-                    <span className="font-medium text-gray-900">
+                    <span
+                      className="font-medium text-gray-900 truncate"
+                      style={{ maxWidth: '200px' }}
+                    >
                       {startup.location}
                     </span>
                   </div>

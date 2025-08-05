@@ -283,6 +283,7 @@ export const MainSection: React.FC<{
                           <SelectItem value="energy">Clean Energy</SelectItem>
                           <SelectItem value="logistics">Logistics</SelectItem>
                           <SelectItem value="ecommerce">E-commerce</SelectItem>
+                          <SelectItem value="Tech">Tech</SelectItem>
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>

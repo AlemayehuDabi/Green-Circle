@@ -60,7 +60,6 @@ export async function POST(request: NextRequest) {
         $set: {
           faydaId: userIdentifier,
           isValidate: true,
-          role: 'startup',
           Nationality: decodedUserInfo.nationality,
           Birthdate: decodedUserInfo.birthdate,
           Address: decodedUserInfo.address,

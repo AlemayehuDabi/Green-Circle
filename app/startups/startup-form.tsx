@@ -23,6 +23,7 @@ export default function StartupsForm() {
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [startup, setStartup] = useState<Startup[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
     const fetchStartups = async () => {
@@ -49,7 +50,7 @@ export default function StartupsForm() {
       startup.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSector =
       selectedSector === 'all' ||
-      startup.sector.toLowerCase() === selectedSector;
+      startup.sector?.toLowerCase() === selectedSector;
     const matchesLocation =
       selectedLocation === 'all' ||
       startup.location.toLowerCase().includes(selectedLocation);
@@ -57,7 +58,7 @@ export default function StartupsForm() {
     return matchesSearch && matchesSector && matchesLocation;
   });
 
-  //
+  const filteredAndVisibleStartups = filteredStartups?.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-white">
@@ -99,6 +100,8 @@ export default function StartupsForm() {
               <SelectItem value="healthcare">Healthcare</SelectItem>
               <SelectItem value="energy">Clean Energy</SelectItem>
               <SelectItem value="logistics">Logistics</SelectItem>
+              <SelectItem value="tech">Tech</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
 
@@ -119,7 +122,7 @@ export default function StartupsForm() {
 
         {/* Startup Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredStartups?.map((startup) => (
+          {filteredAndVisibleStartups?.map((startup) => (
             <StartupCard key={startup._id} startup={startup} />
           ))}
         </div>
@@ -133,9 +136,13 @@ export default function StartupsForm() {
         )}
 
         {/* Load More */}
-        {Array.isArray(filteredStartups) && filteredStartups.length > 0 && (
+        {filteredStartups && visibleCount < filteredStartups.length && (
           <div className="mt-12 text-center">
-            <Button variant="outline" size="lg">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setVisibleCount((prev) => prev + 3)} // Load 3 more
+            >
               Load More Startups
             </Button>
           </div>

@@ -44,6 +44,7 @@ const StartupSchema = new Schema<IStartup>(
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending',
     },
+    revenue: { type: String },
   },
   { timestamps: true }
 );

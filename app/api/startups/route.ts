@@ -3,7 +3,7 @@ import { connectToDB } from '@/lib/db';
 import { IUser, User } from '@/models/user';
 import { z } from 'zod';
 import { StartupZodSchema } from '@/zod-validator/validator';
-import { Startup } from '@/models/start-up';
+import { IStartup, Startup } from '@/models/start-up';
 
 // post start-up
 export async function POST(request: NextRequest) {
@@ -45,7 +45,6 @@ export async function POST(request: NextRequest) {
       }
       throw error;
     }
-    console.log('let seeee', formData.name);
     // Create startup document
     const startup = new Startup({
       userId: user._id,
@@ -90,16 +89,19 @@ export async function GET() {
     await connectToDB();
     // for the admin
     const startups = await Startup.find({})
-      // .select(startupProjection)
       .populate<{ founders: IUser[] }>({
         path: 'founders',
         model: 'User',
-        select: 'name',
+        select:
+          'name email role isValidate faydaId phone_number nationality bio',
       })
-      .lean()
-      .exec(); // Explicitly call exec() for better type inference
-
-    console.log('start admin', startups);
+      .exec();
+    //
+    startups.forEach((s) => {
+      console.log(s.founders);
+    });
+    //
+    console.log(startups[0]);
 
     return NextResponse.json(
       {

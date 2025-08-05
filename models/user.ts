@@ -1,12 +1,20 @@
 import { Schema, model, models } from 'mongoose';
+
 export interface IUser {
   name: string;
   email: string;
-  role?: 'startup' | 'user';
+  role?: 'startup' | 'user' | 'admin';
   isValidate?: boolean;
   faydaId?: string;
   createdAt: Date;
   updatedAt: Date;
+  nationality?: string;
+  birthdate?: string;
+  address?: string;
+  gender?: string;
+  phone_number?: string;
+  image?: string;
+  bio?: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -20,7 +28,39 @@ const userSchema = new Schema<IUser>(
       default: 'user',
     },
     isValidate: { type: Boolean, default: false },
-    faydaId: { type: String, unique: true, sparse: true },
+    faydaId: {
+      type: String,
+      // unique: true,
+      sparse: true,
+    },
+    nationality: {
+      type: String,
+      default: 'Ethiopian',
+    },
+    birthdate: {
+      type: String,
+      default: 'N/A',
+    },
+    address: {
+      type: String,
+      default: 'N/A',
+    },
+    gender: {
+      type: String,
+      default: 'N/A',
+    },
+    phone_number: {
+      type: String,
+      default: 'N/A',
+    },
+    image: {
+      type: String,
+      default: 'N/A',
+    },
+    bio: {
+      type: String,
+      default: 'N/A',
+    },
   },
   { timestamps: true }
 );

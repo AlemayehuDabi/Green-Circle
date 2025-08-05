@@ -4,13 +4,17 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StartupCard } from '@/components/startup-card';
 import { Startup } from '@/types';
+import { useState } from 'react';
 
 interface FeaturedStartupsProps {
   startups: Startup[];
 }
 
 export function FeaturedStartups({ startups }: FeaturedStartupsProps) {
-  console.log('startups', startups);
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  const fewStartups = startups.slice(0, visibleCount);
+
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -25,7 +29,7 @@ export function FeaturedStartups({ startups }: FeaturedStartupsProps) {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {startups.map((startup) => (
+          {fewStartups.map((startup) => (
             <StartupCard key={startup._id} startup={startup} />
           ))}
         </div>

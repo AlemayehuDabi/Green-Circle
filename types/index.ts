@@ -5,26 +5,32 @@ export interface Founder {
   phone: string;
   role: string;
   bio: string;
+  image: string;
 }
 
 export interface Startup {
   _id: string;
   name: string;
-  logo: string;
-  sector: string;
-  location: string;
-  description: string;
-  foundedYear: number;
-  employees: string;
+  logo?: string;
   website?: string;
-  status: string;
-  founders: Founder[];
-  pitch: string;
-  achievements: string[];
-  contact: {
-    email: string;
-    phone: string;
+  sector?: string;
+  location: string;
+  foundedYear?: number;
+  employees?: string;
+  description: string;
+  pitch?: string;
+  achievements?: string[];
+  contact?: {
+    email?: string;
+    phone?: string;
   };
+  revenue?: string;
+  founders: Founder[];
+  founderRole?: string;
+  founderBio?: string;
+  status: string;
+  createdAt: string; // ISO string if coming from API
+  updatedAt: string;
 }
 
 export interface SubmissionStatus {
@@ -56,11 +62,15 @@ export interface RawStartup {
   employees: string;
   website?: string;
   status: string;
-  founders: any[]; // Ideally, replace `any` with your Founder type
+  founders: Founder[];
   pitch: string;
   achievements?: string;
   founderEmail: string;
   founderPhone: string;
+  createdAt: string;
+  updatedAt: string;
+  founderRole?: string;
+  founderBio?: string;
 }
 
 export interface BetterAuthSession {
