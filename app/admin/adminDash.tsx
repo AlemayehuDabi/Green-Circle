@@ -1,27 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import {
-  BarChart3,
-  Building2,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  FileText,
-  Home,
-  MapPin,
-  Settings,
-  TrendingUp,
-  Users,
-  Verified,
-  Eye,
-  Download,
-  Bell,
-  X,
-  Filter,
-  Plus,
-  Search,
-} from 'lucide-react';
+import { BarChart3, Building2, CheckCircle, Clock, DollarSign, FileText, Home, MapPin, Settings, TrendingUp, Users, Verified, Eye, Download, Bell, X, Filter, Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -57,24 +37,31 @@ import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 
 // Types
+interface IUser {
+  _id: string;
+  name?: string;
+  email: string;
+  // Add other user properties if they are populated and used
+}
+
 interface Startup {
   _id: string;
   name: string;
-  founders: string[];
+  founders: IUser[]; // Changed to IUser[] as per API response
   sector: string;
-  createdAt: string;
+  createdAt: string; // Will store formatted date string
   employees: string;
   revenue: string;
   location: string;
   status: 'pending' | 'approved' | 'rejected' | 'under_review';
-  fayda_verified: boolean;
+  // Removed fayda_verified as it's not in the API response
 }
 
 interface Activity {
   action: string;
   entity: string;
   time: string;
-  type: string;
+  type: string; // Added type based on mock data, though not explicitly from API
 }
 
 interface Sector {
@@ -83,7 +70,7 @@ interface Sector {
   count: number;
 }
 
-interface Region {
+interface Region { // This type is for mock data, not directly from API, but kept for analytics section
   region: string;
   count: number;
   percentage: number;
@@ -101,80 +88,15 @@ interface DashboardStats {
   regionsActive: number;
 }
 
-// Mock data
-const dashboardStats: DashboardStats = {
-  totalStartups: 1247,
-  verifiedStartups: 342,
-  pendingVerifications: 89,
-  totalInvestment: 45600000,
-  activeInvestors: 156,
-  jobsCreated: 3420,
-  monthlyGrowth: 12.5,
-  successRate: 73,
-  regionsActive: 11,
-};
-
-const sectorData: Sector[] = [
-  { name: 'FinTech', percentage: 28, count: 349 },
-  { name: 'AgTech', percentage: 22, count: 274 },
-  { name: 'EdTech', percentage: 18, count: 224 },
-  { name: 'HealthTech', percentage: 15, count: 187 },
-  { name: 'E-commerce', percentage: 10, count: 125 },
-  { name: 'Other', percentage: 7, count: 88 },
-];
-
-const regionalData: Region[] = [
-  { region: 'Addis Ababa', count: 561, percentage: 45 },
-  { region: 'Oromia', count: 224, percentage: 18 },
-  { region: 'Amhara', count: 150, percentage: 12 },
-  { region: 'Tigray', count: 100, percentage: 8 },
-  { region: 'SNNP', count: 125, percentage: 10 },
-  { region: 'Other Regions', count: 87, percentage: 7 },
-];
-
-const recentActivity: Activity[] = [
-  {
-    action: 'New startup registered',
-    entity: 'HealthTech Pro',
-    time: '2 hours ago',
-    type: 'registration',
-  },
-  {
-    action: 'Verification approved',
-    entity: 'GreenEnergy Ltd',
-    time: '4 hours ago',
-    type: 'approval',
-  },
-  {
-    action: 'Investment recorded',
-    entity: '$500K to DataMine',
-    time: '6 hours ago',
-    type: 'investment',
-  },
-  {
-    action: 'New investor joined',
-    entity: 'Diaspora Fund',
-    time: '1 day ago',
-    type: 'investor',
-  },
-  {
-    action: 'Profile updated',
-    entity: 'TechSolutions Inc',
-    time: '2 days ago',
-    type: 'update',
-  },
-];
-
 // Sidebar Component
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  data: Startup[] | null;
+  data: Startup[] | null; // `data` here refers to the startups for the badge count
 }
 
 // delete
-
-const handleRejection = async (startupId: string) => {
+const handleRejection = async (startupId: string, fetchData: () => void) => {
   try {
     const res = await fetch('/api/startups', {
       method: 'DELETE',
@@ -183,14 +105,12 @@ const handleRejection = async (startupId: string) => {
       },
       body: JSON.stringify({ startupId }),
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.error || 'Failed to reject startup');
     }
-
     console.log('Startup rejected successfully:', data);
+    fetchData(); // Re-fetch data after successful rejection
   } catch (error) {
     console.error('Error rejecting startup:', error);
   }
@@ -211,13 +131,10 @@ const handleApprove = async ({
       },
       body: JSON.stringify({ startupId }),
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.error || 'Failed to approve startup');
     }
-
     fetchData();
     console.log('Approved:', data);
   } catch (error) {
@@ -247,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, data }) => {
               tab: 'verification',
               icon: CheckCircle,
               label: 'Verification Queue',
-              badge: data?.length || 0,
+              badge: data?.filter(s => s.status === 'pending').length || 0, // Only count pending for badge
             },
             { tab: 'startups', icon: Building2, label: 'Startups' },
             { tab: 'analytics', icon: BarChart3, label: 'Analytics' },
@@ -275,17 +192,22 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, data }) => {
 
 // Overview Component
 interface OverviewContentProps {
-  stats: DashboardStats;
-  sectors: Sector[];
-  activities: Activity[];
-  data: Startup[] | null;
+  stats: DashboardStats | null;
+  sectors: Sector[] | null;
+  activities: Activity[] | null;
+  regionalData: Region[]; // Added regionalData prop
 }
 
 const OverviewContent: React.FC<OverviewContentProps> = ({
   stats,
   sectors,
   activities,
+  regionalData, // Destructure regionalData
 }) => {
+  if (!stats || !sectors || !activities) {
+    return <div>Loading overview data...</div>; // Or a skeleton loader
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -316,19 +238,19 @@ const OverviewContent: React.FC<OverviewContentProps> = ({
             title: 'Total Investment',
             value: `$${(stats.totalInvestment / 1000000).toFixed(1)}M`,
             icon: DollarSign,
-            subtext: '+23% from last quarter',
+            subtext: '+23% from last quarter', // This subtext is still hardcoded
           },
           {
             title: 'Active Investors',
             value: stats.activeInvestors,
             icon: TrendingUp,
-            subtext: '+8 new this month',
+            subtext: '+8 new this month', // This subtext is still hardcoded
           },
           {
             title: 'Jobs Created',
             value: stats.jobsCreated.toLocaleString(),
             icon: Users,
-            subtext: 'Direct employment',
+            subtext: 'Direct employment', // This subtext is still hardcoded
           },
         ].map((stat, index) => (
           <Card key={index}>
@@ -420,7 +342,6 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
 
   const filteredStartups = useMemo(() => {
     if (!startups) return [];
-
     let result = startups;
 
     if (selectedSector !== 'all') {
@@ -428,26 +349,41 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
         (startup) => startup.sector.toLowerCase() === selectedSector
       );
     }
+
     if (searchTerm) {
       result = result.filter(
         (startup) =>
           startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           startup.founders.some((founder) =>
-            founder.toLowerCase().includes(searchTerm.toLowerCase())
+            (founder.name || founder.email).toLowerCase().includes(searchTerm.toLowerCase())
           )
       );
     }
+
     return result.sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return sortOrder === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       }
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+      // For founders, compare by the first founder's name/email
+      if (sortField === 'founders') {
+        const aFounderName = a.founders[0]?.name || a.founders[0]?.email || '';
+        const bFounderName = b.founders[0]?.name || b.founders[0]?.email || '';
+        return sortOrder === 'asc'
+          ? aFounderName.localeCompare(bFounderName)
+          : bFounderName.localeCompare(aFounderName);
       }
+      // For createdAt, compare as dates
+      if (sortField === 'createdAt') {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      }
+      // Fallback for other types or if values are not comparable
       return 0;
     });
   }, [startups, selectedSector, searchTerm, sortField, sortOrder]);
@@ -537,7 +473,6 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
                 { label: 'Location', field: 'location' },
                 { label: 'Employees', field: 'employees' },
                 { label: 'Revenue', field: 'revenue' },
-                { label: 'Status', field: 'status' },
                 { label: 'Submitted', field: 'createdAt' },
                 { label: 'Actions' },
               ].map((header, index) => (
@@ -568,7 +503,7 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
                   <TableCell>
                     {Array.isArray(startup.founders) &&
                     startup.founders.length > 0
-                      ? startup.founders.join(', ')
+                      ? startup.founders.map(f => f.name || f.email).join(', ')
                       : ''}
                   </TableCell>
                   <TableCell>
@@ -578,7 +513,6 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
                   <TableCell>{startup.location}</TableCell>
                   <TableCell>{startup.employees}</TableCell>
                   <TableCell>{startup.revenue}</TableCell>
-                  <TableCell>{getStatusBadge(startup.status)}</TableCell>
                   <TableCell>{startup.createdAt}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
@@ -602,7 +536,7 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => handleRejection(startup._id)}
+                            onClick={() => handleRejection(startup._id, fetchData)}
                           >
                             <X className="w-4 h-4 mr-1" />
                             Reject
@@ -615,7 +549,7 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={10} className="text-center">
+                <TableCell colSpan={9} className="text-center"> {/* Adjusted colspan */}
                   No startups available
                 </TableCell>
               </TableRow>
@@ -630,36 +564,49 @@ const VerificationContent: React.FC<VerificationContentProps> = ({
 // Main Dashboard Component
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<string>('overview');
-  const [data, setData] = useState<Startup[] | null>(null);
+  const [startupsData, setStartupsData] = useState<Startup[] | null>(null);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
+  const [sectorData, setSectorData] = useState<Sector[] | null>(null);
+  const [recentActivity, setRecentActivity] = useState<Activity[] | null>(null);
 
   async function fetchData() {
     try {
       const response = await fetch('/api/startups');
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server responded with non-OK status:', response.status, errorText);
+        setStartupsData(null);
+        setDashboardStats(null);
+        setSectorData(null);
+        setRecentActivity(null);
+        throw new Error(`Failed to fetch data: ${response.statusText || 'Unknown error'}. Server response: ${errorText.substring(0, 200)}...`);
+      }
 
       const result = await response.json();
-
-      if (result.success) {
-        console.log('admin fetch', result);
-        setData(
-          result.startups.map((item: any) => ({
-            _id: item._id,
-            name: item.startupName,
-            founders: item.founderName,
-            sector: item.sector,
-            createdAt: item.createdAt,
-            employees: item.employees,
-            revenue: item.revenue,
-            location: item.location,
-            status: item.status,
-            fayda_verified: item.fayda_verified,
-          }))
-        );
-      } else {
-        setData(null);
-      }
+      console.log('admin fetch', result);
+      setStartupsData(
+        result.startups.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          founders: item.founders,
+          sector: item.sector,
+          createdAt: new Date(item.createdAt).toLocaleString(),
+          employees: item.employees,
+          revenue: item.revenue,
+          location: item.location,
+          status: item.status,
+        }))
+      );
+      setDashboardStats(result.stats);
+      setSectorData(result.sectors);
+      setRecentActivity(result.activities);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setData(null);
+      setStartupsData(null);
+      setDashboardStats(null);
+      setSectorData(null);
+      setRecentActivity(null);
     }
   }
 
@@ -667,9 +614,23 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+  // Derive regionalData here, accessible to both OverviewContent and Analytics
+  const regionalData: Region[] = useMemo(() => {
+    if (!dashboardStats) return [];
+    return [
+      { region: 'Addis Ababa', count: Math.round(dashboardStats.totalStartups * 0.45), percentage: 45 },
+      { region: 'Oromia', count: Math.round(dashboardStats.totalStartups * 0.18), percentage: 18 },
+      { region: 'Amhara', count: Math.round(dashboardStats.totalStartups * 0.12), percentage: 12 },
+      { region: 'Tigray', count: Math.round(dashboardStats.totalStartups * 0.08), percentage: 8 },
+      { region: 'SNNP', count: Math.round(dashboardStats.totalStartups * 0.10), percentage: 10 },
+      { region: 'Other Regions', count: Math.round(dashboardStats.totalStartups * 0.07), percentage: 7 },
+    ];
+  }, [dashboardStats]);
+
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} data={data} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} data={startupsData} />
       <div className="flex-1 overflow-auto">
         <header className="bg-white shadow-sm border-b p-4">
           <div className="flex items-center justify-between">
@@ -707,94 +668,103 @@ export default function AdminDashboard() {
         </header>
         <main className="p-6">
           {activeTab === 'overview' && (
-            <OverviewContent
-              stats={dashboardStats}
-              sectors={sectorData}
-              activities={recentActivity}
-              data={data}
-            />
+            dashboardStats && sectorData && recentActivity ? (
+              <OverviewContent
+                stats={dashboardStats}
+                sectors={sectorData}
+                activities={recentActivity}
+                regionalData={regionalData} // Pass regionalData to OverviewContent
+              />
+            ) : (
+              <div>Loading dashboard overview...</div> // Loading state for overview
+            )
           )}
           {activeTab === 'verification' && (
-            <VerificationContent startups={data} fetchData={fetchData} />
+            <VerificationContent startups={startupsData} fetchData={fetchData} />
           )}
           {activeTab === 'analytics' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  {
-                    title: 'Monthly Growth',
-                    value: `+${dashboardStats.monthlyGrowth}%`,
-                    subtext: 'New startups this month',
-                    className: 'text-green-600',
-                  },
-                  {
-                    title: 'Investment Flow',
-                    value: '$2.3M',
-                    subtext: 'This quarter',
-                    className: 'text-blue-600',
-                  },
-                  {
-                    title: 'Success Rate',
-                    value: `${dashboardStats.successRate}%`,
-                    subtext: 'Verification approval',
-                    className: 'text-purple-600',
-                  },
-                  {
-                    title: 'Regional Spread',
-                    value: dashboardStats.regionsActive,
-                    subtext: 'Regions covered',
-                    className: 'text-orange-600',
-                  },
-                ].map((stat, index) => (
-                  <Card key={index}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        {stat.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className={`text-2xl font-bold ${stat.className}`}>
-                        {stat.value}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {stat.subtext}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
+            dashboardStats && sectorData && recentActivity ? ( // Re-using fetched data for analytics
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    {
+                      title: 'Monthly Growth',
+                      value: `+${dashboardStats.monthlyGrowth}%`,
+                      subtext: 'New startups this month',
+                      className: 'text-green-600',
+                    },
+                    {
+                      title: 'Investment Flow',
+                      value: `$${(dashboardStats.totalInvestment / 1000000).toFixed(1)}M`, // Using totalInvestment from fetched stats
+                      subtext: 'Total investment recorded', // Updated subtext
+                      className: 'text-blue-600',
+                    },
+                    {
+                      title: 'Success Rate',
+                      value: `${dashboardStats.successRate}%`,
+                      subtext: 'Verification approval',
+                      className: 'text-purple-600',
+                    },
+                    {
+                      title: 'Regional Spread',
+                      value: dashboardStats.regionsActive,
+                      subtext: 'Regions covered',
+                      className: 'text-orange-600',
+                    },
+                  ].map((stat, index) => (
+                    <Card key={index}>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          {stat.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className={`text-2xl font-bold ${stat.className}`}>
+                          {stat.value}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {stat.subtext}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Geographic Distribution</CardTitle>
+                    <CardDescription>
+                      Startups by region in Ethiopia
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Using the derived regionalData */}
+                      {regionalData.map((region) => (
+                        <div key={region.region} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium flex items-center gap-2">
+                              <MapPin className="w-4 h-4" />
+                              {region.region}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {region.count} ({region.percentage}%)
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full"
+                              style={{ width: `${region.percentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Geographic Distribution</CardTitle>
-                  <CardDescription>
-                    Startups by region in Ethiopia
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {regionalData.map((region) => (
-                      <div key={region.region} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            {region.region}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {region.count} ({region.percentage}%)
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${region.percentage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            ) : (
+              <div>Loading analytics data...</div> // Loading state for analytics
+            )
           )}
           {(activeTab === 'startups' ||
             activeTab === 'users' ||

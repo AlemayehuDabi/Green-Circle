@@ -10,7 +10,7 @@ export function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
                 <span className="text-sm font-bold text-white">ES</span>
               </div>
-              <span className="text-xl font-semibold">Ethiopia Startup</span>
+              <span className="text-xl font-semibold">Green Circle</span>
             </div>
             <p className="text-gray-300">Connecting Ethiopian entrepreneurs with investors, mentors, and supporters.</p>
           </div>
@@ -76,7 +76,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-gray-700 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Ethiopia Startup. All rights reserved.</p>
+          <p>&copy; 2024 Green Circle. All rights reserved.</p>
         </div>
       </div>
     </footer>
