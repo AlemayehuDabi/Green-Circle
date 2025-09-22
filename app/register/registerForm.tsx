@@ -75,7 +75,7 @@ export default function RegisterForm() {
               <span className="text-sm font-bold text-white">ES</span>
             </div>
             <span className="text-xl font-semibold text-gray-900">
-              Ethiopia Startup
+              Green Circle
             </span>
           </Link>
         </div>

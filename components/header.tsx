@@ -42,7 +42,7 @@ export function Header({ currentPage }: HeaderProps) {
               <span className="text-sm font-bold text-white">ES</span>
             </div>
             <span className="text-xl font-semibold text-gray-900">
-              Ethiopia Startup
+              Green Circle
             </span>
           </Link>
           <nav className="hidden items-center space-x-8 md:flex">
