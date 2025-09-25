@@ -4,7 +4,7 @@ import { IUser, User } from '@/models/user';
 import { z } from 'zod';
 import { StartupZodSchema } from '@/zod-validator/validator';
 import { Startup } from '@/models/start-up';
-import { authClient } from '@/lib/auth-client';
+import { auth } from '@/lib/auth';
 
 // post start-up
 export async function POST(request: NextRequest) {
@@ -103,7 +103,6 @@ export async function GET(req: NextRequest) {
     const createdAfter = url.searchParams.get('createdAfter');
     const createdBefore = url.searchParams.get('createdBefore');
     const founderEmail = url.searchParams.get('founderEmail');
-
     // Only allow these filters
     const allowedFilters = [
       'search',
@@ -116,9 +115,13 @@ export async function GET(req: NextRequest) {
     let filters: any = {};
 
     // Restrict for non-admin users (only approved startups are visible)
-    const user = authClient.useSession();
-    if (user.data?.user.role !== 'admin') {
-      filters.status = 'approved';
+    // Retrieve the session from the request headers
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (session?.user.role !== 'admin') {
+      filters.status = { $in: ['approved', 'pending'] };
     }
 
     // Handle allowed filters
@@ -159,8 +162,8 @@ export async function GET(req: NextRequest) {
       if (createdBefore) filters.createdAt.$lte = new Date(createdBefore);
     }
 
-    // Founder email filter (admin only)
-    if (founderEmail && user.data?.user.role === 'admin') {
+    // Founder email filter
+    if (founderEmail) {
       filters.founderEmail = { $regex: founderEmail, $options: 'i' };
     }
 
@@ -182,6 +185,7 @@ export async function GET(req: NextRequest) {
       {
         error: 'Failed to retrieve startups',
         details: error.message,
+        msg: error,
       },
       { status: 500 }
     );

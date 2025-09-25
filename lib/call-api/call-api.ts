@@ -7,14 +7,11 @@ export const getStartupById = async (
   id: string
 ): Promise<Startup | undefined> => {
   try {
-    const res = await fetch(`/api/startups`);
+    const res = await fetch(`/api/startups/${encodeURIComponent(id)}`);
     if (!res.ok) throw new Error('Failed to fetch startups');
 
     const data = await res.json();
-    const startups: RawStartup[] = data.startups;
-
-    const found = startups.find((s) => s._id === id);
-    if (!found) return notFound();
+    const found: RawStartup = data.startups;
 
     const transformed: Startup = {
       _id: found._id,
@@ -57,7 +54,7 @@ export const userStartups = async (): Promise<Startup[]> => {
 
     if (!userEmail) throw new Error('No user session');
 
-    const res = await fetch(`/api/startups`);
+    const res = await fetch(`/api/startups/${encodeURIComponent(userEmail)}`);
     if (!res.ok) throw new Error('Failed to fetch startups');
 
     const data = await res.json();
@@ -90,16 +87,14 @@ export const userStartups = async (): Promise<Startup[]> => {
       updatedAt: s.updatedAt,
     }));
 
-    const filtered = transformed.filter((s) => s.contact?.email === userEmail);
-
-    return filtered;
+    return transformed;
   } catch (err) {
     console.error('Error in userStartups:', err);
     throw err;
   }
 };
 
-// Filter Rejected startups
+// startups
 export const filterStartup = async (): Promise<Startup[]> => {
   try {
     const res = await fetch(`/api/startups`);
@@ -110,13 +105,7 @@ export const filterStartup = async (): Promise<Startup[]> => {
 
     if (!startups || startups.length === 0) return notFound();
 
-    const filteredStartups: RawStartup[] = startups.filter(
-      (s) => s && s.status !== 'rejected'
-    );
-
-    if (filteredStartups.length === 0) return notFound();
-
-    const transformed: Startup[] = filteredStartups.map((s) => ({
+    const transformed: Startup[] = startups.map((s) => ({
       _id: s._id,
       name: s.name,
       logo: '',
@@ -159,7 +148,7 @@ export const updatedUser = async ({
   bio: string;
 }) => {
   try {
-    console.log('sadfdgdf', email, phone, bio);
+    console.log('user info', email, phone, bio);
 
     const res = await fetch('/api/updateUser', {
       method: 'PATCH',
