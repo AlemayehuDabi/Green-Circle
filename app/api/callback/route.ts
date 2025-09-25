@@ -6,6 +6,7 @@ import { User } from '@/models/user';
 export async function POST(request: NextRequest) {
   // const { searchParams } = request.nextUrl;
   const { code, codeVerifier, email } = await request.json();
+
   console.log('this is email from callback', email);
 
   if (!email) {
