@@ -4,6 +4,7 @@ import { IUser, User } from '@/models/user';
 import { z } from 'zod';
 import { StartupZodSchema } from '@/zod-validator/validator';
 import { Startup } from '@/models/start-up';
+import { authClient } from '@/lib/auth-client';
 
 // post start-up
 export async function POST(request: NextRequest) {
@@ -88,82 +89,98 @@ export async function POST(request: NextRequest) {
   }
 }
 // get all start-up
-// get all startups + dashboard stats
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectToDB();
 
-    const startups = await Startup.find({}).populate<{ founders: IUser[] }>({
+    const url = new URL(req.url);
+
+    // Extract range/query params explicitly
+    const minRevenue = url.searchParams.get('minRevenue');
+    const maxRevenue = url.searchParams.get('maxRevenue');
+    const minEmployees = url.searchParams.get('minEmployees');
+    const maxEmployees = url.searchParams.get('maxEmployees');
+    const createdAfter = url.searchParams.get('createdAfter');
+    const createdBefore = url.searchParams.get('createdBefore');
+    const founderEmail = url.searchParams.get('founderEmail');
+
+    // Only allow these filters
+    const allowedFilters = [
+      'search',
+      'sector',
+      'location',
+      'foundedYear',
+      'status',
+    ];
+
+    let filters: any = {};
+
+    // Restrict for non-admin users (only approved startups are visible)
+    const user = authClient.useSession();
+    if (user.data?.user.role !== 'admin') {
+      filters.status = 'approved';
+    }
+
+    // Handle allowed filters
+    allowedFilters.forEach((field) => {
+      const value = url.searchParams.get(field);
+      if (value) {
+        if (field === 'search') {
+          filters.$or = [
+            { name: { $regex: value, $options: 'i' } },
+            { description: { $regex: value, $options: 'i' } },
+            { pitch: { $regex: value, $options: 'i' } },
+            { achievements: { $regex: value, $options: 'i' } },
+          ];
+        } else {
+          filters[field] = value;
+        }
+      }
+    });
+
+    // Revenue range filter
+    if (minRevenue || maxRevenue) {
+      filters.revenue = {};
+      if (minRevenue) filters.revenue.$gte = parseInt(minRevenue);
+      if (maxRevenue) filters.revenue.$lte = parseInt(maxRevenue);
+    }
+
+    // Employees range filter
+    if (minEmployees || maxEmployees) {
+      filters.employees = {};
+      if (minEmployees) filters.employees.$gte = parseInt(minEmployees);
+      if (maxEmployees) filters.employees.$lte = parseInt(maxEmployees);
+    }
+
+    // Date range filter
+    if (createdAfter || createdBefore) {
+      filters.createdAt = {};
+      if (createdAfter) filters.createdAt.$gte = new Date(createdAfter);
+      if (createdBefore) filters.createdAt.$lte = new Date(createdBefore);
+    }
+
+    // Founder email filter (admin only)
+    if (founderEmail && user.data?.user.role === 'admin') {
+      filters.founderEmail = { $regex: founderEmail, $options: 'i' };
+    }
+
+    // Fetch startups with populated founders
+    const startups = await Startup.find(filters).populate<{
+      founders: IUser[];
+    }>({
       path: 'founders',
       model: 'User',
       select: 'name email role isValidate faydaId phone_number nationality bio',
     });
 
-    const totalStartups = startups.length;
-    const verifiedStartups = startups.filter(
-      (s) => s.status === 'approved'
-    ).length;
-    const pendingVerifications = startups.filter(
-      (s) => s.status === 'pending'
-    ).length;
-    const totalInvestment = startups.reduce(
-      (sum, s) => sum + (parseInt(s.revenue || '0') || 0),
-      0
-    );
-
-    const activeInvestors = 20; // hardcoded or compute if you track investors
-    const jobsCreated = 1000; // hardcoded or compute from a field
-    const monthlyGrowth = 7; // hardcoded or compute based on `createdAt`
-
-    const sectors = Array.from(
-      startups.reduce((map, startup) => {
-        const sector = startup.sector || 'Other';
-        const current = map.get(sector) || 0;
-        return map.set(sector, current + 1);
-      }, new Map<string, number>())
-    ).map(([name, count]) => ({
-      name,
-      count,
-      percentage: Math.round((count / totalStartups) * 100),
-    }));
-
-    const activities = startups.slice(0, 5).map((s) => ({
-      action:
-        s.status === 'approved' ? 'Approved Startup' : 'New Startup Registered',
-      entity: s.name,
-      time: s.createdAt?.toLocaleString() || '',
-    }));
-
-    const approved = startups.filter((s) => s.status === 'approved').length;
-    const successRate = totalStartups
-      ? Math.round((approved / totalStartups) * 100)
-      : 0;
-
-    const uniqueRegions = new Set(
-      startups.map((s) => s.location?.trim().toLowerCase())
-    );
-    const regionsActive = uniqueRegions.size;
-
     return NextResponse.json({
-      stats: {
-        totalStartups,
-        verifiedStartups: approved,
-        pendingVerifications,
-        totalInvestment,
-        activeInvestors,
-        jobsCreated,
-        monthlyGrowth,
-        successRate,
-        regionsActive,
-      },
-      sectors,
-      activities,
+      message: 'Startups retrieved successfully.',
       startups,
     });
   } catch (error: any) {
     return NextResponse.json(
       {
-        error: 'fetching dashboard data failed',
+        error: 'Failed to retrieve startups',
         details: error.message,
       },
       { status: 500 }

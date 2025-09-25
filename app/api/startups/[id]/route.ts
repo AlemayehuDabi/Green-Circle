@@ -37,7 +37,7 @@ export async function GET(
     }
 
     return NextResponse.json({
-      message: 'Startup information retrieved successfully.',
+      message: 'Startup retrieved successfully.',
       startup,
     });
   } catch (error: any) {
