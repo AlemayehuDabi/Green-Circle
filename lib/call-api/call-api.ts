@@ -54,7 +54,7 @@ export const userStartups = async (): Promise<Startup[]> => {
 
     if (!userEmail) throw new Error('No user session');
 
-    const res = await fetch(`/api/startups/${encodeURIComponent(userEmail)}`);
+    const res = await fetch(`/api/startups/by-email/${encodeURIComponent(userEmail)}`);
     if (!res.ok) throw new Error('Failed to fetch startups');
 
     const data = await res.json();

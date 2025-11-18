@@ -16,83 +16,77 @@ export function Header({ currentPage }: HeaderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const fetchSession = async () => {
-        const { data } = await authClient.getSession();
-        setSession(data?.user || null);
-      };
-
-      fetchSession();
-    } catch (error) {
-    } finally {
+    const fetchSession = async () => {
+      const { data } = await authClient.getSession();
+      setSession(data?.user || null);
       setLoading(false);
-    }
+    };
+    fetchSession();
   }, []);
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="border-b bg-white/80 backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
+
+          {/* Brand */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-              <span className="text-sm font-bold text-white">ES</span>
-            </div>
             <span className="text-xl font-semibold text-gray-900">
-              Green Circle
-            </span>
+            Green <span className="text-green-500">Circle</span>
+          </span>
+
           </Link>
-          <nav className="hidden items-center space-x-8 md:flex">
+
+          {/* Desktop Links */}
+          <nav className="hidden md:flex items-center space-x-10">
             <Link
               href="/startups"
-              className={`${
+              className={`transition-colors ${
                 currentPage === 'startups'
-                  ? 'font-medium text-emerald-600'
-                  : 'text-gray-800 hover:text-gray-900'
+                  ? 'text-emerald-600 font-medium'
+                  : 'text-gray-700 hover:text-gray-900'
               }`}
             >
               Directory
             </Link>
+
             <Link
               href={
                 session
-                  ? session.role === 'user'
-                    ? '/submit/verify'
-                    : session.role === 'startup'
+                  ? session.role === 'startup'
                     ? '/submit/startup-info'
-                    : '/login'
+                    : '/submit/verify'
                   : '/login?callbackUrl=/submit/verify'
               }
-              className={`${
+              className={`transition-colors ${
                 currentPage === 'submit'
-                  ? 'font-medium text-emerald-600'
-                  : 'text-gray-800 hover:text-gray-900'
+                  ? 'text-emerald-600 font-medium'
+                  : 'text-gray-700 hover:text-gray-900'
               }`}
             >
               Submit Startup
             </Link>
-            {session === undefined ? (
-              <div className="h-8 w-24 animate-pulse rounded-md bg-gray-200" />
-            ) : session ? (
-              <>
-                <UserProfileDropdown session={session} />
-              </>
+
+            {/* Right Side Session Section */}
+            {session ? (
+              <UserProfileDropdown session={session} />
             ) : (
-              // If no session, show Login and Get Started buttons
-              <>
+              <div className="flex items-center space-x-4">
                 <Link
                   href="/login"
-                  className="text-gray-800 hover:text-gray-900"
+                  className="text-gray-700 hover:text-gray-900 transition"
                 >
                   Login
                 </Link>
-                <Button asChild className="bg-emerald-500 hover:bg-emerald-600">
+                <Button
+                  asChild
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
                   <Link href="/register">Get Started</Link>
                 </Button>
-              </>
+              </div>
             )}
           </nav>
         </div>

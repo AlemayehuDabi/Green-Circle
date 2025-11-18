@@ -7,6 +7,9 @@ import { BetterAuthSession } from '@/types';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import Loading from '@/app/loading';
+import { cn } from "@/lib/utils";
+import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
+
 
 export function HeroSection() {
   const [session, setSession] = useState<BetterAuthSession | null>(null);
@@ -30,39 +33,51 @@ export function HeroSection() {
   }
 
   const role = session?.role;
+   return (
+    <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
+      {/* Background animation */}
+      <AnimatedGridPattern
+        numSquares={30}
+        maxOpacity={0.1}
+        duration={3}
+        repeatDelay={1}
+        className={cn(
+          "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+          "absolute inset-0"
+        )}
+      />
 
-  return (
-    <section className="px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl text-center">
-        <h1 className="mb-6 text-5xl font-bold text-gray-900 md:text-6xl">
-          Accelerate Ethiopia
+      {/* Centered content */}
+      <div className="relative z-10 max-w-3xl text-center">
+        <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl">
+          Green Circle
         </h1>
-        <p className="mx-auto mb-8 max-w-3xl text-xl text-gray-800 md:text-2xl">
-          Discover startups officially recognized and verified by Ethiopia’s
-          national startup support framework. Connect with forward-thinking
-          founders driving innovation across the country.
+
+        <p className="mx-auto mb-8 text-lg sm:text-xl md:text-2xl text-gray-700 leading-relaxed">
+          The forefront of Ethiopian innovation. A curated community of verified startups building for a global stage. Discover the talent, the drive, and the future.
         </p>
-        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Button
             asChild
             size="lg"
-            className="bg-emerald-500 hover:bg-emerald-600"
+            className="bg-emerald-500 hover:bg-emerald-600 font-semibold transition-colors"
           >
             <Link href="/startups">
               Explore Startups <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link
-              href={
-                role === 'startup' ? '/submit/startup-info' : '/submit/verify'
-              }
-            >
+
+          <Button asChild variant="outline" size="lg" className="font-semibold">
+            <Link href={role === 'startup' ? '/submit/startup-info' : '/submit/verify'}>
               Submit Your Startup
             </Link>
           </Button>
         </div>
       </div>
+
+      {/* Scroll hint */}
+      <div className="absolute bottom-0 w-full h-10 bg-gradient-to-b from-transparent to-white" />
     </section>
   );
 }

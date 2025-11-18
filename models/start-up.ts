@@ -49,5 +49,6 @@ const StartupSchema = new Schema<IStartup>(
   { timestamps: true }
 );
 
+// THIS IS THE CORRECTED CODE
 export const Startup =
-  models.Startup || model<IStartup>('Startup', StartupSchema);
+  models.Startup || model<IStartup>('Startup', StartupSchema, 'startups');
