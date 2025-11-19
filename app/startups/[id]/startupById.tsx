@@ -1,319 +1,291 @@
 'use client';
 
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Startup } from '@/types';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Startup as StartupType } from '@/types';
+
+import { getStartupById } from '@/lib/call-api/call-api';
+
 import { Header } from '@/components/header';
+import { ImageWithFallback } from '@/components/image-withfallback';
+
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
 import {
-  MapPin,
-  Users,
+  ArrowLeft,
   Calendar,
   Globe,
+  MapPin,
+  Users,
   Mail,
   Phone,
-  ArrowLeft,
+  ImageIcon,
+  VideoIcon,
+  UserIcon,
+  Award,
   Heart,
-  DollarSign,
-  UserPlus,
-  MailCheck,
-  MailCheckIcon,
 } from 'lucide-react';
-import { ImageWithFallback } from '@/components/image-withfallback';
-import { getStartupById } from '@/lib/call-api/call-api';
-import { cn } from '@/lib/utils';
+
 import Loading from '@/app/loading';
 
 export default function StartupDetailPage({ id }: { id: string }) {
-  console.log('id', id);
-  const [startup, setStartup] = useState<Startup | null>(null);
+  const [startup, setStartup] = useState<StartupType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const load = async () => {
       try {
         const data = await getStartupById(id);
-        if (!data) {
-          console.log('no data');
-          return;
-        }
+        if (!data) return notFound();
         setStartup(data);
-      } catch (err) {
-        console.error('Failed to load startup');
       } finally {
         setLoading(false);
       }
     };
-
-    fetch();
+    load();
   }, [id]);
 
   if (loading) return <Loading />;
   if (!startup) return notFound();
 
-  console.log('this is a start-up', startup);
+  // Neutral placeholders (better UI)
+  const gallery = startup.images || [null, null, null];
+  const video = startup.video || null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-10">
-      <div className="min-h-screen bg-white">
-        <Header />
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <Button
-            asChild
-            variant="ghost"
-            className="mb-6 text-gray-700 hover:text-gray-900"
-          >
-            <Link href="/startups">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Directory
-            </Link>
-          </Button>
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="space-y-8 lg:col-span-2">
-              <Card>
-                <CardContent className="p-8">
-                  <div className="flex items-start space-x-6">
-                    <ImageWithFallback
-                      src={startup.logo || '/placeholder.svg'}
-                      alt={startup.name}
-                      width={80}
-                      height={80}
-                      className="h-20 w-20 rounded-xl"
-                    />
-                    <div className="flex-1">
-                      <div className="mb-2 flex items-center space-x-3">
-                        <h1 className="text-3xl font-bold text-gray-900">
-                          {startup.name}
-                        </h1>
-                        {startup.status === 'approved' && (
-                          <Badge
-                            variant="secondary"
-                            className={cn('text-emerald-700 bg-emerald-100')}
-                          >
-                            {startup.status === 'approved' && 'Verified'}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="mb-4 flex items-center space-x-4 text-gray-700 text-sm">
-                        <div className="flex items-center space-x-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>{startup.location || ''}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Users className="h-4 w-4" />
-                          <span>{startup.employees || ''} employees</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>Founded {startup.foundedYear || ''}</span>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="mb-4 text-gray-700">
-                        {startup.sector}
-                      </Badge>
-                      <p className="text-gray-800 text-base leading-relaxed">
-                        {startup.description || ''}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">
-                    Company Overview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="leading-relaxed text-gray-800 text-base">
-                    {startup.pitch || ''}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">
-                    Key Achievements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {startup.achievements ? (
-                      startup.achievements.map((achievement, i) => (
-                        <li key={i} className="flex items-center space-x-2">
-                          <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-                          <span className="text-gray-800 text-base">
-                            {achievement}
-                          </span>
-                        </li>
-                      ))
-                    ) : (
-                      <div>no achievements yet</div>
-                    )}
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">
-                    Meet the Founders
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {startup?.founders?.map((founder, i) => (
-                      <div key={i} className="flex items-start space-x-4">
-                        <ImageWithFallback
-                          src={founder.image || '/placeholder.svg'}
-                          alt={founder.name}
-                          width={80}
-                          height={80}
-                          className="h-16 w-16 rounded-full flex-shrink-0"
-                        />
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-gray-900">
-                              {founder.name || ''}
-                            </h4>
-                          </div>
-                          <p className="mb-2 text-sm text-blue-950">
-                            {founder.email || ''}
-                          </p>
+    <section className="min-h-screen bg-gray-50">
+      <Header />
 
-                          <p className="mb-2 text-sm text-emerald-700 ml-1 mt-1">
-                            {startup.founderRole || ''}
-                          </p>
-                          <p className="text-sm text-gray-800">
-                            {startup.founderBio || ''}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">
-                    Support This Startup
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button className="w-full bg-emerald-500 hover:bg-emerald-600">
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    Invest
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full bg-transparent text-gray-800 hover:bg-gray-100"
-                  >
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Become a Mentor
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full bg-transparent text-gray-800 hover:bg-gray-100"
-                  >
-                    <Heart className="mr-2 h-4 w-4" />
-                    Donate
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">
-                    Contact Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {startup.website && (
-                    <div className="flex items-center space-x-3">
-                      <Globe className="h-4 w-4 text-gray-700" />
-                      <Link
-                        href={startup.website}
-                        className="text-emerald-600 hover:text-emerald-700 text-base truncate"
-                        style={{ maxWidth: '200px' }}
-                      >
-                        {startup.website || 'no website'}
-                      </Link>
-                    </div>
-                  )}
-                  <div className="flex items-center space-x-3">
-                    <MailCheckIcon className="h-4 w-4 text-gray-700" />
-                    <Link
-                      href={`mailto:${startup.contact?.email}`}
-                      className="text-emerald-600 hover:text-emerald-700 text-base truncate"
-                      style={{ maxWidth: '200px' }}
-                    >
-                      {startup.contact?.email || 'no email'}
-                    </Link>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Phone className="h-4 w-4 text-gray-700" />
-                    <Link
-                      href={`tel:${startup.contact?.phone}`}
-                      className="text-emerald-600 hover:text-emerald-700 text-base truncate"
-                      style={{ maxWidth: '200px' }}
-                    >
-                      {startup.contact?.phone || 'no phone_contact'}
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">Quick Stats</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between text-base">
-                    <span className="text-gray-800">Sector</span>
-                    <span
-                      className="font-medium text-gray-900 truncate"
-                      style={{ maxWidth: '200px' }}
-                    >
-                      {startup.sector}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-base">
-                    <span className="text-gray-800">Founded</span>
-                    <span
-                      className="font-medium text-gray-900 truncate"
-                      style={{ maxWidth: '200px' }}
-                    >
-                      {startup.foundedYear || ''}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-base">
-                    <span className="text-gray-800">Team Size</span>
-                    <span
-                      className="font-medium text-gray-900 truncate"
-                      style={{ maxWidth: '200px' }}
-                    >
-                      {startup.employees || '0'}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-base">
-                    <span className="text-gray-800">Location</span>
-                    <span
-                      className="font-medium text-gray-900 truncate"
-                      style={{ maxWidth: '200px' }}
-                    >
-                      {startup.location || 'no location'}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+      <div className="max-w-7xl mx-auto px-4 pt-10 pb-20">
+        {/* Back button */}
+        <Button asChild variant="ghost" className="mb-6 text-gray-700 hover:text-gray-900">
+          <Link href="/startups">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Startups
+          </Link>
+        </Button>
+
+        {/* =====================  BANNER  ===================== */}
+        <div className="relative w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden mb-16 shadow bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
+
+        {/* Floating logo + name + Like button */}
+        <div className="flex justify-between items-start px-2 mb-10">
+          <div className="bg-white shadow-lg p-4 rounded-xl flex items-center space-x-4 -mt-16 ml-6">
+            <ImageWithFallback
+              src={startup.logo || '/placeholder.svg'}
+              alt={startup.name}
+              width={90}
+              height={90}
+              className="rounded-xl bg-gray-100"
+            />
+            <div>
+              <h1 className="text-3xl font-bold">{startup.name}</h1>
+              <Badge className="mt-1">{startup.sector}</Badge>
             </div>
           </div>
+
+          {/* Like Button */}
+          <button
+            onClick={() => setLiked(!liked)}
+            className={`p-3 rounded-full shadow bg-white mr-6 transition ${
+              liked ? 'text-red-500' : 'text-gray-500'
+            }`}
+          >
+            <Heart className={`h-6 w-6 ${liked ? 'fill-red-500 text-red-500' : ''}`} />
+          </button>
+        </div>
+
+        {/* =====================  MAIN LAYOUT  ===================== */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+          {/* LEFT SIDEBAR */}
+          <div className="space-y-6">
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Company Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-gray-700">
+
+                {startup.location && (
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5" />
+                    {startup.location}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-5 w-5" />
+                  Founded: {startup.foundedYear || 'N/A'}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Users className="h-5 w-5" />
+                  Employees: {startup.employees}
+                </div>
+
+                {startup.website && (
+                  <div className="flex items-center gap-3">
+                    <Globe className="h-5 w-5" />
+                    <Link href={startup.website} target="_blank" className="text-emerald-600 hover:underline">
+                      {startup.website}
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-gray-700">
+                {startup.contact?.email && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5" />
+                    <a href={`mailto:${startup.contact.email}`} className="text-emerald-600">
+                      {startup.contact.email}
+                    </a>
+                  </div>
+                )}
+                {startup.contact?.phone && (
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-5 w-5" />
+                    <a href={`tel:${startup.contact.phone}`} className="text-emerald-600">
+                      {startup.contact.phone}
+                    </a>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* MIDDLE SECTION */}
+          <div className="lg:col-span-2 space-y-10">
+
+            {/* Description */}
+            <Card>
+              <CardHeader>
+                <CardTitle>About {startup.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-800 leading-relaxed text-lg">
+                  {startup.description}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Pitch */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Pitch</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-800 leading-relaxed">
+                  {startup.pitch || 'No pitch available.'}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Achievements */}
+            <Card>
+              <CardHeader className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-gray-700" />
+                <CardTitle>Key Achievements</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {startup.achievements?.length ? (
+                  <ul className="space-y-2">
+                    {startup.achievements.map((a, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <div className="mt-1 h-2 w-2 bg-emerald-500 rounded-full" />
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No achievements listed.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Gallery */}
+            <Card>
+              <CardHeader className="flex items-center gap-2">
+                <ImageIcon className="h-5 w-5 text-gray-600" />
+                <CardTitle>Gallery</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {gallery.map((img, i) => (
+                    <div
+                      key={i}
+                      className="rounded-xl h-40 w-full bg-gray-200 flex items-center justify-center text-gray-500"
+                    >
+                      {img ? (
+                        <img src={img} alt="" className="w-full h-full rounded-xl object-cover" />
+                      ) : (
+                        <ImageIcon className="h-8 w-8 opacity-50" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Video */}
+            <Card>
+              <CardHeader className="flex items-center gap-2">
+                <VideoIcon className="h-5 w-5 text-gray-700" />
+                <CardTitle>Pitch Video</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {video ? (
+                  <iframe
+                    src={video}
+                    className="w-full aspect-video rounded-xl shadow"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="w-full aspect-video bg-gray-200 flex items-center justify-center rounded-xl">
+                    <VideoIcon className="h-10 w-10 text-gray-500" />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Team */}
+            <Card>
+              <CardHeader className="flex items-center gap-2">
+                <UserIcon className="h-5 w-5 text-gray-700" />
+                <CardTitle>Founders</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {startup.founders.map((f, i) => (
+                    <div key={i} className="flex gap-4 items-center">
+                      <div className="rounded-full h-16 w-16 bg-gray-200 flex items-center justify-center overflow-hidden">
+                        {f.image ? (
+                          <img src={f.image} className="h-full w-full object-cover" alt={f.name} />
+                        ) : (
+                          <UserIcon className="h-8 w-8 text-gray-500" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">{f.name}</h3>
+                        <p className="text-gray-700 text-sm">{f.bio}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
         </div>
       </div>
     </section>

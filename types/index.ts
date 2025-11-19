@@ -1,15 +1,18 @@
-// this are sstartup founders
+// FOUNDER — matches API response exactly
 export interface Founder {
+  _id: string;
   name: string;
   email: string;
-  phone: string;
   role: string;
-  bio: string;
-  image: string;
-  nationality: string;
+  nationality?: string;
+  phone_number?: string;
+  bio?: string;
+  image?: string;
+  isValidate?: boolean;
+  faydaId?: string;
 }
-
-// loged in user
+ 
+// LOGGED-IN USER
 export interface User {
   id: string;
   name: string;
@@ -17,6 +20,7 @@ export interface User {
   role: 'user' | 'startup' | 'admin';
 }
 
+// STARTUP — unified type after API
 export interface Startup {
   _id: string;
   name: string;
@@ -24,54 +28,54 @@ export interface Startup {
   website?: string;
   sector?: string;
   location: string;
-  foundedYear?: number;
+  foundedYear?: string | number;
   employees?: string;
   description: string;
   pitch?: string;
-  achievements?: string[];
+
+  achievements?: string | string[];
+  documents?: string[];
+
+  founderRole?: string;
+  founderEmail?: string;
+  founderPhone?: string;
+  founderBio?: string;
+
+  founders: Founder[]; // populated
+
   contact?: {
     email?: string;
     phone?: string;
   };
+
   revenue?: string;
-  founders: Founder[];
-  founderRole?: string;
-  founderBio?: string;
   status: string;
-  createdAt: string; // ISO string if coming from API
+
+  createdAt: string;
   updatedAt: string;
 }
 
-export interface SubmissionStatus {
-  id: number;
-  name: string;
-  founder: string;
-  sector: string;
-  location: string;
-  submittedDate: string;
-  status: 'pending' | 'approved' | 'rejected';
-  fayda_verified: boolean;
-}
-
+// RAW STARTUP — before mapping, straight from DB/API
 export interface RawStartup {
   _id: string;
   name: string;
+  website?: string;
   sector: string;
   location: string;
   description: string;
   foundedYear: string;
   employees: string;
-  website?: string;
-  status: string;
-  founders: Founder[];
   pitch: string;
-  achievements?: string;
-  founderEmail: string;
-  founderPhone: string;
-  createdAt: string;
-  updatedAt: string;
+  achievements?: string | string[];
+  documents?: string[];
+  founders: Founder[];
+  founderEmail?: string;
+  founderPhone?: string;
   founderRole?: string;
   founderBio?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BetterAuthSession {
@@ -85,4 +89,14 @@ export interface BetterAuthSession {
   role: string;
   isValidate?: boolean | null;
   faydaId?: string;
+}
+
+export interface StartupResponse {
+  message: string;
+  startup: RawStartup;
+}
+
+export interface StartupListResponse {
+  message: string;
+  startups: RawStartup[];
 }
