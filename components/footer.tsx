@@ -6,12 +6,11 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
-            <div className="mb-4 flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-                <span className="text-sm font-bold text-white">ES</span>
-              </div>
-              <span className="text-xl font-semibold">Green Circle</span>
-            </div>
+              <span className="text-xl font-semibold text-white">
+            <span className="text-green-500">Green</span> Circle
+          </span>
+            <hr />
+            <br />
             <p className="text-gray-300">Connecting Ethiopian entrepreneurs with investors, mentors, and supporters.</p>
           </div>
           <div>

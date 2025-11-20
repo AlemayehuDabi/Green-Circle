@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { motion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 
 interface AnimatedGridPatternProps {
@@ -24,26 +23,28 @@ export function AnimatedGridPattern({
   x = -1,
   y = -1,
   strokeDasharray = 0,
-  numSquares = 50,
+  numSquares = 30, // Reduced count slightly for cleaner look
   className,
   maxOpacity = 0.5,
-  duration = 4,
-  repeatDelay = 0.5,
+  duration = 3,
+  repeatDelay = 1,
   ...props
 }: AnimatedGridPatternProps) {
   const id = useId();
-  const containerRef = useRef(null);
+  const containerRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [squares, setSquares] = useState(() => generateSquares(numSquares));
 
   function getPos() {
+    // Prevent calculation if dimensions aren't set yet
+    if (dimensions.width === 0 || dimensions.height === 0) return [0, 0];
+    
     return [
       Math.floor((Math.random() * dimensions.width) / width),
       Math.floor((Math.random() * dimensions.height) / height),
     ];
   }
 
-  // Adjust the generateSquares function to return objects with an id, x, and y
   function generateSquares(count: number) {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -51,7 +52,6 @@ export function AnimatedGridPattern({
     }));
   }
 
-  // Function to update a single square's position
   const updateSquarePosition = (id: number) => {
     setSquares((currentSquares) =>
       currentSquares.map((sq) =>
@@ -65,14 +65,12 @@ export function AnimatedGridPattern({
     );
   };
 
-  // Update squares to animate in
   useEffect(() => {
     if (dimensions.width && dimensions.height) {
       setSquares(generateSquares(numSquares));
     }
   }, [dimensions, numSquares]);
 
-  // Resize observer to update container dimensions
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -92,14 +90,17 @@ export function AnimatedGridPattern({
         resizeObserver.unobserve(containerRef.current);
       }
     };
-  }, [containerRef]);
+  }, []);
 
   return (
     <svg
       ref={containerRef}
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-0 h-full w-full fill-gray-400/30 stroke-gray-400/30",
+        // UPDATED COLORS:
+        // 1. stroke-emerald-600/10 -> The lines are Emerald but subtle (10% opacity)
+        // 2. fill-emerald-600/30   -> The flashing squares are Emerald (30% opacity)
+        "pointer-events-none absolute inset-0 h-full w-full fill-emerald-600/30 stroke-emerald-600/10",
         className,
       )}
       {...props}

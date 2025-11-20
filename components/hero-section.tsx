@@ -36,16 +36,16 @@ export function HeroSection() {
    return (
     <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
       {/* Background animation */}
-      <AnimatedGridPattern
-        numSquares={30}
-        maxOpacity={0.1}
-        duration={3}
-        repeatDelay={1}
-        className={cn(
-          "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
-          "absolute inset-0"
-        )}
-      />
+       <div className="absolute inset-0 z-0">
+        <AnimatedGridPattern
+          numSquares={30}
+          maxOpacity={0.2}
+          duration={3}
+          repeatDelay={1}
+          className="[mask-image:radial-gradient(700px_circle_at_center,white,transparent)]
+           inset-x-0 h-full " 
+        />
+      </div>
 
       {/* Centered content */}
       <div className="relative z-10 max-w-3xl text-center">
