@@ -1,83 +1,116 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
-import { BetterAuthSession } from '@/types';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
-import Loading from '@/app/loading';
+import { BetterAuthSession } from '@/types';
+import { Button } from '@/components/ui/button';
+import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern"; // Ensure path matches your file
+import { ArrowRight, Sparkles, ChevronRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
-
 
 export function HeroSection() {
   const [session, setSession] = useState<BetterAuthSession | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getSession = async () => {
-      const { data, error } = await authClient.getSession();
-
-      if (error) {
-        setSession(null);
-      } else {
-        setSession(data?.user || ({} as any));
+      try {
+        const { data } = await authClient.getSession();
+        setSession(data?.user || null);
+      } catch (error) {
+        console.error("Failed to fetch session", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     getSession();
   }, []);
 
-  if (!session) {
-    <Loading />;
-  }
+  // Determine where the "Submit" button goes based on role
+  const submitLink = session?.role === 'startup' 
+    ? '/submit/startup-info' 
+    : '/submit/verify';
 
-  const role = session?.role;
-   return (
-    <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
-      {/* Background animation */}
-       <div className="absolute inset-0 z-0">
+  return (
+    <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden bg-white px-4 pt-20 pb-32 sm:px-6 lg:px-8">
+      
+      {/* 1. Background Grid - Subtle and Premium */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <AnimatedGridPattern
-          numSquares={30}
-          maxOpacity={0.2}
-          duration={3}
-          repeatDelay={1}
-          className="[mask-image:radial-gradient(700px_circle_at_center,white,transparent)]
-           inset-x-0 h-full " 
+          numSquares={40}
+          maxOpacity={0.25}
+          duration={4}
+          repeatDelay={0.5}
+          // The mask makes it fade into white at the bottom and edges
+          className={cn(
+            "[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]",
+            "inset-x-0 inset-y-[-20%] h-[150%]" 
+          )} 
         />
       </div>
 
-      {/* Centered content */}
-      <div className="relative z-10 max-w-3xl text-center">
-        <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl">
-          Green Circle
-        </h1>
+      {/* 2. Main Content */}
+      <div className="relative z-10 max-w-4xl text-center space-y-8">
+        
+        {/* Top Badge / Pill */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+          <Link 
+            href="/about"
+            className="inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-emerald-600 backdrop-blur-sm"
+          >
+            <Sparkles className="mr-2 h-3.5 w-3.5 text-emerald-500" />
+            <span>Powering Ethiopia&apos;s Digital Future</span>
+            <ChevronRight className="ml-1 h-3 w-3 text-slate-400" />
+          </Link>
+        </div>
 
-        <p className="mx-auto mb-8 text-lg sm:text-xl md:text-2xl text-gray-700 leading-relaxed">
-          The forefront of Ethiopian innovation. A curated community of verified startups building for a global stage. Discover the talent, the drive, and the future.
-        </p>
+        {/* Headlines */}
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-backwards">
+          <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl md:text-7xl lg:text-8xl">
+            Green <span className="text-emerald-600 relative">
+              Circle
+              {/* Optional: Creative underline/highlight */}
+              <svg className="absolute w-full h-3 -bottom-1 left-0 text-emerald-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.4" />
+              </svg>
+            </span>
+          </h1>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <p className="mx-auto max-w-2xl text-lg text-slate-600 leading-relaxed md:text-xl">
+            The forefront of Ethiopian innovation. Join a curated community of 
+            verified startups, visionary investors, and global opportunities.
+          </p>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out fill-mode-backwards">
           <Button
             asChild
             size="lg"
-            className="bg-emerald-500 hover:bg-emerald-600 font-semibold transition-colors"
+            className="h-12 px-8 text-base bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg hover:shadow-emerald-200/50 transition-all rounded-full"
           >
             <Link href="/startups">
               Explore Startups <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
 
-          <Button asChild variant="outline" size="lg" className="font-semibold">
-            <Link href={role === 'startup' ? '/submit/startup-info' : '/submit/verify'}>
-              Submit Your Startup
+          <Button 
+            asChild 
+            variant="outline" 
+            size="lg" 
+            className="h-12 px-8 text-base border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-emerald-700 hover:border-emerald-200 transition-all rounded-full"
+          >
+            <Link href={submitLink}>
+              {loading ? 'Loading...' : 'Submit Your Startup'}
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Scroll hint */}
-      <div className="absolute bottom-0 w-full h-10 bg-gradient-to-b from-transparent to-white" />
+      {/* 3. Bottom Scroll Fade - seamless blend to next section */}
+      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white via-white/80 to-transparent z-20" />
     </section>
   );
 }
