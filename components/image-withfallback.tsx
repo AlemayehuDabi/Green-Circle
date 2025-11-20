@@ -1,42 +1,33 @@
-"use client"
+'use client';
 
-import Image from "next/image"
-import { useState } from "react"
-import { cn } from "@/lib/utils" // Assuming cn utility is available
+import { useState, useEffect } from 'react';
+import Image, { ImageProps } from 'next/image';
 
-interface ImageWithFallbackProps {
-  src?: string
-  alt: string
-  width: number
-  height: number
-  className?: string
+interface ImageWithFallbackProps extends ImageProps {
+  fallbackSrc?: string;
 }
 
-export function ImageWithFallback({ src, alt, width, height, className }: ImageWithFallbackProps) {
-  const [imageError, setImageError] = useState(false)
-  const initials = alt
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .substring(0, 2)
+export function ImageWithFallback({
+  src,
+  fallbackSrc = '/placeholder.svg', // Ensure you have this file in your public folder
+  alt,
+  ...props
+}: ImageWithFallbackProps) {
+  const [imgSrc, setImgSrc] = useState(src);
 
-  if (imageError || !src) {
-    return (
-      <div className={cn("flex items-center justify-center bg-gray-200 text-gray-600 font-semibold", className)}>
-        {initials}
-      </div>
-    )
-  }
+  // Update local state if the incoming src prop changes (e.g. when navigating to a new page)
+  useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
 
   return (
     <Image
-      src={src || "/placeholder.svg"}
+      {...props}
+      src={imgSrc}
       alt={alt}
-      width={width}
-      height={height}
-      className={cn("object-cover", className)}
-      onError={() => setImageError(true)}
+      onError={() => {
+        setImgSrc(fallbackSrc);
+      }}
     />
-  )
+  );
 }

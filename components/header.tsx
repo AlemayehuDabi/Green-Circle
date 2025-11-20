@@ -34,7 +34,7 @@ export function Header({ currentPage }: HeaderProps) {
           {/* Brand */}
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-xl font-semibold text-gray-900">
-            Green <span className="text-green-500">Circle</span>
+            <span className="text-green-500">Green</span> Circle
           </span>
 
           </Link>

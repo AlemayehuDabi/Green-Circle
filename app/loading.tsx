@@ -1,22 +1,33 @@
 'use client';
 
-import { ClipLoader } from 'react-spinners';
 import { motion } from 'framer-motion';
 
 export default function Loading() {
   return (
-    <div className="flex items-center justify-center h-screen bg-green-50">
+    <div className="flex flex-col items-center justify-center h-screen bg-white">
+      
+      {/* Fast, crisp rotating ring */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col items-center"
+        className="w-14 h-14 rounded-full border-4 border-gray-300 border-t-gray-800"
+        animate={{ rotate: 360 }}
+        transition={{
+          repeat: Infinity,
+          ease: "linear",
+          duration: 0.55,  // Fast and snappy
+        }}
+      />
+
+      {/* Smooth fade text */}
+      <motion.p
+        className="mt-4 text-gray-600 font-medium text-base"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.2,
+        }}
       >
-        <ClipLoader color="#16a34a" size={60} speedMultiplier={1.5} />
-        <p className="mt-4 text-green-700 font-semibold text-lg animate-pulse">
-          Loading, please wait...
-        </p>
-      </motion.div>
+        Loading...
+      </motion.p>
     </div>
   );
 }

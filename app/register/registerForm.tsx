@@ -71,12 +71,9 @@ export default function RegisterForm() {
         {/* Header */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500">
-              <span className="text-sm font-bold text-white">ES</span>
-            </div>
             <span className="text-xl font-semibold text-gray-900">
-              Green Circle
-            </span>
+            <span className="text-green-500">Green</span> Circle
+          </span>
           </Link>
         </div>
 
