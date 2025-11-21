@@ -69,14 +69,29 @@ export function HeroSection() {
         {/* Headlines */}
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-backwards">
           <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl md:text-7xl lg:text-8xl">
-            Green <span className="text-emerald-600 relative">
-              Circle
-              {/* Optional: Creative underline/highlight */}
-              <svg className="absolute w-full h-3 -bottom-1 left-0 text-emerald-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.4" />
-              </svg>
-            </span>
+            Green  <span className="relative ml-2 inline-block text-emerald-600">
+          Circle
+          
+          {/* The Hand-Drawn Circle around the text */}
+          <svg 
+            className="absolute -top-7 -left-13 -right-3 -bottom-2 -z-10 h-[150%] w-[140%] text-emerald-500" 
+            viewBox="0 0 100 100" 
+            preserveAspectRatio="none"
+          >
+            <path 
+              d="M10,50 Q20,5 50,5 T90,50 T50,95 T10,50" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="3" 
+              className="opacity-20"
+            />
+          </svg>
+        </span>
           </h1>
+
+  
+
+    
 
           <p className="mx-auto max-w-2xl text-lg text-slate-600 leading-relaxed md:text-xl">
             The forefront of Ethiopian innovation. Join a curated community of 

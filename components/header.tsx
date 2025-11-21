@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { UserProfileDropdown } from './user-profile-dropdown';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
+import { Logo } from './logo/greencirlce-logo';
 import Loading from '@/app/loading';
 
 interface HeaderProps {
@@ -32,12 +33,7 @@ export function Header({ currentPage }: HeaderProps) {
         <div className="flex h-16 items-center justify-between">
 
           {/* Brand */}
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-semibold text-gray-900">
-            <span className="text-green-500">Green</span> Circle
-          </span>
-
-          </Link>
+          <Logo/> 
 
           {/* Desktop Links */}
           <nav className="hidden md:flex items-center space-x-10">
