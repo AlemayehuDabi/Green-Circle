@@ -1,10 +1,9 @@
 import { connectToDB } from '@/lib/db';
 import { Startup } from '@/models/start-up';
 import { IUser } from '@/models/user';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  req: NextRequest,
+  req: Request,
   {
     params,
   }: {
@@ -17,7 +16,7 @@ export async function GET(
     const { id } = params;
 
     if (!id) {
-      return NextResponse.json(
+      return Response.json(
         { error: '`startupId` is required' },
         { status: 400 }
       );
@@ -30,18 +29,18 @@ export async function GET(
     });
 
     if (!startup) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Start-up not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
+    return Response.json({
       message: 'Startup retrieved successfully.',
       startup,
     });
   } catch (error: any) {
-    return NextResponse.json(
+    return Response.json(
       {
         error: 'Retriving startup data failed',
         details: error.message,
@@ -52,7 +51,7 @@ export async function GET(
 }
 
 export async function PUT(
-  req: NextRequest,
+  req: Request,
   {
     params,
   }: {
@@ -63,7 +62,7 @@ export async function PUT(
     const { id } = params;
 
     if (!id) {
-      return NextResponse.json(
+      return Response.json(
         { error: '`startupId` is required' },
         { status: 400 }
       );
@@ -80,13 +79,13 @@ export async function PUT(
     });
 
     if (!startup) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Start-up not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: 'Startup updated successfully.',
         startup,
@@ -96,7 +95,7 @@ export async function PUT(
       }
     );
   } catch (error: any) {
-    return NextResponse.json(
+    return Response.json(
       {
         error: 'Updating startup data failed',
         details: error.message,
@@ -108,7 +107,7 @@ export async function PUT(
 
 // delete start-up
 export async function DELETE(
-  request: NextRequest,
+  request: Request,
   {
     params,
   }: {
@@ -119,7 +118,7 @@ export async function DELETE(
     const { id } = params;
 
     if (!id) {
-      return NextResponse.json(
+      return Response.json(
         { error: '`startupId` is required' },
         { status: 400 }
       );
@@ -130,18 +129,18 @@ export async function DELETE(
     const deleted = await Startup.findByIdAndDelete(id);
 
     if (!deleted) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Start-up not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(
+    return Response.json(
       { message: 'Start-up rejected (deleted) successfully', startupid: id },
       { status: 200 }
     );
   } catch (error: any) {
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to reject start-up', details: error.message },
       { status: 500 }
     );
