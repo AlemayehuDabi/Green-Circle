@@ -37,11 +37,12 @@ export function StartupCard({ startup }: StartupCardProps) {
         <div className="-mt-10 mb-4 flex justify-between items-end">
           <div className="h-20 w-20 rounded-xl border-4 border-white bg-white shadow-sm overflow-hidden">
             <ImageWithFallback
-              src={startup.logo}
-              alt={startup.name}
-              fill
-              className="object-cover"
-            />
+            src={startup.logo ?? "/placeholder-logo.png"}
+            alt={startup.name ?? "Startup Logo"}
+            fill
+            className="object-cover"
+          />
+
           </div>
           
           {/* Sector Badge (Next to logo, aligned bottom) */}

@@ -5,6 +5,8 @@ export interface IStartup extends Document {
   website?: string;
   sector?: string;
   location: string;
+  images?: string[];
+  video?: string;
   foundedYear?: string;
   employees?: string;
   description: string;
@@ -27,6 +29,8 @@ const StartupSchema = new Schema<IStartup>(
     name: { type: String, required: true },
     website: { type: String },
     sector: { type: String },
+    images: { type: [String], default: [] },
+    video: { type: String, default: null },
     location: { type: String, required: true },
     foundedYear: { type: String },
     employees: { type: String },
@@ -49,6 +53,6 @@ const StartupSchema = new Schema<IStartup>(
   { timestamps: true }
 );
 
-// THIS IS THE CORRECTED CODE
+
 export const Startup =
   models.Startup || model<IStartup>('Startup', StartupSchema, 'startups');

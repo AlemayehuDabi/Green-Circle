@@ -58,19 +58,20 @@ export default function StartupProfile() {
   const [startups, setStartups] = useState<Startup[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<Founder>({
+    _id: '',
     name: '',
     email: '',
     role: 'startup',
     bio: '',
     image: '',
-    phone: '',
+    phone_number: '',
     nationality: '',
   });
 
   const [open, setOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    phone: user.phone,
+    phone: user.phone_number,
     bio: user.bio,
   });
 
@@ -83,13 +84,14 @@ export default function StartupProfile() {
         const user = session.data?.user;
 
         setUser({
-          name: user?.name || '',
-          email: user?.email || '',
-          role: (user?.role as 'user' | 'admin' | 'startup') || 'startup',
-          bio: user?.bio || '',
-          image: user?.image || '',
-          phone: user?.phone_number || '',
-          nationality: user?.nationality || '',
+          _id: user?.id ?? '',
+          name: user?.name ?? '',
+          email: user?.email ?? '',
+          role: (user?.role as 'user' | 'admin' | 'startup') ?? 'startup',
+          bio: user?.bio ?? '',
+          image: user?.image ?? '',
+          phone_number: user?.phone_number ?? '',
+          nationality: user?.nationality ?? '',
         });
 
         // fetch startup
@@ -110,9 +112,9 @@ export default function StartupProfile() {
   }, []);
 
   useEffect(() => {
-    if (user.phone || user.bio) {
+    if (user.phone_number || user.bio) {
       setFormData({
-        phone: user.phone,
+        phone: user.phone_number,
         bio: user.bio,
       });
     }
@@ -163,7 +165,7 @@ export default function StartupProfile() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      <span>{user.phone}</span>
+                      <span>{user.phone_number}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
@@ -322,10 +324,11 @@ export default function StartupProfile() {
                 onClick={async () => {
                   try {
                     const update = await updatedUser({
-                      phone: formData.phone,
-                      bio: formData.bio,
-                      email: user.email,
-                    });
+                    phone: (formData.phone ?? "") as string,
+                    bio: (formData.bio ?? "") as string,
+                    email: user.email,
+                  });
+
 
                     // Update local state
                     setUser((prev) => ({

@@ -1,17 +1,17 @@
-// FOUNDER — matches API response exactly
-export interface Founder {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  nationality?: string;
-  phone_number?: string;
-  bio?: string;
-  image?: string;
-  isValidate?: boolean;
-  faydaId?: string;
-}
- 
+  // FOUNDER — matches API response exactly
+  export interface Founder {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+    nationality?: string;
+    phone_number?: string;
+    bio?: string;
+    image?: string;
+    isValidate?: boolean;
+    faydaId?: string;
+  }
+  
 // LOGGED-IN USER
 export interface User {
   id: string;

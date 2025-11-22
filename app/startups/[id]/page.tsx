@@ -3,11 +3,11 @@ import StartupDetailPage from './startupById';
 import Loading from '../../loading';
 
 interface StartupPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default async function page({ params }: StartupPageProps) {
-  const { id } = (await params) as { id: string };
+export default async function Page({ params }: StartupPageProps) {
+  const { id } = await params;
 
   if (!id) {
     return <Loading />;

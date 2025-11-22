@@ -8,30 +8,22 @@ export async function GET(
   {
     params,
   }: {
-    params: {
-      userEmail: string;
-    };
+    params: Promise<{ userEmail: string }>;
   }
 ) {
   try {
-    const { userEmail } = params;
+    const { userEmail } = await params;
 
     if (!userEmail) {
       return NextResponse.json(
-        {
-          error: '`userEmail` is required',
-        },
-        {
-          status: 400,
-        }
+        { error: '`userEmail` is required' },
+        { status: 400 }
       );
     }
 
     const startups = await Startup.find({
       founderEmail: userEmail,
-    }).populate<{
-      founders: IUser[];
-    }>({
+    }).populate<{ founders: IUser[] }>({
       path: 'founders',
       model: 'User',
       select: 'name email role isValidate faydaId phone_number nationality bio',
@@ -39,17 +31,13 @@ export async function GET(
 
     if (!startups) {
       return NextResponse.json(
-        {
-          error: 'Startups not found.',
-        },
-        {
-          status: 404,
-        }
+        { error: 'Startups not found.' },
+        { status: 404 }
       );
     }
 
     return NextResponse.json({
-      message: 'Startups is retrived successfully',
+      message: 'Startups retrieved successfully',
       startups,
     });
   } catch (error: any) {

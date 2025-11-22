@@ -55,8 +55,17 @@ export default function StartupDetailPage({ id }: { id: string }) {
   if (loading) return <Loading />;
   if (!startup) return notFound();
 
-  const gallery = startup.images || [];
-  const video = startup.video ;
+  const gallery = (startup as any).images ?? [];
+  const video = (startup as any).video ?? null;
+  const achievements = Array.isArray((startup as any).achievements)
+  ? (startup as any).achievements
+  : [];
+
+  const email = (startup.founders as any)?.email || null;
+  const linkedin = (startup.founders as any)?.linkedin || null;
+  const x = ( startup.founders as any)?.x || null;
+
+
 
   return (
     <section className="min-h-screen bg-slate-50">
@@ -88,11 +97,12 @@ export default function StartupDetailPage({ id }: { id: string }) {
               {/* Logo */}
               <div className="relative h-28 w-28 md:h-32 md:w-32 rounded-xl border-4 border-white shadow-lg bg-white overflow-hidden">
                 <ImageWithFallback
-                  src={startup.logo || '/placeholder.svg'}
-                  alt={startup.name}
-                  fill
-                  className="object-cover"
-                />
+      src={startup.logo ?? "/placeholder-logo.png"}
+      alt={startup.name ?? "Startup Logo"}
+      fill
+      className="object-cover"
+    />
+
               </div>
               
               {/* Text Info */}
@@ -183,10 +193,13 @@ export default function StartupDetailPage({ id }: { id: string }) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {startup.achievements?.length ? (
+                {achievements.length ? (
                     <ul className="space-y-3">
-                      {startup.achievements.map((a, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm text-slate-700">
+                      {achievements.map((a: any, i: number) => (
+                        <li
+                          key={i}
+                          className="flex items-start gap-3 text-sm text-slate-700"
+                        >
                           <div className="mt-1.5 h-1.5 w-1.5 min-w-[6px] bg-emerald-500 rounded-full" />
                           {a}
                         </li>
@@ -196,6 +209,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                     <p className="text-slate-500 text-sm italic">No achievements listed.</p>
                   )}
                 </CardContent>
+
               </Card>
             </div>
           </div>
@@ -238,21 +252,29 @@ export default function StartupDetailPage({ id }: { id: string }) {
                 )}
 
                 {/* Image Grid */}
-                {gallery.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {gallery.map((img, i) => (
-                      <div key={i} className="relative aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 border border-slate-200 group">
-                        <img
-                          src={img}
-                          alt={`Gallery ${i}`}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  !video && <div className="text-center py-10 text-slate-500 bg-slate-50 rounded-lg border border-dashed border-slate-200">No media available for this startup.</div>
-                )}
+{gallery.length > 0 ? (
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    {gallery.map((img: string, i: number) => (
+      <div
+        key={i}
+        className="relative aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 border border-slate-200 group"
+      >
+        <img
+          src={img}
+          alt={`Gallery ${i}`}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+    ))}
+  </div>
+) : (
+  !video && (
+    <div className="text-center py-10 text-slate-500 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+      No media available for this startup.
+    </div>
+  )
+)}
+
               </CardContent>
             </Card>
 
@@ -286,30 +308,35 @@ export default function StartupDetailPage({ id }: { id: string }) {
                           <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Co-Founder</p>
                           <p className="text-sm text-slate-600 line-clamp-2 mb-3 text-pretty">{f.bio}</p>
 
-                          {/* Horizontal Social Icons */}
-                          <div className="flex items-center gap-2">
-                            {f.email && (
-                              <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-full">
-                                <a href={`mailto:${f.email}`} title="Email">
-                                  <Mail className="h-4 w-4" />
-                                </a>
-                              </Button>
-                            )}
-                            {f.linkedin && (
-                              <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full">
-                                <a href={f.linkedin} target="_blank" title="LinkedIn">
-                                  <Linkedin className="h-4 w-4" />
-                                </a>
-                              </Button>
-                            )}
-                            {f.x && (
-                              <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-black hover:bg-slate-100 rounded-full">
-                                <a href={f.x} target="_blank" title="X (Twitter)">
-                                  <svg viewBox="0 0 1200 1227" className="h-3.5 w-3.5 fill-current"><path d="M714 519l475-519H953L602 392 328 0H0l483 682L0 1227h247l330-360 291 360h328L714 519z"/></svg>
-                                </a>
-                              </Button>
-                            )}
-                          </div>
+                         {/* Horizontal Social Icons */}
+<div className="flex items-center gap-2">
+  {email && (
+    <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-full">
+      <a href={`mailto:${email}`} title="Email">
+        <Mail className="h-4 w-4" />
+      </a>
+    </Button>
+  )}
+
+  {linkedin && (
+    <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full">
+      <a href={linkedin} target="_blank" title="LinkedIn">
+        <Linkedin className="h-4 w-4" />
+      </a>
+    </Button>
+  )}
+
+  {x && (
+    <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-black hover:bg-slate-100 rounded-full">
+      <a href={x} target="_blank" title="X (Twitter)">
+        <svg viewBox="0 0 1200 1227" className="h-3.5 w-3.5 fill-current">
+          <path d="M714 519l475-519H953L602 392 328 0H0l483 682L0 1227h247l330-360 291 360h328L714 519z"/>
+        </svg>
+      </a>
+    </Button>
+  )}
+</div>
+
                         </div>
                       </div>
                     </CardContent>
