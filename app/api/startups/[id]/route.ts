@@ -4,16 +4,12 @@ import { IUser } from '@/models/user';
 
 export async function GET(
   req: Request,
-  {
-    params,
-  }: {
-    params: { id: string };
-  }
+  { params }: { params: Promise<{id: string}> }
 ) {
   try {
     await connectToDB();
 
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return Response.json(
@@ -25,14 +21,12 @@ export async function GET(
     const startup = await Startup.findById(id).populate<{ founders: IUser[] }>({
       path: 'founders',
       model: 'User',
-      select: 'name email role isValidate faydaId phone_number nationality bio',
+      select:
+        'name email role isValidate faydaId phone_number nationality bio',
     });
 
     if (!startup) {
-      return Response.json(
-        { error: 'Start-up not found' },
-        { status: 404 }
-      );
+      return Response.json({ error: 'Start-up not found' }, { status: 404 });
     }
 
     return Response.json({
@@ -42,7 +36,7 @@ export async function GET(
   } catch (error: any) {
     return Response.json(
       {
-        error: 'Retriving startup data failed',
+        error: 'Retrieving startup data failed', 
         details: error.message,
       },
       { status: 500 }
@@ -52,14 +46,10 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  {
-    params,
-  }: {
-    params: { id: string };
-  }
+  { params }: { params: Promise<{id: string}> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return Response.json(
@@ -68,21 +58,19 @@ export async function PUT(
       );
     }
 
-    const data = req.json();
+    const data = await req.json(); // ✅ await req.json()
 
-    const startup = Startup.findByIdAndUpdate(id, data).populate<{
+    const startup = await Startup.findByIdAndUpdate(id, data, { new: true }).populate<{
       founders: IUser[];
     }>({
       path: 'founders',
       model: 'User',
-      select: 'name email role isValidate faydaId phone_number nationality bio',
-    });
+      select:
+        'name email role isValidate faydaId phone_number nationality bio',
+    }); 
 
     if (!startup) {
-      return Response.json(
-        { error: 'Start-up not found' },
-        { status: 404 }
-      );
+      return Response.json({ error: 'Start-up not found' }, { status: 404 });
     }
 
     return Response.json(
@@ -90,9 +78,7 @@ export async function PUT(
         message: 'Startup updated successfully.',
         startup,
       },
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error: any) {
     return Response.json(
@@ -105,17 +91,12 @@ export async function PUT(
   }
 }
 
-// delete start-up
 export async function DELETE(
-  request: Request,
-  {
-    params,
-  }: {
-    params: { id: string };
-  }
+  req: Request,
+  { params }: { params: Promise<{id: string}> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return Response.json(
@@ -129,10 +110,7 @@ export async function DELETE(
     const deleted = await Startup.findByIdAndDelete(id);
 
     if (!deleted) {
-      return Response.json(
-        { error: 'Start-up not found' },
-        { status: 404 }
-      );
+      return Response.json({ error: 'Start-up not found' }, { status: 404 });
     }
 
     return Response.json(
