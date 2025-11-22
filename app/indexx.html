@@ -1,0 +1,54 @@
+<svg width="500" height="150" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* Using system fonts to match the 'font-extrabold' look */
+    .text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 60px;
+      letter-spacing: -2px;
+    }
+  </style>
+
+  <!-- 1. The Text "Green" (Slate-900 color: #0f172a) -->
+  <text x="50" y="95" class="text" fill="#0f172a">Green</text>
+
+  <!-- 2. The Imperfect Ring 
+       I positioned this behind the word "Circle" to match your absolute positioning.
+       Color: Emerald-500 (#10b981) with Opacity 0.2 
+  -->
+  <path 
+    d="M10,30 Q20,10 50,10 T90, 50 T55,90 T11,20" 
+    fill="none" 
+    stroke="#10b981" 
+    stroke-width="4" 
+    stroke-opacity="0.25"
+    transform="translate(210, 20) scale(2.0, 1.3)" 
+  />
+
+  <!-- 3. The Text "Circle" (Emerald-600 color: #059669) -->
+  <text x="240" y="95" class="text" fill="#059669">Circle</text>
+</svg>
+
+<!-- 
+ <h1 className={`text-2xl font-extrabold tracking-tight ${color}`}>
+        Green
+        <span className="relative ml-2 inline-block text-emerald-600">
+          Circle
+          
+          {/* The Hand-Drawn Circle around the text */}
+          <svg 
+            className="absolute -top-2 -left-3 -right-3 -bottom-2 -z-10 h-[140%] w-[130%] text-emerald-500" 
+            viewBox="0 0 100 100" 
+            preserveAspectRatio="none"
+          >
+            <path 
+              d="M10,50 Q20,5 50,5 T90,50 T50,95 T10,50" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="3" 
+              className="opacity-20"
+            />
+          </svg>
+        </span>
+      </h1>
+-->
