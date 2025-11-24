@@ -30,6 +30,9 @@ export interface FormData {
   faydaId: boolean;
   terms: boolean;
 
+  // 
+  // video: string
+
   foundedYear: string;
   employees: string;
   revenue: string;

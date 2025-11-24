@@ -13,18 +13,24 @@ export function ImageWithFallback({
   alt,
   ...props
 }: ImageWithFallbackProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  const [imgSrc, setImgSrc] = useState(() => {
+    // If src is empty string, null, or undefined, use fallbackSrc
+    return src || fallbackSrc;
+  });
 
   // Update local state if the incoming src prop changes (e.g. when navigating to a new page)
   useEffect(() => {
-    setImgSrc(src);
-  }, [src]);
+    setImgSrc(src || fallbackSrc);
+  }, [src, fallbackSrc]);
+
+  // Don't render the image if there's no valid source
+  if (!imgSrc) return null;
 
   return (
     <Image
       {...props}
       src={imgSrc}
-      alt={alt}
+      alt={alt || ''}
       onError={() => {
         setImgSrc(fallbackSrc);
       }}
