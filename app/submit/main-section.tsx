@@ -29,11 +29,12 @@ import { StartupZodSchema } from '@/zod-validator/validator';
 import z from 'zod';
 import { authClient } from '@/lib/auth-client';
 import { ClipLoader } from 'react-spinners';
+import DocumentUploader from '@/components/DocumentUploader';
 
 export const MainSection: React.FC<{
   step: number;
   formData: FormData;
-  handleInputChange: (field: string, value: string | boolean) => void;
+  handleInputChange: (field: string, value: string | boolean | string[]) => void;
   handleNext: () => void;
   isStepValid: boolean;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -54,7 +55,7 @@ export const MainSection: React.FC<{
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
-  // url
+  // url for fayda
   const generateSignInUrl = async () => {
     const { codeChallenge } = await generatePKCEPair();
 
@@ -135,6 +136,7 @@ export const MainSection: React.FC<{
         founderPhone: '+251912345678',
         founderBio:
           'Selam Tesfaye is a tech entrepreneur passionate about digital agriculture, with over 7 years of experience in software development and rural innovation.',
+        documents: []
       });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -516,6 +518,19 @@ export const MainSection: React.FC<{
                     )}
                   </div>
                 </div>
+
+                {/* upload documents */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Upload Documents
+                  </h3>
+                  <DocumentUploader
+                    onUploaded={(files) =>
+                      handleInputChange('documents', files.map((file) => file.url))
+                    }
+                  />
+                </div>
+
 
                 {/* Legal Compliance */}
                 <div className="space-y-4">

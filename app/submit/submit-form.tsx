@@ -32,6 +32,7 @@ export interface FormData {
 
   // 
   // video: string
+  documents: string[];
 
   foundedYear: string;
   employees: string;
@@ -84,6 +85,7 @@ export default function SubmitStartupForm({ verified }: { verified: boolean }) {
     founderPhone: '+251912345678',
     founderBio:
       'Selam Tesfaye is a tech entrepreneur passionate about digital agriculture, with over 7 years of experience in software development and rural innovation.',
+    documents: [],
   });
 
   // useEffect(() => {
@@ -93,7 +95,7 @@ export default function SubmitStartupForm({ verified }: { verified: boolean }) {
   //   }
   // }, [pathname, router]);
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
