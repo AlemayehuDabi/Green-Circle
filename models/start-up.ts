@@ -1,27 +1,39 @@
-import { Schema, model, models, Document, Types } from 'mongoose';
+import { Schema, model, models, Document } from 'mongoose';
 
 export interface IStartup extends Document {
   name: string;
   website?: string;
   sector?: string;
   location: string;
-  images?: string[];
-  video?: string;
+  images?: string[]; 
+  video?: string | null;
   foundedYear?: string;
   employees?: string;
   description: string;
-  pitch?: string;
-  achievements?: string;
-  documents: string[]; // S3/Cloudinary URLs
-  founderRole?: string;
-  founderEmail?: string;
-  founderPhone?: string;
-  founderBio?: string;
-  revenue?: string;
-  founders: Types.ObjectId[]; // references to User model
+  achievements?: string[]; // Changed to Array
+  documents?: string[];
+  
+  
+  // Contact Object (Matches frontend startup.contact.email)
+  contact: {
+    email?: string;
+    phone?: string;
+  };
+
+  // Embedded Founders (Matches frontend startup.founders.map)
+  founders: {
+    name: string;
+    role?: string;
+    bio?: string;
+    image?: string;
+    email?: string;
+    linkedin?: string;
+    x?: string;
+  }[];
+
   status: 'pending' | 'approved' | 'rejected';
-  // banner: string;
-  // logo: string;
+  revenue?: string;
+  logo: string; // Uncommented
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,32 +43,43 @@ const StartupSchema = new Schema<IStartup>(
     name: { type: String, required: true },
     website: { type: String },
     sector: { type: String },
-    images: { type: [String], default: [] },
-    video: { type: String, default: null },
     location: { type: String, required: true },
     foundedYear: { type: String },
     employees: { type: String },
     description: { type: String, required: true },
-    pitch: { type: String },
-    achievements: { type: String },
-    documents: [{ type: String, required: true, default: "" }],
-    founderRole: { type: String },
-    founderEmail: { type: String },
-    founderPhone: { type: String },
-    founderBio: { type: String },
-    founders: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
+    
+    // Arrays for media and lists
+    images: { type: [String], default: [] },
+    achievements: { type: [String], default: [] }, 
+    documents: { type: [String], default: [] },
+    video: { type: String, default: null },
+    logo: { type: String, default: "/placeholder-logo.png" },
+
+    // Grouped Contact Info
+    contact: {
+      email: { type: String },
+      phone: { type: String }
+    },
+
+    // Embedded Founders (Crucial for Directory display without Auth complexity)
+    founders: [{
+      name: { type: String, required: true },
+      role: { type: String },
+      bio: { type: String },
+      image: { type: String },
+      email: { type: String },
+      linkedin: { type: String },
+      x: { type: String }
+    }],
+
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],
-      default: 'pending',
+      default: 'approved', // Default to approved for seed data
     },
     revenue: { type: String },
-    // banner: {type: String, default: ""},
-    // logo: {type: String, default: ""},
   },
   { timestamps: true }
 );
 
-
-export const Startup =
-  models.Startup || model<IStartup>('Startup', StartupSchema, 'startups');
+export const Startup = models.Startup || model<IStartup>('Startup', StartupSchema, 'startups');
