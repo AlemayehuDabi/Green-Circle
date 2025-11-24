@@ -37,23 +37,36 @@ export default function DocumentUploader({ onUploaded, type }: Props) {
 
     const uploadedResults: UploadedFile[] = [];
 
-    for (let file of files) {
-      // 1️⃣ Get signed Cloudinary upload signature from backend
-      const sigResponse = await fetch(`/api/upload/cloudinary-signature?folder=${type}`);
-      const { timestamp, signature, apiKey, cloudName } =
-        await sigResponse.json();
+   for (let file of files) {
+      // 1️⃣ Get signed Cloudinary upload signature from backend (UPDATED to POST)
+      const sigResponse = await fetch('/api/upload/cloudinary-signature', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ folder: type }), // 'type' is 'images', 'videos', or 'documents'
+      });
 
-      // 2️⃣ Get cloudinary upload response
-      console.log("cloudinary upload response", sigResponse)
+      if (!sigResponse.ok) {
+        console.error("Failed to get signature");
+        continue;
+      }
+
+      const { timestamp, signature, apiKey, cloudName } = await sigResponse.json();
 
       // 2️⃣ Build multipart body
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("timestamp", timestamp);
+      formData.append("timestamp", timestamp.toString()); // Ensure string
       formData.append("signature", signature);
       formData.append("api_key", apiKey);
+      formData.append("folder", type); // Cloudinary needs the folder name in the upload too
 
-      // 3️⃣ Use XMLHttpRequest for REAL upload progress
+      // 3️⃣ Determine Resource Type (Critical for Images/Videos to render correctly)
+      // If type is 'documents', use 'raw'. Otherwise use 'image' or 'video'.
+      const resourceType = type === 'documents' ? 'raw' : (type === 'videos' ? 'video' : 'image');
+
+      // 4️⃣ Use XMLHttpRequest for REAL upload progress
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
 
@@ -70,23 +83,27 @@ export default function DocumentUploader({ onUploaded, type }: Props) {
         });
 
         xhr.addEventListener("load", () => {
-          const res = JSON.parse(xhr.responseText);
-          uploadedResults.push({ url: res.secure_url, name: file.name });
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const res = JSON.parse(xhr.responseText);
+            uploadedResults.push({ url: res.secure_url, name: file.name });
 
-          setUploads((prev) =>
-            prev.map((u) =>
-              u.file === file ? { ...u, progress: 100, done: true } : u
-            )
-          );
-
-          resolve();
+            setUploads((prev) =>
+              prev.map((u) =>
+                u.file === file ? { ...u, progress: 100, done: true } : u
+              )
+            );
+            resolve();
+          } else {
+             reject(new Error("Cloudinary upload failed"));
+          }
         });
 
         xhr.addEventListener("error", reject);
 
+        // UPDATED URL: Uses dynamic resourceType instead of hardcoded 'raw'
         xhr.open(
           "POST",
-          `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`
+          `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`
         );
         xhr.send(formData);
       });
