@@ -787,12 +787,11 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
                     id="email"
                     type="email"
                     value={user.email}
-                    disabled
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    placeholder="user@gmail.com"
                     className="bg-gray-50"
                   />
-                  <p className="text-xs text-gray-500">
-                    Email address cannot be changed
-                  </p>
                 </div>
 
                 <div className="space-y-2">
