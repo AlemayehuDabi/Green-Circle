@@ -20,6 +20,8 @@ export interface IStartup extends Document {
   revenue?: string;
   founders: Types.ObjectId[]; // references to User model
   status: 'pending' | 'approved' | 'rejected';
+  // banner: string;
+  // logo: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,7 +39,7 @@ const StartupSchema = new Schema<IStartup>(
     description: { type: String, required: true },
     pitch: { type: String },
     achievements: { type: String },
-    documents: [{ type: String, required: true }],
+    documents: [{ type: String, required: true, default: "" }],
     founderRole: { type: String },
     founderEmail: { type: String },
     founderPhone: { type: String },
@@ -49,6 +51,8 @@ const StartupSchema = new Schema<IStartup>(
       default: 'pending',
     },
     revenue: { type: String },
+    // banner: {type: String, default: ""},
+    // logo: {type: String, default: ""},
   },
   { timestamps: true }
 );

@@ -589,7 +589,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
     <div className="min-h-screen bg-gray-50 pb-12">
       {/* Banner */}
       <div 
-        className="relative h-48 bg-gradient-to-r from-green-500 to-emerald-600 w-full"
+        className="relative h-48 bg-linear-to-r from-green-500 to-emerald-600 w-full"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -626,12 +626,12 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
               >
                 <Avatar className="w-full h-full">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="text-3xl bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+                  <AvatarFallback className="text-3xl bg-linear-to-br from-green-500 to-emerald-600 text-white">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     <Edit className="h-6 w-6 text-white" />
                   </div>
                 )}

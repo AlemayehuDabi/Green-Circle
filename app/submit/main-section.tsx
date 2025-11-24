@@ -525,12 +525,12 @@ export const MainSection: React.FC<{
                     Upload Documents
                   </h3>
                   <DocumentUploader
+                    type='documents'
                     onUploaded={(files) =>
                       handleInputChange('documents', files.map((file) => file.url))
                     }
                   />
                 </div>
-
 
                 {/* Legal Compliance */}
                 <div className="space-y-4">

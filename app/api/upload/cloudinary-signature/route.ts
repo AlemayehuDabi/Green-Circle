@@ -1,21 +1,25 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import crypto from "crypto";
-import { NextResponse } from "next/server";
 
-export function GET(){
-    const timestamp = Math.round(new Date().getTime() / 1000);
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { folder } = req.query; // folder: "images", "videos", "documents"
+  if (!folder || !["images", "videos", "documents"].includes(folder as string)) {
+    return res.status(400).json({ error: "Invalid folder" });
+  }
 
-    const signature = crypto
-      .createHash("sha1")
-      .update(
-        `timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`
-      )
-      .digest("hex");
+  const timestamp = Math.round(Date.now() / 1000);
 
-    return NextResponse.json({
-      timestamp,
-      signature,
-      apiKey: process.env.CLOUDINARY_API_KEY,
-      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    });
+  // signature for Cloudinary upload
+  const signature = crypto
+    .createHash("sha1")
+    .update(`folder=${folder}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`)
+    .digest("hex");
+
+  res.status(200).json({
+    timestamp,
+    signature,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    folder,
+  });
 }
-

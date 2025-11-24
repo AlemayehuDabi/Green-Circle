@@ -15,9 +15,10 @@ interface FileUploadState {
 
 interface Props {
   onUploaded: (files: UploadedFile[]) => void;
+  type: "images" | "videos" | "documents";
 }
 
-export default function DocumentUploader({ onUploaded }: Props) {
+export default function DocumentUploader({ onUploaded, type }: Props) {
   const [uploads, setUploads] = useState<FileUploadState[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -38,7 +39,7 @@ export default function DocumentUploader({ onUploaded }: Props) {
 
     for (let file of files) {
       // 1️⃣ Get signed Cloudinary upload signature from backend
-      const sigResponse = await fetch("/api/upload/cloudinary-signature");
+      const sigResponse = await fetch(`/api/upload/cloudinary-signature?folder=${type}`);
       const { timestamp, signature, apiKey, cloudName } =
         await sigResponse.json();
 
@@ -93,6 +94,9 @@ export default function DocumentUploader({ onUploaded }: Props) {
 
     onUploaded(uploadedResults);
   };
+
+  // return based on type
+  
 
   return (
     <div className="border border-gray-300 dark:border-gray-600 rounded-xl p-6 bg-white dark:bg-gray-900 transition hover:border-black/50 cursor-pointer"

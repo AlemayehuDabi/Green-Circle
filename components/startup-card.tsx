@@ -13,12 +13,14 @@ interface StartupCardProps {
 }
 
 export function StartupCard({ startup }: StartupCardProps) {
+
+  // console.log(startup)
   
   return (
     <Card className="group flex flex-col h-full border-slate-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-emerald-200/60">
       
       {/* 1. Card Header / Banner */}
-      <div className="relative h-24 w-full bg-gradient-to-r from-slate-800 to-slate-900">
+      <div className="relative h-24 w-full bg-linear-to-r from-slate-800 to-slate-900">
         {/* Subtle Pattern Overlay (Matches Detail Page) */}
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         
@@ -32,7 +34,7 @@ export function StartupCard({ startup }: StartupCardProps) {
         )}
       </div>
 
-      <CardContent className="relative pt-0 pb-4 flex-grow">
+      <CardContent className="relative pt-0 pb-4 grow">
         {/* 2. Logo Section (Overlapping) */}
         <div className="-mt-10 mb-4 flex justify-between items-end">
           <div className="h-20 w-20 rounded-xl border-4 border-white bg-white shadow-sm overflow-hidden">
@@ -42,7 +44,6 @@ export function StartupCard({ startup }: StartupCardProps) {
             fill
             className="object-cover"
           />
-
           </div>
           
           {/* Sector Badge (Next to logo, aligned bottom) */}
