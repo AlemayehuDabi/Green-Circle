@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -51,6 +51,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
     };
     load();
   }, [id]);
+ 
 
   if (loading) return <Loading />;
   if (!startup) return notFound();
@@ -276,7 +277,8 @@ export default function StartupDetailPage({ id }: { id: string }) {
           <div className="lg:col-span-4 space-y-6">
             
             {/* CONTACT HUB CARD */}
-            <Card className="border-blue-200 shadow-sm bg-blue-50/30 sticky top-24">
+            
+            <Card className="border-blue-200 shadow-sm bg-white top-24">
                <CardHeader className="pb-3">
                   <CardTitle className="text-base font-bold text-blue-900 flex items-center gap-2">
                      <Mail className="h-4 w-4" /> Connect with {startup.name}
@@ -341,6 +343,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                   </div>
                </CardContent>
             </Card>
+         
 
             {/* Quick Summary Card */}
             <Card className="border-slate-200 shadow-sm">
