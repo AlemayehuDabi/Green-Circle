@@ -21,7 +21,7 @@ export function TrustSection() {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section id='trust' className="py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

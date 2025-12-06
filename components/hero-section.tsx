@@ -56,7 +56,7 @@ export function HeroSection() {
       {/* Top Badge / Pill - UPDATED FOR "INFRASTRUCTURE" */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
         <Link 
-          href="/about"
+          href="#trust"
           className="inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-emerald-600 backdrop-blur-sm"
         >
           <Sparkles className="mr-2 h-3.5 w-3.5 text-emerald-500" />
