@@ -49,6 +49,17 @@ export function Header({ currentPage }: HeaderProps) {
             </Link>
 
             <Link
+              href="/analysis"
+              className={`transition-colors ${
+                currentPage === 'analysis'
+                  ? 'text-emerald-600 font-medium'
+                  : 'text-gray-700 hover:text-gray-900'
+              }`}
+            >
+              Analysis
+            </Link>
+
+            <Link
               href={
                 session
                   ? session.role === 'startup'
