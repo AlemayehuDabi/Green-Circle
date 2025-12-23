@@ -159,7 +159,7 @@ const CompanyProfile = ({ company, onBack }: CompanyProfileProps) => {
           className="bg-card rounded-2xl p-6 border border-border shadow-soft"
         >
           <h3 className="text-lg font-semibold text-foreground mb-4">Revenue Growth (12 Months)</h3>
-          <div className="h-[280px]">
+          <div className="h-70">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={company.monthlyData}>
                 <defs>
@@ -213,7 +213,7 @@ const CompanyProfile = ({ company, onBack }: CompanyProfileProps) => {
                     borderRadius: "12px",
                   }}
                   labelStyle={{ color: "hsl(var(--foreground))" }}
-                  formatter={(value: number) => value.toLocaleString()}
+                  formatter={(value: number) => value?.toLocaleString() ?? "0"}
                 />
                 <Legend />
                 <Bar dataKey="activeUsers" name="Active Users" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
