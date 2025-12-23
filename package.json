@@ -82,5 +82,5 @@
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"
   },
-  "packageManager": "yarn@4.11.0"
+  "packageManager": "yarn@4.12.0"
 }
