@@ -7,7 +7,7 @@
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint",
-    "scrape:techcabal": "tsx scripts/scrape-techcabal.ts"
+    "scrape:techcabal": "tsx --env-file=.env scripts/scrape-techcabal.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.0",
