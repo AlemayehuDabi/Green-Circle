@@ -12,9 +12,9 @@ export interface IStartup extends Document {
   description: string;
   achievements?: string[]; // Changed to Array
   documents?: string[];
+  slug?: string;
 
   // scraping fields
-  slug?: string;
   sources: {
     name?:string,
     url?: string,
@@ -89,6 +89,7 @@ const StartupSchema = new Schema<IStartup>(
       x: { type: String }
     }],
 
+    slug: { type: String, required: true, unique: true },
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],
@@ -97,7 +98,6 @@ const StartupSchema = new Schema<IStartup>(
     revenue: { type: String },
 
     // scrape
-    slug: { type: String, required: true, unique: true },
     sources: [
       {
         name: String, // e.g. "TechCabal"
