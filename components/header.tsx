@@ -28,7 +28,7 @@ export function Header({ currentPage }: HeaderProps) {
   if (loading) return <Loading />;
 
   return (
-    <header className="border-b bg-white/80 backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-md">
+    <header className="border-b bg-white/80 backdrop-blur-md supports-backdrop-filter:backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
 

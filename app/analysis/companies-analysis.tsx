@@ -71,7 +71,7 @@ const Analysis = () => {
       <AppSidebar currentView={currentView} onViewChange={handleViewChange} />
 
       {/* Main content area */}
-      <div className="ml-[250px]">
+      <div className="ml-62.5">
         {/* Top Bar */}
         <TopBar />
 
