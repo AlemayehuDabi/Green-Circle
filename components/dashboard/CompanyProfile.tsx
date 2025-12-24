@@ -213,7 +213,7 @@ const CompanyProfile = ({ company, onBack }: CompanyProfileProps) => {
                     borderRadius: "12px",
                   }}
                   labelStyle={{ color: "hsl(var(--foreground))" }}
-                  formatter={(value: number) => value?.toLocaleString() ?? "0"}
+                  formatter={(value: number | undefined) => value?.toLocaleString() ?? "0"}
                 />
                 <Legend />
                 <Bar dataKey="activeUsers" name="Active Users" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
