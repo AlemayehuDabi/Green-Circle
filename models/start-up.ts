@@ -12,7 +12,15 @@ export interface IStartup extends Document {
   description: string;
   achievements?: string[]; // Changed to Array
   documents?: string[];
-  
+  slug?: string;
+
+  // scraping fields
+  sources: {
+    name?:string,
+    url?: string,
+  }[];
+  confidenceLevel?: Number;
+  claimStatus?: String;
   
   // Contact Object (Matches frontend startup.contact.email)
   contact: {
@@ -43,7 +51,16 @@ const StartupSchema = new Schema<IStartup>(
     name: { type: String, required: true },
     website: { type: String },
     sector: { type: String },
-    location: { type: String, required: true },
+    location: { type: String, enum: [
+      "Fintech",
+      "AgriTech",
+      "HealthTech",
+      "EdTech",
+      "Logistics",
+      "Ecommerce",
+      "SaaS",
+      "Other",
+    ], required: true },
     foundedYear: { type: String },
     employees: { type: String },
     description: { type: String, required: true },
@@ -72,12 +89,31 @@ const StartupSchema = new Schema<IStartup>(
       x: { type: String }
     }],
 
+    slug: { type: String, required: true, unique: true },
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],
       default: 'approved', // Default to approved for seed data
     },
     revenue: { type: String },
+
+    // scrape
+    sources: [
+      {
+        name: String, // e.g. "TechCabal"
+        url: String,
+      },
+    ],
+    confidenceLevel: {
+      type: Number, // 1–4
+      default: 1,
+    },
+
+    claimStatus: {
+      type: String,
+      enum: ["unclaimed", "pending", "claimed"],
+      default: "unclaimed",
+    },
   },
   { timestamps: true }
 );
