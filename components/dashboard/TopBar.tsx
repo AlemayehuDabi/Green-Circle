@@ -1,14 +1,45 @@
 import { motion } from "framer-motion";
 import { Search, Command, Bell, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import Loading from "@/app/loading";
+import { UserProfileDropdown } from "../user-profile-dropdown";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 const TopBar = () => {
+
+ // 1. Start as true so the first render shows the spinner
+const [session, setSession] = useState<any>(null);
+const [loading, setLoading] = useState(true); 
+
+useEffect(() => {
+  const fetchSession = async () => {
+    try {
+      // No need to setLoading(true) here if it starts as true
+      const { data } = await authClient.getSession();
+      setSession(data?.user || null);
+    } catch (error) {
+      console.log("session fetch error: ", error);
+    } finally {
+      setLoading(false); // This stops the spinner
+    }
+  };
+
+  fetchSession();
+}, []);
+
+// 2. ONLY show loading if loading is TRUE
+if (loading) {
+  return <Loading />;
+}
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }} 
-      className="glass fixed top-0 right-0 left-[250px] z-40 px-6 py-4 border-b border-border/50 bg-white/95"
+      className="glass fixed top-0 right-0 left-62.5 z-40 px-6 py-4 border-b border-border/50 bg-white/95"
     >
       <div className="flex items-center justify-between">
         {/* Breadcrumbs */}
@@ -43,16 +74,28 @@ const TopBar = () => {
           </button>
 
           {/* User Profile */}
-          <div className="flex items-center gap-3 pl-4 border-l border-border">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-foreground">Abebe Kebede</p>
-              <p className="text-xs text-muted-foreground">Policy Analyst</p>
-            </div>
-            <Avatar className="w-10 h-10 ring-2 ring-primary/20">
-              <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=abebe" />
-              <AvatarFallback className="bg-primary text-primary-foreground">AK</AvatarFallback>
-            </Avatar>
-          </div>
+
+          {/*  logged-out profile */}
+
+          {session ? (
+            <UserProfileDropdown session={session} />
+          ) : (
+            <div className="flex items-center space-x-4">
+                <Link
+                  href="/login"
+                  className="text-gray-700 hover:text-gray-900 transition"
+                >
+                  Login
+                </Link>
+                <Button
+                  asChild
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
+                  <Link href="/register">Get Started</Link>
+                </Button>
+             </div>
+          )}
+
         </div>
       </div>
     </motion.header>
