@@ -341,6 +341,7 @@ import { Edit, Mail, Phone, Globe, Twitter, Linkedin, Github, Calendar, MapPin, 
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { updatedUser } from '@/lib/call-api/call-api';
+import Loading from '../loading';
 
 // Types
 type SocialLinks = {
@@ -371,6 +372,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
 
   const [user, setUser] = useState({
     name: '',
@@ -432,6 +434,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
 
   const fetchUserData = async () => {
     try {
+      setLoading(true)
       const session = await authClient.getSession();
       if (session.data?.user) {
         const userData = session.data.user;
@@ -456,6 +459,8 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
     } catch (error) {
       console.error('Error fetching user data:', error);
       toast.error('Failed to load user data');
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -487,6 +492,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
 
   const handleSave = async () => {
     try {
+      setLoading(true)
       // Update user data
       const updated = await updatedUser({
         email: user.email,
@@ -508,6 +514,8 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile');
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -524,6 +532,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
     // TODO: Implement file upload logic
     // This is a placeholder for the actual file upload implementation
     try {
+      setLoading(true)
       setIsUploading(true);
       // const avatarUrl = await uploadFile(file);
       // setUser(prev => ({ ...prev, avatar: avatarUrl }));
@@ -532,6 +541,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
       console.error('Error uploading file:', error);
       toast.error('Failed to update profile picture');
     } finally {
+      setLoading(false)
       setIsUploading(false);
     }
   };
@@ -554,6 +564,11 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
       console.log('Dropped file:', file);
     }
   };
+
+   // loading
+  if (loading){
+    return <Loading />
+  }
 
   const getInitials = (name: string) => {
     return name
@@ -584,6 +599,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
         return <User className="h-3 w-3" />;
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
@@ -649,7 +665,7 @@ export default function UserProfile({ initialUser }: UserProfileProps) {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{user.name}</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-white">{user.name}</h1>
                   <p className="text-gray-600 flex items-center gap-2">
                     <Mail className="h-4 w-4" />
                     {user.email}

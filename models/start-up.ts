@@ -14,6 +14,9 @@ export interface IStartup extends Document {
   documents?: string[];
   slug?: string;
 
+  pitch?:string;
+  banner?:string;
+
   // scraping fields
   sources: {
     name?:string,
@@ -64,6 +67,8 @@ const StartupSchema = new Schema<IStartup>(
     foundedYear: { type: String },
     employees: { type: String },
     description: { type: String, required: true },
+    pitch: {type:String},
+    banner: {type:String},
     
     // Arrays for media and lists
     images: { type: [String], default: [] },

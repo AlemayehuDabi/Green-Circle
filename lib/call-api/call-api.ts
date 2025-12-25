@@ -6,7 +6,7 @@ import { authClient } from '../auth-client';
 const transform = (s: RawStartup): Startup => ({
   _id: s._id,
   name: s.name,
-  logo: '',
+  logo: s.logo,
   sector: s.sector,
   location: s.location,
   description: s.description,
@@ -18,6 +18,7 @@ const transform = (s: RawStartup): Startup => ({
   founderRole: s.founderRole,
   founderBio: s.founderBio,
   pitch: s.pitch,
+  banner: s.banner,
   achievements: Array.isArray(s.achievements)
     ? s.achievements
     : s.achievements

@@ -32,6 +32,8 @@ export interface Startup {
   employees?: string;
   description: string;
   pitch?: string;
+  banner?: string;
+  slug?:string;
 
   achievements?: string | string[];
   documents?: string[];
@@ -73,6 +75,8 @@ export interface RawStartup {
   founderPhone?: string;
   founderRole?: string;
   founderBio?: string;
+  banner?: string;
+  logo?: string; 
   status: string;
   createdAt: string;
   updatedAt: string;
