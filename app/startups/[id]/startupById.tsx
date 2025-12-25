@@ -94,7 +94,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
             )}
           
              {/* THIS IS THE FIX: A gradient overlay that is transparent at the top and dark at the bottom */}
-    <div className="absolute inset-0 bg-linear-to-t from-2% from-emerald-700/90 via-15% via-emerald-700/50 to-transparent" />
+    {/* <div className="absolute inset-0 bg-linear-to-t from-2% from-emerald-700/90 via-15% via-emerald-700/50 to-transparent" /> */}
 
           {/* Navigation (Absolute Top Left) */}
          <div className="absolute top-6 left-4 md:left-8 z-20">
