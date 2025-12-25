@@ -12,13 +12,33 @@ interface StartupCardProps {
   startup: Startup;
 }
 
+
 export function StartupCard({ startup }: StartupCardProps) {
+
+    const logoUrl = startup.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(startup.name)}&background=emerald&size=200`;
+
   return (
     <Card className="group flex flex-col h-full border-slate-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-emerald-200/60">
       
       {/* 1. Card Header / Banner */}
-      <div className="relative h-24 w-full bg-gradient-to-r from-slate-800 to-slate-900">
-        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      <div className={`relative h-24 w-full ${!startup.banner && "bg-linear-to-r from-slate-800 to-slate-900"}`}>
+        <div className="absolute inset-0 opacity-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+
+         {/* The Actual Banner Image */}
+                 {startup.banner ? (
+                    <ImageWithFallback
+                       src={startup.banner}
+                       alt={`${startup.name} banner`}
+                       fill
+                       priority
+                       className="object-cover"
+                    />
+                 ) : (
+                    // Fallback if no banner image exists
+                    <div className="absolute inset-0 bg-linear-to-r from-slate-800 to-slate-900" />
+                 )}
+
+
         
         {startup.status === 'approved' && (
           <div className="absolute top-3 right-3">
@@ -36,7 +56,7 @@ export function StartupCard({ startup }: StartupCardProps) {
           {/* 👇 FIXED: Added 'relative' here so the image stays inside this box */}
           <div className="relative h-20 w-20 rounded-xl border-4 border-white bg-white shadow-sm overflow-hidden shrink-0">
             <ImageWithFallback
-              src={startup.logo || ""} // Removed fallback string here, handled in component
+              src={logoUrl}
               alt={startup.name}
               fill
               className="object-cover"

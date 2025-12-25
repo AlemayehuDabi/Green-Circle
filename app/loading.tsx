@@ -13,7 +13,7 @@ export default function Loading() {
         transition={{
           repeat: Infinity,
           ease: "linear",
-          duration: 0.55,  // Fast and snappy
+          duration: 0.7,  // Fast and snappy
         }}
       />
 

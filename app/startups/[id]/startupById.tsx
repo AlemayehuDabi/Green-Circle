@@ -56,32 +56,55 @@ export default function StartupDetailPage({ id }: { id: string }) {
   if (loading) return <Loading />;
   if (!startup) return notFound();
 
+  console.log("this is a single startup data: ", startup)
+
   // Data Safety
   const gallery = (startup as any).images || [];
   const video = (startup as any).video || null;
   const achievements = (startup as any).achievements || [];
   const logoUrl = startup.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(startup.name)}&background=random&size=200`;
+
     return (
     <section className="min-h-screen bg-slate-50 font-sans pb-20">
       <Header />
 
       {/* --- HERO SECTION (Matches Card Style) --- */}
-      <div className="relative w-full bg-slate-900">
-        
-        {/* 1. Dark Gradient Banner */}
-        <div className="relative h-64 md:h-80 w-full bg-gradient-to-r from-slate-800 to-slate-900 overflow-hidden">
-          {/* Pattern Overlay */}
-          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      <div className="relative w-full">
+
+         {/* Pattern Overlay */}
+      <div className="absolute border-4  inset-0 opacity-10 h-96 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] "></div>
+
           
+
+        {/* 1. Dark Gradient Banner */}
+        <div className={`relative h-64 md:h-80 w-full ${!startup.banner && "bg-linear-to-r from-slate-800 to-slate-900"}`}>
+          
+          {/* The Actual Banner Image */}
+         {startup.banner ? (
+            <ImageWithFallback
+               src={startup.banner}
+               alt={`${startup.name} banner`}
+               fill
+               priority
+               className="object-cover"
+               />
+            ) : (
+               // Fallback if no banner image exists
+               <div className="absolute inset-0 bg-linear-to-r from-slate-800 to-slate-900" />
+            )}
+          
+             {/* THIS IS THE FIX: A gradient overlay that is transparent at the top and dark at the bottom */}
+    <div className="absolute inset-0 bg-linear-to-t from-2% from-emerald-700/90 via-15% via-emerald-700/50 to-transparent" />
+
           {/* Navigation (Absolute Top Left) */}
-          <div className="absolute top-6 left-4 md:left-8 z-20">
+         <div className="absolute top-6 left-4 md:left-8 z-20">
             <Button asChild variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-sm">
               <Link href="/startups" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Registry</span>
               </Link>
             </Button>
-          </div>
+         </div>
 
           {/* Verified Badge (Absolute Top Right) */}
           {startup.status === 'approved' && (
@@ -94,8 +117,9 @@ export default function StartupDetailPage({ id }: { id: string }) {
         </div>
 
         {/* 2. Overlapping Identity Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative -mt-20 md:-mt-24 mb-8">
-           <div className="flex flex-col md:flex-row items-end gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative -mt-20 md:-mt-24 mb-8  py-2 rounded-lg">
+
+           <div className="flex flex-col md:flex-row items-end gap-6 rounded-l-xl rounded-r-sm pr-2">
               
               {/* Logo Box (Square, White Border) */}
               <div className="relative h-32 w-32 md:h-40 md:w-40 rounded-xl border-4 border-white bg-white shadow-md overflow-hidden shrink-0">
@@ -113,11 +137,11 @@ export default function StartupDetailPage({ id }: { id: string }) {
                     
                     <div>
                        <div className="flex items-center gap-3 mb-2">
-                          <h1 className="text-3xl md:text-5xl font-bold text-slate-900 md:text-white drop-shadow-md md:drop-shadow-lg">
+                          <h1 className="text-3xl md:text-5xl font-bold drop-shadow-md md:drop-shadow-lg">
                              {startup.name}
                           </h1>
                        </div>
-                       <div className="flex flex-wrap items-center gap-3 text-slate-600 md:text-slate-200 font-medium">
+                       <div className="flex flex-wrap items-center gap-3 text-slate-600 md:text-gray-700 font-medium">
                           <span className="flex items-center gap-1.5">
                              <Briefcase className="h-4 w-4 opacity-80" /> {startup.sector}
                           </span>
@@ -144,6 +168,7 @@ export default function StartupDetailPage({ id }: { id: string }) {
                  </div>
               </div>
            </div>
+
         </div>
       </div>
 
